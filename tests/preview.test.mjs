@@ -122,3 +122,18 @@ test("inline application JavaScript parses without syntax errors", () => {
   assert.ok(match, "inline application script exists");
   assert.doesNotThrow(() => new Script(match[1]), "inline application script should parse");
 });
+
+test("mobile keyboard handling hides the fixed dock and keeps focused fields in view", () => {
+  assert.match(html, /body\.keyboard-open \.mobile-action-dock\{display:none!important\}/);
+  assert.match(html, /function syncKeyboardState\(\)/);
+  assert.match(html, /visualViewport\.addEventListener\("resize"/);
+  assert.match(html, /focused\.scrollIntoView\(\{block:"center"/);
+  assert.match(html, /orientationchange/);
+});
+
+test("workflow step indicators respond to navigation and project brief editing", () => {
+  assert.match(html, /function setStep\(n\)/);
+  assert.match(html, /setStep\(3\)/);
+  assert.match(html, /setStep\(4\)/);
+  assert.match(html, /data-step="4"><b>4<\/b><span>生成 Agent 指令<\/span>/);
+});
