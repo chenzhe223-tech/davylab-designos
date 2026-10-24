@@ -94,7 +94,7 @@ test("intent-led search provides synonym matching and explainable recommendation
   assert.ok(ranked("现有项目规则对照审查").some(item => item.profile.id === "dashboard-studio"), "read-only profile remains discoverable for explicit audit intent");
 });
 
-test("intent discovery UI includes natural-language examples, shortcut chips, and no-result recovery", () => {
+test("preview has an explicit confirmation step before Agent prompt generation", () => {\n  assert.match(html, /id="confirmDesign"/);\n  assert.match(html, /确认方案并继续/);\n  assert.match(html, /\$\("confirmDesign"\)\.addEventListener\("click"/);\n  assert.match(html, /function buildPrompt\(\)\{const chosen=\[activeProfile,/);\n});\n\ntest("intent discovery UI includes natural-language examples, shortcut chips, and no-result recovery", () => {
   assert.match(html, /id="intentInput"/);
   assert.match(html, /id="matchIntent"/);
   assert.match(html, /data-intent="科技感"/);
