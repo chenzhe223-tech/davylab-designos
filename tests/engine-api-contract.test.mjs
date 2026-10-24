@@ -26,6 +26,7 @@ test('engine API has bounded input, origin allowlist, rate limiting, and no cred
 
 test('Docker image installs the pinned engine before starting the API bridge', () => {
   assert.match(docker, /npm run engine:setup/);
-  assert.match(docker, /capability-inventory\.py/);\n  assert.match(docker, /test -s \/app\/generated\/skill-capability-inventory\.json/);
+  assert.match(docker, /capability-inventory\.py/);
+  assert.match(docker, /test -s \/app\/generated\/skill-capability-inventory\.json/);
   assert.match(docker, /engine-api\/server\.py/);
 });
