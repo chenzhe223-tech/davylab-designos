@@ -1,14 +1,17 @@
 {
-  "name": "davylab-designos-preview",
+  "name": "davylab-designos",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Interactive static preview for DAVYLAB DesignOS",
+  "description": "Design system workspace and UI UX Pro Max adapter",
   "scripts": {
     "test": "node --test tests/*.test.mjs",
-    "check": "npm test"
+    "validate:rules": "node scripts/validate-rules.mjs",
+    "build": "node scripts/build.mjs",
+    "engine:status": "node scripts/designos.mjs engine-status",
+    "engine:setup": "node scripts/designos.mjs setup-engine",
+    "verify:engine-output": "node scripts/verify-engine-output.mjs",
+    "check": "npm run validate:rules && npm test && npm run build"
   },
-  "engines": {
-    "node": ">=20"
-  }
+  "engines": {"node": ">=20"}
 }
