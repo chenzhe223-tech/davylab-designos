@@ -259,3 +259,11 @@ test("contrast calculation returns a WCAG 21:1 ratio for black on white", () => 
   const low = sandbox.__contrast.contrastCheck("#777777", "#ffffff", "body");
   assert.equal(low.passed, false);
 });
+
+test("normalized candidate carries UX rules and provenance from live Skill search results", () => {
+  assert.match(html, /const uxSearch=lastEngineSearchResults\.find/);
+  assert.match(html, /evidenceId:"live-ux-search"/);
+  assert.match(html, /lastEngineSearchResults\.flatMap/);
+  assert.match(html, /domain:item\.id/);
+  assert.match(html, /upstream CLI search output \(source path not exposed\)/);
+});
