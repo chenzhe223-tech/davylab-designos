@@ -58,7 +58,7 @@ test("JSON export explains its scope and supports selected and all profiles", ()
 test("protected project remains read-only and private project data is not fetched", () => {
   assert.match(html, /Dashboard Studio：只读/);
   assert.match(html, /不得自动将其应用(?:于|到)目标项目/);
-  assert.doesNotMatch(html, /fetch\s*\(/);
+  assert.match(html, /const ENGINE_API_BASE="https:\/\/davylab-designos-engine\.onrender\.com"/);\n  assert.match(html, /fetch\(ENGINE_API_BASE\+"\/api\/search"/);\n  assert.doesNotMatch(html, /fetch\s*\(\s*["\x27`]https?:\/\/(?!davylab-designos-engine\.onrender\.com)[^"\x27`]+\/api\//i);
   assert.doesNotMatch(html, /https?:\/\/(?!fonts\.googleapis\.com)[\w.-]+\/api\//i);
   assert.doesNotMatch(html, /(?:sk-[A-Za-z0-9]{20,}|gh[pousr]_[A-Za-z0-9]{20,})/);
 });
@@ -145,4 +145,16 @@ test("profile details and comparison expose evidence status and full design toke
   assert.match(html, /Typography|字体/);
   assert.match(html, /间距 \/ 圆角/);
   assert.match(html, /JSON\.stringify\(sp\)/);
+});
+
+test("product brief performs live upstream Skill search and clearly labels unavailable-engine fallback", () => {
+  assert.match(html, /id="engineEvidence"/);
+  assert.match(html, /id="engineStatus"/);
+  assert.match(html, /function queryOfficialEngine\(query\)/);
+  assert.match(html, /ENGINE_DOMAINS=\[\{id:"style"/);
+  assert.match(html, /\{id:"color",label:"行业配色"\}/);
+  assert.match(html, /\{id:"typography",label:"字体配对"\}/);
+  assert.match(html, /\{id:"ux",label:"UX 指南"\}/);
+  assert.match(html, /引擎暂不可用/);
+  assert.match(html, /不会以示例或硬编码结果冒充引擎输出/);
 });
