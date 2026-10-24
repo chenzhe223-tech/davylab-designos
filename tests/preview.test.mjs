@@ -63,6 +63,16 @@ test("protected project remains read-only and private project data is not fetche
   assert.doesNotMatch(html, /(?:sk-[A-Za-z0-9]{20,}|gh[pousr]_[A-Za-z0-9]{20,})/);
 });
 
+test("mobile quick-action dock exposes preview, phone view, and Agent prompt actions", () => {
+  assert.match(html, /class="mobile-action-dock"/);
+  assert.match(html, /id="mobilePreview"/);
+  assert.match(html, /id="mobileDevice"/);
+  assert.match(html, /id="mobilePrompt"/);
+  assert.match(html, /\$\("mobilePreview"\)\.addEventListener\("click"/);
+  assert.match(html, /\$\("mobileDevice"\)\.addEventListener\("click"/);
+  assert.match(html, /\$\("mobilePrompt"\)\.addEventListener\("click",openPrompt\)/);
+});
+
 test("responsive layout covers tablet and mobile breakpoints", () => {
   assert.match(html, /@media\(max-width:900px\)/);
   assert.match(html, /@media\(max-width:560px\)/);
