@@ -246,3 +246,16 @@ test("candidate review calculates WCAG text contrast and records unknown or fail
   assert.match(html, /正文对比度：无法自动计算，需人工检查/);
   assert.match(html, /低于 4\.5:1，需调整/);
 });
+
+test("contrast calculation returns a WCAG 21:1 ratio for black on white", () => {
+  const start = html.indexOf("function parseHexColor(");
+  const end = html.indexOf("function normalizeCandidate(", start);
+  assert.ok(start >= 0 && end > start, "contrast helpers are present");
+  const sandbox = {};
+  runInNewContext(html.slice(start, end) + "globalThis.__contrast={contrastCheck};", sandbox);
+  const result = sandbox.__contrast.contrastCheck("#000000", "#ffffff", "body");
+  assert.equal(result.ratio, 21);
+  assert.equal(result.passed, true);
+  const low = sandbox.__contrast.contrastCheck("#777777", "#ffffff", "body");
+  assert.equal(low.passed, false);
+});
