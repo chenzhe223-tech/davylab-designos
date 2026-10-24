@@ -73,11 +73,48 @@ test('production UI: live Skill search, candidate generation, selection and capa
   await expect(page.locator('#engineEvidenceBody')).toContainText('产品类别映射');
   await page.locator('#generateEngineCandidate').click();
   await expect(page.locator('#engineCandidate .engine-candidate-card').first()).toBeVisible({ timeout: 120000 });
-  await expect(page.locator('#engineCandidate .candidate-live-preview').first()).toBeVisible();
-  await expect(page.locator('#engineCandidate .candidate-preview-notice').first()).toContainText('对比度');
-  await page.locator('#engineCandidate .engine-candidate-card [data-choose-direction]').first().click();
+  const candidateCards = page.locator('#engineCandidate .engine-candidate-card');
+  await expect(candidateCards).toHaveCount(3);
+  const firstCandidate = candidateCards.first();
+  await expect(firstCandidate.locator('.candidate-live-preview')).toBeVisible();
+  await expect(firstCandidate.locator('.candidate-preview-notice').first()).toContainText('对比度');
+  await firstCandidate.locator('.candidate-preview-device button').filter({ hasText: '手机' }).click();
+  await expect(firstCandidate.locator('.candidate-live-preview')).toHaveClass(/is-mobile/);
+  await firstCandidate.locator('.candidate-preview-device button').filter({ hasText: '桌面' }).click();
+  await expect(firstCandidate.locator('.candidate-live-preview')).not.toHaveClass(/is-mobile/);
+  await firstCandidate.locator('[data-choose-direction]').click();
+  await expect(firstCandidate).toHaveClass(/is-selected/);
   await expect(page.locator('#engineCandidate .engine-candidate-card.is-selected')).toHaveCount(1);
-  await expect(page.locator('#engineCandidate .engine-candidate-actions button').filter({ hasText: '下载此方向 JSON' }).first()).toBeVisible();
+
+  const [candidateJsonDownload] = await Promise.all([
+    page.waitForEvent('download'),
+    firstCandidate.getByRole('button', { name: '下载此方向 JSON' }).click(),
+  ]);
+  const candidateJson = JSON.parse(await readFile(await candidateJsonDownload.path(), 'utf8'));
+  expect(candidateJson.schemaVersion).toBe('1.0.0');
+  expect(candidateJson.brief.productCategory).toMatch(/travel|tourism/i);
+  expect(candidateJson.evidence.engine.version).toBe('2.15.0');
+  expect(candidateJson.delivery.agentExecutionPerformed).toBe(false);
+  expect(candidateJson.delivery.designSpecAvailable).toBe(false);
+
+  const [designMarkdownDownload] = await Promise.all([
+    page.waitForEvent('download'),
+    firstCandidate.getByRole('button', { name: '下载此方向 Markdown' }).click(),
+  ]);
+  const designMarkdown = await readFile(await designMarkdownDownload.path(), 'utf8');
+  expect(designMarkdown).toContain('## Product brief');
+  expect(designMarkdown).toContain('## Upstream UX guidance');
+  expect(designMarkdown).toContain('The candidate has not been approved');
+
+  const [agentBriefDownload] = await Promise.all([
+    page.waitForEvent('download'),
+    firstCandidate.getByRole('button', { name: '下载 Agent 执行指令' }).click(),
+  ]);
+  const agentBrief = await readFile(await agentBriefDownload.path(), 'utf8');
+  expect(agentBrief).toContain('Agent Implementation Brief');
+  expect(agentBrief).toContain('not an implemented application');
+  expect(agentBrief).toContain('Acceptance checklist');
+
   await page.locator('#toggleSkillCatalog').click();
   await expect(page.locator('#skillCatalogDomain option[value="styles.csv"]')).toHaveCount(1, { timeout: 30000 });
   await page.locator('#skillCatalogDomain').selectOption('styles.csv');
