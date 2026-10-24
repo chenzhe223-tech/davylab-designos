@@ -40,7 +40,7 @@ test("agent prompt generation includes selected profile rules and distinct agent
   assert.match(html, /## 3\. 选定设计档案与来源/);
   assert.match(html, /const agents=\[/);
   for (const agent of ["codex", "claude", "cursor", "copilot", "gemini", "workbuddy", "generic"]) {
-    assert.ok(html.includes('"id":"' + id + '"'), "missing profile " + id);
+    assert.ok(html.includes('"id":"' + agent + '"'), "missing agent " + agent);
   }
   assert.match(html, /持续推进所有可自主完成的工作/);
   assert.match(html, /尚未发送给 Agent/);
