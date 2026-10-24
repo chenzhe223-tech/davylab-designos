@@ -98,7 +98,7 @@ Do not represent authored profiles as the complete Skill. Keep the upstream Skil
 - The inventory generator now preserves the full raw field dictionary for every upstream record rather than only ID/name/status.
 - `/api/capabilities` returns catalog metadata by default and supports filtering by a real source domain, free-text search over IDs/names/status/raw fields, and bounded pagination (up to 100 records per request).
 - The homepage has a collapsed “真实 Skill 能力库” explorer that loads domain names/counts from the actual inventory, allows searching, displays active/status/source-row details, and expands raw source fields for inspection. It includes pagination for large domains such as Google Fonts.
-- This tranche requires a new Render rebuild because the currently verified service revision predates the raw-field inventory format and filtered endpoint. CI and a live API smoke run must pass after the rebuild before claiming production catalog access is accepted.
+- Render service deployment `dep-dbebr7rrjlhs73f6hpqg` is now live at commit `867fc5e2`, which includes the raw-field inventory and filtered/paginated endpoint. The first smoke attempt ran before the Render rollout finished and failed at the catalog step. Re-run the smoke after the next Cloudflare deployment to verify the now-live endpoint.
 
 ## Current product/UI change
 
