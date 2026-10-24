@@ -17,6 +17,15 @@ jobs:
       name: production
     steps:
       - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate profiles, tests, and build
+        run: |
+          npm run validate:rules
+          npm test
+          npm run build
       - name: Verify deployment credentials
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -48,9 +57,7 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          mkdir -p site
-          cp index.html site/index.html
-          npx --yes wrangler@4 pages deploy site --project-name=davylab-designos --branch=main --commit-hash="$GITHUB_SHA" --commit-message="$GITHUB_WORKFLOW: $GITHUB_SHA"
+          npx --yes wrangler@4 pages deploy dist --project-name=davylab-designos --branch=main --commit-hash="$GITHUB_SHA" --commit-message="$GITHUB_WORKFLOW: $GITHUB_SHA"
       - name: Verify production URL
         run: |
           set -euo pipefail
