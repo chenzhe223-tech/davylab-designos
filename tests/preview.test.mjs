@@ -176,7 +176,7 @@ test("candidate generation uses active styles returned by live Skill search and 
   assert.match(html, /Promise\.all\(selected\.map/);
   assert.match(html, /下载此方向 JSON/);
   assert.match(html, /下载此方向 Markdown/);
-  assert.match(html, /该候选尚未完成真实目标应用实现/);
+  assert.match(html, /候选尚未完成真实目标应用实现/);
   assert.match(html, /需要复核：引擎将产品归类为 General/);
 });
 
