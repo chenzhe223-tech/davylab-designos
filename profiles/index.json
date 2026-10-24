@@ -226,45 +226,35 @@
       "evidence": "Candidate profile. Validate against real SaaS projects before approval."
     },
     "presentation": {
-      "id": "warm-editorial",
-      "category": "marketing",
-      "type": "营销页面",
-      "style": "温润 · 编辑感 · 有呼吸",
-      "use": "品牌站、专题页、内容产品",
-      "device": "mobile",
-      "layout": "叙事型标题区 + 内容分段 + 视觉主图 + 明确 CTA",
-      "interaction": "清晰的阅读路径、短表单、可见的 CTA 和键盘焦点",
-      "limitations": "不适合需要极高数据密度的操作型后台；需以真实品牌素材替换占位内容。",
+      "id": "saas-product",
+      "category": "product",
+      "type": "SaaS 产品",
+      "style": "现代 · 清晰 · 任务导向",
+      "use": "专业 SaaS、团队协作、业务工作台",
+      "device": "desktop",
+      "layout": "任务导航 + 主工作区 + 分组表单与状态反馈",
+      "interaction": "任务分组表单、验证反馈、危险操作确认、可见键盘焦点",
+      "limitations": "复杂工作流仍需按实际用户任务验证；继承规则需结合目标产品调整。",
       "principles": [
-        "先讲价值，再讲功能",
-        "段落短而有节奏",
-        "图像服务于故事"
+        "导航结构反映用户任务",
+        "表单按任务分组",
+        "危险操作提供确认"
       ],
       "tags": [
-        "温暖有质感",
-        "活泼有趣",
-        "品牌官网",
-        "极简留白",
-        "内容产品"
+        "SaaS 产品",
+        "商务专业",
+        "工作台",
+        "AI 工具"
       ],
       "aliases": [
-        "温暖",
-        "亲和",
-        "柔和",
-        "有温度",
-        "高级",
-        "品牌",
-        "官网",
-        "品牌站",
-        "专题页",
-        "叙事",
-        "编辑式排版",
-        "留白",
-        "大留白",
-        "温润",
-        "生活方式"
+        "SaaS",
+        "企业工具",
+        "管理后台",
+        "表单",
+        "任务流",
+        "专业产品"
       ],
-      "mobileFit": "移动优先的叙事布局",
+      "mobileFit": "按任务优先级重排",
       "protected": false
     },
     "evidenceStatus": "draft"
