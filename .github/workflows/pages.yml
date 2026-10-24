@@ -5,6 +5,13 @@ on:
     branches: [main]
     paths:
       - "index.html"
+      - "profiles/**"
+      - "projects/**"
+      - "schemas/**"
+      - "scripts/**"
+      - "engine.lock.json"
+      - "package.json"
+      - "tests/**"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -23,17 +30,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate profiles
+        run: npm run validate:rules
+      - name: Test preview
+        run: npm test
+      - name: Build static site
+        run: npm run build
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
-      - name: Prepare static site
-        run: |
-          mkdir -p site
-          cp index.html site/index.html
-          touch site/.nojekyll
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: site
+          path: dist
 
   deploy:
     environment:
