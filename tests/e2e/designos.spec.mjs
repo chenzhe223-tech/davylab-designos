@@ -48,3 +48,14 @@ test('JSON export preview contains canonical profile identifiers and version', a
   expect(downloaded.profiles.length).toBe(5);
   expect(downloaded.profiles.some(profile => profile.profileId === 'davylab-warm-editorial')).toBeTruthy();
 });
+
+test('first-run experience is product-category agnostic, not dashboard-first', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto(appUrl);
+  await expect(page.locator('h1')).toContainText('先理解你想做的产品');
+  await expect(page.locator('#intentInput')).toHaveAttribute('placeholder', /AI 旅行 App/);
+  const firstProjectType = await page.locator('#projectType option').first().textContent();
+  expect(firstProjectType).toContain('移动应用');
+  expect(firstProjectType).not.toMatch(/dashboard|看板/i);
+  await expect(page.locator('[data-intent="AI 旅行 App，探索小众目的地并记录旅行记忆"]')).toBeVisible();
+});
