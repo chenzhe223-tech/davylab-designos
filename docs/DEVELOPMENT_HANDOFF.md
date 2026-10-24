@@ -162,7 +162,16 @@ Next sequence:
 5. Continue the product decision flow: candidate schema → multiple grounded candidates → meaningful preview/compare → complete spec export → browser acceptance.
 6. Update this handoff again with exact current commit SHA, workflow URLs, Render deployment ID/status and API smoke-test results.
 
-## 10. Useful file map
+## 10. Multi-direction candidate generation and export
+
+- The homepage now derives up to three candidate directions from actual active style records returned by the live Skill style search, then calls the official engine generation endpoint separately for each. It does not hard-code the direction names.
+- Each candidate shows style, color swatches, typography, page pattern and rule excerpts, plus a warning when the upstream output is generic or may have a mismatched industry mapping.
+- Each candidate has JSON and Markdown export actions. The Markdown is currently a candidate design-system brief, not yet the complete implementation-ready specification.
+- Latest frontend commits: `7e434dac0b6ef046c61038c951432e4400b2ed0c`, `6a39ea04028ff077b50c571aa67368e12529403d`, `5be9c1ac9d3aa364b154793fafdb98fb81cf8672`. Check the latest CI run for these commits before reporting the new multi-candidate tranche as accepted.
+- Latest known passing live engine smoke: [run 40100260878](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40100260878), which passed health, status, inventory, live search, base generation and React stack generation. Render API deploy [dep-dbebhenavr4c73acht6g](https://dashboard.render.com/web/srv-dbe8obss728c73bdno40) reached live at commit `dbf1fb2c`; later commits are primarily UI/docs/tests, but verify the service is still healthy.
+- Read `docs/REBUILD_AUDIT.md` for the complete verified inventory counts and current gaps.
+
+## 11. Useful file map
 
 - `docs/REBUILD_AUDIT.md` — full-rebuild evidence ledger and acceptance gaps
 - `schemas/design-candidate.schema.json` — normalized candidate schema
