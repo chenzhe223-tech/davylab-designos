@@ -101,7 +101,8 @@
         "响应式"
       ],
       "mobileFit": "需针对手机重排",
-      "protected": false
+      "protected": false,
+      "displayName": "Balanced SaaS"
     },
     "evidenceStatus": "reviewed"
   },
@@ -187,7 +188,8 @@
         "响应式"
       ],
       "mobileFit": "需将高密度信息纵向堆叠",
-      "protected": false
+      "protected": false,
+      "displayName": "Analytics Dashboard"
     },
     "evidenceStatus": "draft"
   },
@@ -255,7 +257,8 @@
         "专业产品"
       ],
       "mobileFit": "按任务优先级重排",
-      "protected": false
+      "protected": false,
+      "displayName": "SaaS Product"
     },
     "evidenceStatus": "draft"
   },
@@ -350,7 +353,8 @@
         "既有项目"
       ],
       "mobileFit": "只读审查，不自动写入",
-      "protected": true
+      "protected": true,
+      "displayName": "Dashboard Studio"
     },
     "evidenceStatus": "reviewed"
   },
@@ -448,7 +452,8 @@
         "生活方式"
       ],
       "mobileFit": "移动优先的叙事布局",
-      "protected": false
+      "protected": false,
+      "displayName": "Warm Editorial"
     }
   }
 ]
