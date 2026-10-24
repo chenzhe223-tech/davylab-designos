@@ -20,7 +20,13 @@ jobs:
         with:
           python-version: "3.x"
       - run: npm run validate:rules
+      - name: Install Playwright for browser acceptance
+        run: npm install --no-save @playwright/test
+      - name: Install Chromium browser
+        run: npx playwright install --with-deps chromium
       - run: npm test
+      - name: Run desktop and mobile end-to-end tests
+        run: npx playwright test
       - run: npm run build
       - name: Install pinned real UI UX Pro Max engine
         run: npm run engine:setup
