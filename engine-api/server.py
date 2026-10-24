@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Minimal public API bridge to the pinned official UI UX Pro Max CLI."""
+import ipaddress
 import json
 import os
 import subprocess
@@ -18,10 +19,39 @@ ALLOWED_ORIGINS = {
     "http://localhost:4173",
     "http://127.0.0.1:4173",
 }
-RATE_LIMIT = 20
+RATE_LIMIT = 60
 RATE_WINDOW = 60
 REQUEST_LIMIT = 12_000
 requests_by_ip = defaultdict(deque)
+
+
+def client_rate_limit_key(handler):
+    """Use Cloudflare's single-value client IP only behind the trusted local proxy.
+
+    Render documents that the application sees a proxy peer by default. Trust
+    CF-Connecting-IP only when the socket peer is loopback (the Render local
+    proxy observed in production); ignore forwarding headers on direct peers.
+    If the header is missing or invalid, fail closed to the socket peer.
+    """
+    peer = handler.client_address[0]
+    try:
+        peer_ip = ipaddress.ip_address(peer)
+    except ValueError:
+        return str(peer)
+
+    mapped = getattr(peer_ip, "ipv4_mapped", None)
+    trusted_local_proxy = peer_ip.is_loopback or bool(mapped and mapped.is_loopback)
+    if not trusted_local_proxy:
+        return peer_ip.compressed
+
+    forwarded = handler.headers.get("CF-Connecting-IP", "").strip()
+    try:
+        client_ip = ipaddress.ip_address(forwarded)
+        if client_ip.is_unspecified or client_ip.is_multicast or client_ip.is_loopback:
+            return peer_ip.compressed
+        return client_ip.compressed
+    except ValueError:
+        return peer_ip.compressed
 
 
 def run_cli(args, timeout=60):
@@ -74,6 +104,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Cache-Control", "no-store")
+        if status == 429:
+            self.send_header("Retry-After", str(RATE_WINDOW))
         # CORS responses must echo the exact validated origin, never a wildcard.
         # This includes approved project-owned Pages preview hostnames.
         if origin and allowed_request(self):
@@ -94,7 +126,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def _rate_limited(self):
         now = time.time()
-        bucket = requests_by_ip[self.client_address[0]]
+        bucket = requests_by_ip[client_rate_limit_key(self)]
         while bucket and now - bucket[0] > RATE_WINDOW:
             bucket.popleft()
         if len(bucket) >= RATE_LIMIT:

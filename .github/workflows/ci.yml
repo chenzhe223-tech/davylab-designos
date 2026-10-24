@@ -24,6 +24,8 @@ jobs:
         run: npm install --no-save @playwright/test
       - name: Install Chromium browser
         run: npx playwright install --with-deps chromium
+      - name: Test Render client-IP rate-limit key
+        run: python3 -m unittest discover -s tests -p 'test_engine_api_rate_limit.py'
       - run: npm test
       - name: Run desktop and mobile end-to-end tests
         run: npx playwright test

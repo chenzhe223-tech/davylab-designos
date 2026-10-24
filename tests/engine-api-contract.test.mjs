@@ -20,7 +20,12 @@ test('engine API exposes only the explicit health, status, capabilities and offi
 });
 test('engine API has bounded input, origin allowlist, rate limiting, and no credential literals', () => {
   assert.match(api, /REQUEST_LIMIT = 12_000/);
-  assert.match(api, /RATE_LIMIT = 20/);
+  assert.match(api, /RATE_LIMIT = 60/);
+  assert.match(api, /def client_rate_limit_key\(handler\)/);
+  assert.match(api, /CF-Connecting-IP/);
+  assert.match(api, /trusted_local_proxy/);
+  assert.match(api, /requests_by_ip\[client_rate_limit_key\(self\)\]/);
+  assert.match(api, /Retry-After/);
   assert.match(api, /ALLOWED_ORIGINS/);
   assert.match(api, /parsed\.hostname\.endswith\("\.davylab-designos\.pages\.dev"\)/);
   assert.match(api, /parsed\.scheme == "https"/);
