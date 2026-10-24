@@ -171,7 +171,15 @@ Next sequence:
 - Latest known passing live engine smoke: [run 40100260878](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40100260878), which passed health, status, inventory, live search, base generation and React stack generation. Render API deploy [dep-dbebhenavr4c73acht6g](https://dashboard.render.com/web/srv-dbe8obss728c73bdno40) reached live at commit `dbf1fb2c`; later commits are primarily UI/docs/tests, but verify the service is still healthy.
 - Read `docs/REBUILD_AUDIT.md` for the complete verified inventory counts and current gaps.
 
-## 11. Useful file map
+## 11. Source-backed Skill capability explorer
+
+- Added a collapsed “真实 Skill 能力库” UI with dynamic domain options from the actual capability inventory, search over raw source fields, record status/ID/source row details, expandable raw fields and pagination.
+- Updated `scripts/capability-inventory.py` to preserve raw fields for each record. Updated `engine-api/server.py` so `/api/capabilities` returns domain metadata by default and supports `domain`, `q`, `offset` and bounded `limit` parameters.
+- Relevant commits: `6da32bcaa10ccb02a6cd2619fabafe3dfc0bc52e`, `95ac2b27fa869ee47254dfe0ac9500f8b46ed039`, `18c9b52139b6e0c2cafbc09b904212b33c5ec47a`, `adac2328fee8890b8887edff7b32d6c03f1aa290`, `2b25af9ac203212a46a9c62e26be4dcd59c5fb2c`, `2998c17a81bee6f9895871262687730d2d0138b6`.
+- The latest verified Render deployment predates this capability API update. Trigger/verify a new Render build after current GitHub checks complete, then verify `/api/capabilities` metadata and a filtered `?domain=styles.csv&q=...` response. Do not report this catalog as live until that check passes.
+- Current design acceptance remains partial: candidate outputs are grounded in real engine calls, but category mismatch warnings and human review are still necessary; automatic hard-constraint evaluation, a fully implemented target app, and physical iPhone/iPad acceptance remain outstanding.
+
+## 12. Useful file map
 
 - `docs/REBUILD_AUDIT.md` — full-rebuild evidence ledger and acceptance gaps
 - `schemas/design-candidate.schema.json` — normalized candidate schema
