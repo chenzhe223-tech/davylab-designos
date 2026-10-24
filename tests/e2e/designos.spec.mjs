@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
+import { readFile } from 'node:fs/promises';
 
 const appUrl = process.env.BASE_URL || pathToFileURL(resolve('dist/index.html')).href;
 
@@ -41,4 +42,9 @@ test('JSON export preview contains canonical profile identifiers and version', a
   expect(parsed.profiles.length).toBe(5);
   expect(parsed.profiles.some(profile => profile.profileId === 'davylab-warm-editorial')).toBeTruthy();
   expect(parsed.profiles.every(profile => Boolean(profile.version))).toBeTruthy();
+  const [download] = await Promise.all([page.waitForEvent('download'), page.locator('#confirmDownload').click()]);
+  const filePath = await download.path();
+  const downloaded = JSON.parse(await readFile(filePath, 'utf8'));
+  expect(downloaded.profiles.length).toBe(5);
+  expect(downloaded.profiles.some(profile => profile.profileId === 'davylab-warm-editorial')).toBeTruthy();
 });
