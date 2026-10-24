@@ -32,6 +32,14 @@ jobs:
         run: npm run engine:setup
       - name: Inventory real upstream capability datasets
         run: npm run inventory:skill
+      - name: Preserve auditable capability inventory
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: skill-capability-inventory
+          path: generated/skill-capability-inventory.json
+          if-no-files-found: warn
+          retention-days: 30
       - name: Generate real engine smoke output
         run: node scripts/designos.mjs generate --query "SaaS dashboard for project tracking" --project "DesignOS CI Smoke" --output generated/engine-smoke.json
       - name: Validate real engine output
