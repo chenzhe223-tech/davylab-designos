@@ -212,7 +212,7 @@ async function openSkillCatalog(){
  catch(error){$("skillCatalogMeta").textContent="无法加载能力分类："+String(error.message||error).slice(0,140)}
 }
 
-const ENGINE_DOMAINS=[{id:"style",label:"视觉风格"},{id:"color",label:"行业配色"},{id:"typography",label:"字体配对"},{id:"ux",label:"UX 指南"}];
+const ENGINE_DOMAINS=[{id:"product",label:"产品类别映射"},{id:"style",label:"视觉风格"},{id:"color",label:"行业配色"},{id:"typography",label:"字体配对"},{id:"ux",label:"UX 指南"}];
 function engineText(value){if(value===null||value===undefined)return "";if(typeof value==="string")return value;if(typeof value==="number"||typeof value==="boolean")return String(value);if(Array.isArray(value))return value.map(engineText).filter(Boolean).join("、");if(typeof value==="object"){for(const key of ["name","title","Style Category","Product Type","Font Pairing Name","Issue","Best Chart Type","description","summary","text","content","result"])if(value[key])return engineText(value[key]);return JSON.stringify(value)}return ""}
 function renderEngineEvidence(results,error){
  const status=$("engineStatus"),body=$("engineEvidenceBody");
