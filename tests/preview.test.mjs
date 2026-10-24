@@ -179,3 +179,13 @@ test("candidate generation uses active styles returned by live Skill search and 
   assert.match(html, /该文件是由真实 Skill 生成、尚待人工评审的设计系统候选/);
   assert.match(html, /需要复核：引擎将产品归类为 General/);
 });
+
+test("candidate cards render a responsive token-driven preview with explicit prototype limitations", () => {
+  assert.match(html, /candidate-live-preview/);
+  assert.match(html, /candidate-preview-sections/);
+  assert.match(html, /candidate-preview-device/);
+  assert.match(html, /textContent="桌面"/);
+  assert.match(html, /textContent="手机"/);
+  assert.match(html, /不是已实现的目标应用/);
+  assert.match(html, /不保证 Google Fonts 已加载/);
+});
