@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DesignOS Profile",
+  "type": "object",
+  "required": ["profileId","name","description","productType","status","version","accent","tokens","rules","source"],
+  "properties": {
+    "profileId": {"type":"string","pattern":"^[a-z0-9-]+$"},
+    "name": {"type":"string","minLength":1},
+    "description": {"type":"string","minLength":1},
+    "productType": {"type":"string","minLength":1},
+    "status": {"enum":["draft","review","approved","deprecated"]},
+    "version": {"type":"string","pattern":"^\\d+\\.\\d+\\.\\d+$"},
+    "accent": {"type":"string","pattern":"^#[0-9A-Fa-f]{6}$"},
+    "tokens": {"type":"object"},
+    "rules": {"type":"array","minItems":1,"items":{"type":"string","minLength":1}},
+    "extends": {"type":["string","null"]},
+    "source": {"type":"object","required":["kind"],"properties":{"kind":{"type":"string","minLength":1},"evidence":{"type":"string"},"verifiedAt":{"type":"string"}},"additionalProperties":true},
+    "layoutPreservation": {"type":"object","required":["enabled","mode"],"properties":{"enabled":{"type":"boolean"},"mode":{"enum":["strict","advisory"]},"allowedChanges":{"type":"array","items":{"type":"string"}},"forbiddenChanges":{"type":"array","items":{"type":"string"}}},"additionalProperties":false}
+  },
+  "additionalProperties": false
+}
