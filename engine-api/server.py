@@ -71,7 +71,12 @@ class Handler(BaseHTTPRequestHandler):
 
     def log_message(self, fmt, *args):
         # Do not log request bodies, user prompts, or candidate content.
-        super().log_message(fmt, *args)
+        # Some browsers disconnect while a long engine call is running; do not
+        # let a broken access-log pipe crash the request handler.
+        try:
+            super().log_message(fmt, *args)
+        except (BrokenPipeError, ConnectionResetError):
+            pass
 
     def _headers(self, status=200):
         origin = self.headers.get("Origin", "")
@@ -81,13 +86,23 @@ class Handler(BaseHTTPRequestHandler):
         if origin in ALLOWED_ORIGINS:
             self.send_header("Access-Control-Allow-Origin", origin)
             self.send_header("Vary", "Origin")
+        # CORS preflight may originate from project-owned branch preview URLs.
+        # Echo the exact validated origin, never a wildcard.
+        if origin and allowed_request(self):
+            self.send_header("Access-Control-Allow-Origin", origin)
+            self.send_header("Vary", "Origin")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
 
     def _json(self, status, value):
         self._headers(status)
-        self.wfile.write((json.dumps(value, ensure_ascii=False) + "\n").encode("utf-8"))
+        try:
+            self.wfile.write((json.dumps(value, ensure_ascii=False) + "\n").encode("utf-8"))
+        except (BrokenPipeError, ConnectionResetError):
+            # Client navigated away or timed out. The engine result is discarded
+            # safely instead of emitting a second exception traceback.
+            pass
 
     def _rate_limited(self):
         now = time.time()
