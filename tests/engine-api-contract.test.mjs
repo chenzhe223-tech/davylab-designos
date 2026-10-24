@@ -22,6 +22,8 @@ test('engine API has bounded input, origin allowlist, rate limiting, and no cred
   assert.match(api, /REQUEST_LIMIT = 12_000/);
   assert.match(api, /RATE_LIMIT = 20/);
   assert.match(api, /ALLOWED_ORIGINS/);
+  assert.match(api, /parsed\.hostname\.endswith\("\.davylab-designos\.pages\.dev"\)/);
+  assert.match(api, /parsed\.scheme == "https"/);
   assert.match(api, /origin_not_allowed/);
   assert.match(api, /rate_limit_exceeded/);
   assert.doesNotMatch(api, /sk-[A-Za-z0-9]{20,}|gh[pousr]_[A-Za-z0-9]{20,}/);
