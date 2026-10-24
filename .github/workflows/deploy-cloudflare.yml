@@ -74,4 +74,9 @@ jobs:
           curl --fail --silent --show-error --location --retry 10 --retry-all-errors --retry-delay 3 "$URL" -o /tmp/designos.html
           grep -q "DAVYLAB DesignOS" /tmp/designos.html
           grep -q "设计档案" /tmp/designos.html
+          grep -q '"profileId":"davylab-warm-editorial"' /tmp/designos.html
           echo "PASS: Cloudflare Pages deployment verified: $URL"
+      - name: Run browser regression against deployed production
+        env:
+          BASE_URL: https://davylab-designos.pages.dev/
+        run: npx playwright test
