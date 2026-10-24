@@ -56,7 +56,7 @@ test("JSON export explains its scope and supports selected and all profiles", ()
 
 test("protected project remains read-only and private project data is not fetched", () => {
   assert.match(html, /Dashboard Studio：只读/);
-  assert.match(html, /不得自动将其应用到目标项目/);
+  assert.match(html, /不得自动将其应用(?:于|到)目标项目/);
   assert.doesNotMatch(html, /fetch\s*\(/);
   assert.doesNotMatch(html, /https?:\/\/(?!fonts\.googleapis\.com)[\w.-]+\/api\//i);
   assert.doesNotMatch(html, /(?:sk-[A-Za-z0-9]{20,}|gh[pousr]_[A-Za-z0-9]{20,})/);
