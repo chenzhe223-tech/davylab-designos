@@ -23,12 +23,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
       - name: Prepare static site
         run: |
           mkdir -p site
           cp index.html site/index.html
-          cat > site/.nojekyll <<'EOF'
-          EOF
+          touch site/.nojekyll
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -44,3 +45,12 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Verify deployed page
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 10 --retry-all-errors --retry-delay 3 "$PAGE_URL" -o /tmp/designos.html
+          grep -q "DAVYLAB DesignOS" /tmp/designos.html
+          grep -q "设计档案" /tmp/designos.html
+          echo "PASS: deployed DesignOS page responded and content checks passed: $PAGE_URL"
