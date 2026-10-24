@@ -29,12 +29,7 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div class="mobile-action-dock" role="group" aria-label="快速操作"><button class="btn" id="mobilePreview">查看预览</button><button class="btn" id="mobileDevice">手机视图</button><button class="btn primary" id="mobilePrompt">AI 执行指令 →</button></div>
 <script>
-const profiles=[
-{id:"balanced-saas",name:"Balanced SaaS",category:"product",type:"产品界面",style:"清晰 · 克制 · 高效",desc:"适合面向专业用户的 SaaS 产品，优先建立信息层级与稳定的交互节奏。",palette:["#F6F5F1","#182235","#4168D8"],principles:["清晰的信息层级","稳定的间距系统","操作反馈可见"],use:"工作台、设置页、业务工具",device:"desktop",layout:"侧边导航 + 主要工作区 + 指标卡片与明细区",interaction:"明确的主操作、表单验证反馈、focus 与 disabled 状态",limitations:"不适合将大量实时指标塞入狭窄手机屏幕；需按任务优先级重排内容。",version:"0.1.0",source:"DAVYLAB authored preview profile; based on current in-repository profile description.",protected:false},
-{id:"analytics-dashboard",name:"Analytics Dashboard",category:"dashboard",type:"数据看板",style:"精确 · 高密度 · 可读",desc:"用清晰的指标层级、对比关系和留白，降低复杂数据的认知负担。",palette:["#F4F6F8","#1B2638","#237C91"],principles:["指标口径可追溯","图表服务于决策","异常状态优先显现"],use:"运营看板、商业分析、监控台",device:"desktop",layout:"指标摘要 + 趋势图 + 关键明细，按决策顺序分层",interaction:"筛选、时间范围、指标说明、加载/无数据/错误状态",limitations:"高密度布局在手机端必须改为纵向堆叠与优先级排序。",version:"0.1.0",source:"DAVYLAB authored preview profile; aligned to dashboard rules in profiles/index.json.",protected:false},
-{id:"warm-editorial",name:"Warm Editorial",category:"marketing",type:"营销页面",style:"温润 · 编辑感 · 有呼吸",desc:"通过温暖底色、强标题层级与简洁叙事，构建更有人情味的品牌体验。",palette:["#F8F4EC","#302B27","#B56E47"],principles:["先讲价值，再讲功能","段落短而有节奏","图像服务于故事"],use:"品牌站、专题页、内容产品",device:"mobile",layout:"叙事型标题区 + 内容分段 + 视觉主图 + 明确 CTA",interaction:"清晰的阅读路径、短表单、可见的 CTA 和键盘焦点",limitations:"不适合需要极高数据密度的操作型后台；需以真实品牌素材替换占位内容。",version:"0.1.0",source:"DAVYLAB authored preview profile; illustrative marketing layout derived from stated style rules.",protected:false},
-{id:"dashboard-studio",name:"Dashboard Studio",category:"dashboard",type:"项目专属档案",style:"继承现有规范 · 只读保护",desc:"用于现有 Dashboard Studio 的设计审查与规则对照；当前只允许分析，不执行写入。",palette:["#F5F7FB","#172B4D","#356DFF"],principles:["先审查现有实现","记录差异与证据","未经批准不改动"],use:"既有项目审计、回归检查",device:"desktop",layout:"保留既有导航、工作区和阶段顺序，只在审计预览中展示规则",interaction:"以证据为依据标注差异；任何生产写入均须单独授权",limitations:"严格只读候选档案；不得将示例预览应用到目标项目或自动覆盖生产页面。",version:"0.1.0",source:"profiles/index.json · dashboard-studio-live; protected audit-only candidate.",protected:true}
-];
+const profiles=[];
 const agents=[
 {id:"codex",name:"OpenAI Codex",desc:"仓库检查、执行、测试与修复",style:"先检查仓库和约束，再持续实施、运行测试、修复并交付证据。"},
 {id:"claude",name:"Claude Code",desc:"代码库探索与阶段化实施",style:"先梳理架构和依赖，按可验证阶段修改，保留变更摘要并验证结果。"},
