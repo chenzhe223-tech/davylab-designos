@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 
 const api = await readFile(new URL('../engine-api/server.py', import.meta.url), 'utf8');
 const docker = await readFile(new URL('../engine-api/Dockerfile', import.meta.url), 'utf8');
+const inventory = await readFile(new URL('../scripts/capability-inventory.py', import.meta.url), 'utf8');
 
 test('engine API exposes only the explicit health, status, capabilities and official engine routes', () => {
   assert.match(api, /path == "\/health"/);
@@ -40,5 +41,6 @@ test('capability endpoint supports source-backed filtering and bounded paginatio
   assert.match(api, /max\(1, min\(100/);
   assert.match(api, /totalMatches/);
   assert.match(api, /nextOffset/);
-  assert.match(api, /"fields": row/);
+  assert.match(api, /record\.get\("fields", \{\}\)/);
+  assert.match(inventory, /"fields": row/);
 });
