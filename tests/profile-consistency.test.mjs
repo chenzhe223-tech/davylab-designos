@@ -15,7 +15,7 @@ test('built runtime profile registry is generated from the canonical source', ()
     const item = runtime.find(profile => profile.profileId === source.profileId);
     assert.ok(item, 'missing runtime profile for ' + source.profileId);
     assert.equal(item.version, source.version);
-    assert.equal(item.name, source.name);
+    assert.equal(item.name, source.presentation.displayName || source.name);
     assert.deepEqual(item.rules, source.rules);
     assert.equal(item.status, source.status);
     assert.equal(item.extends, source.extends);
