@@ -149,32 +149,80 @@ function renderEngineEvidence(results,error){
  body.appendChild(grid);const note=document.createElement("p");note.className="engine-disclaimer";note.textContent="来源：UI UX Pro Max 固定上游版本。这里展示真实检索摘要，不等于已经生成或实现完整目标应用；多候选决策、预览与规范导出仍需继续接入。";body.appendChild(note)
 }
 let lastEngineQuery="";
-function renderEngineCandidate(candidate,error){
+let lastEngineSearchResults=[];
+function findEngineRecords(value){
+ if(Array.isArray(value))return value;
+ if(!value||typeof value!=="object")return [];
+ for(const key of ["results","records","items","matches","styles"])if(Array.isArray(value[key]))return value[key];
+ for(const child of Object.values(value)){const found=findEngineRecords(child);if(found.length)return found}
+ return []
+}
+function getCandidateDirections(){
+ const styleResult=lastEngineSearchResults.find(item=>item.id==="style")?.data;
+ const records=findEngineRecords(styleResult?.result??styleResult);
+ const used=new Set();
+ return records.filter(record=>{
+   const status=String(record.status||record.Status||"").toLowerCase();
+   const name=engineText(record.name||record.title||record["Style Category"]||record.style_name||record.id);
+   if(!name||used.has(name.toLowerCase())||status==="deprecated"||status==="supplemental")return false;
+   used.add(name.toLowerCase());return true
+ }).slice(0,3).map((record,index)=>({id:engineText(record.id||record["Style ID"]||"style-"+index),name:engineText(record.name||record.title||record["Style Category"]||record.style_name||record.id),reason:engineText(record.description||record["Best For"]||record["Keywords"]||record["Best For"]||"由官方 Skill 风格检索返回")}))
+}
+function renderEngineCandidate(candidates,error){
  const host=$("engineCandidate"),status=$("engineCandidateStatus");host.replaceChildren();host.hidden=false;
  if(error){status.textContent="候选生成失败："+String(error.message||error).slice(0,160);host.textContent="未能生成真实设计系统。请检查后端状态或稍后重试；没有生成模拟候选。";return}
- const profile=candidate?.profile||{},rules=profile.rules||[],tokens=profile.tokens||{},colors=tokens.color||{},typography=tokens.typography||{},style=tokens.style||{},pattern=tokens.pattern||profile.pattern||{};
- status.textContent="已生成真实引擎候选 · 待评审";
- const title=document.createElement("h4");title.textContent=profile.name||candidate.project||"官方 Skill 设计系统候选";host.appendChild(title);
- const summary=document.createElement("p");summary.textContent="产品类别："+(profile.productType||"上游引擎未分类")+" · 状态："+(profile.status||candidate.status||"candidate")+" · 上游版本："+(candidate.engine?.skillVersion||"以服务端返回为准");host.appendChild(summary);
- const swatches=document.createElement("div");swatches.className="engine-candidate-swatches";
- Object.entries(colors).filter(([k,v])=>typeof v==="string"&&/^#([0-9a-f]{3,8})$/i.test(v)).slice(0,8).forEach(([key,value])=>{const el=document.createElement("div");el.className="engine-swatch";el.style.backgroundColor=value;el.style.color=["#fff","#ffffff","#f8fafc","#f5f5f5"].includes(value.toLowerCase())?"#222":"#fff";el.textContent=key+" "+value;swatches.appendChild(el)});
- if(swatches.childElementCount)host.appendChild(swatches);
+ status.textContent="已生成 "+candidates.length+" 个真实引擎候选 · 待评审";
+ const intro=document.createElement("p");intro.textContent="候选方向来自实时 Skill 风格检索，并分别调用官方设计系统生成器。它们是待评审设计系统，不是已实现的目标应用。";host.appendChild(intro);
  const grid=document.createElement("div");grid.className="engine-candidate-grid";
- const entries=[["风格",style.name||style.id||"上游输出未提供"],["标题字体",typography.heading||"上游输出未提供"],["正文字体",typography.body||"上游输出未提供"],["页面结构",pattern.sections||pattern.name||"请检查原始输出"],["设计规则",Array.isArray(rules)?rules.slice(0,4).join("；"):engineText(rules)],["来源",candidate.source?.repository||candidate.engine?.repository||"固定上游 Skill"]];
- entries.forEach(([label,value])=>{const cell=document.createElement("div");cell.className="engine-candidate-cell";const strong=document.createElement("strong");strong.textContent=label;const span=document.createElement("span");span.textContent=String(value||"未提供");cell.append(strong,span);grid.appendChild(cell)});
- host.appendChild(grid);
- const note=document.createElement("p");note.textContent="该候选由真实上游引擎生成，仍处于待评审状态。这里是设计系统摘要，不是已实现的目标应用，也不代表完成了全部无障碍或设备验收。";host.appendChild(note);
- const exportButton=document.createElement("button");exportButton.type="button";exportButton.className="btn small";exportButton.textContent="下载候选 JSON";exportButton.addEventListener("click",()=>{const blob=new Blob([JSON.stringify(candidate,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="davylab-designos-engine-candidate.json";a.click();URL.revokeObjectURL(url)});host.appendChild(exportButton)
+ candidates.forEach((entry,index)=>{
+  const candidate=entry.candidate;const profile=candidate?.profile||{};const rules=profile.rules||[];const tokens=profile.tokens||{};const colors=tokens.color||{};const typography=tokens.typography||{};const style=tokens.style||{};const pattern=tokens.pattern||profile.pattern||{};
+  const card=document.createElement("article");card.className="engine-candidate-card";
+  const title=document.createElement("h4");title.textContent=entry.direction.name||profile.name||("设计方向 "+(index+1));card.appendChild(title);
+  const summary=document.createElement("p");summary.textContent="Skill 风格："+(style.name||style.id||entry.direction.name||"上游输出未提供")+" · 产品类别："+(profile.productType||"未分类")+" · 状态："+(profile.status||candidate.status||"candidate");card.appendChild(summary);
+  const swatches=document.createElement("div");swatches.className="engine-candidate-swatches";
+  Object.entries(colors).filter(([k,v])=>typeof v==="string"&&/^#([0-9a-f]{3,8})$/i.test(v)).slice(0,6).forEach(([key,value])=>{const el=document.createElement("div");el.className="engine-swatch";el.style.backgroundColor=value;el.style.color=["#fff","#ffffff","#f8fafc","#f5f5f5"].includes(value.toLowerCase())?"#222":"#fff";el.textContent=key+" "+value;swatches.appendChild(el)});
+  if(swatches.childElementCount)card.appendChild(swatches);
+  const details=document.createElement("div");details.className="engine-candidate-grid";
+  const entries=[["风格来源",entry.direction.reason||"官方 Skill 风格检索"],["标题字体",typography.heading||"未提供"],["正文字体",typography.body||"未提供"],["页面结构",pattern.sections||pattern.name||"请检查原始输出"],["设计规则",Array.isArray(rules)?rules.slice(0,3).join("；"):engineText(rules)],["技术栈指南",candidate.stackGuidelines?.count?String(candidate.stackGuidelines.count)+" 条":"引擎未返回匹配记录"]];
+  entries.forEach(([label,value])=>{const cell=document.createElement("div");cell.className="engine-candidate-cell";const strong=document.createElement("strong");strong.textContent=label;const span=document.createElement("span");span.textContent=String(value||"未提供");cell.append(strong,span);details.appendChild(cell)});
+  card.appendChild(details);
+  const identity=candidate.result?.design_system?.source_identities||{};
+  const colorIdentity=identity.color;
+  if(String(profile.productType||"").toLowerCase()==="general"||colorIdentity){
+    const warning=document.createElement("p");warning.className="engine-disclaimer";
+    warning.textContent=String(profile.productType||"").toLowerCase()==="general"?"需要复核：引擎将产品归类为 General，尚未明确匹配到具体行业；请确认配色和页面结构是否真正适合你的产品。":("行业映射参考："+String(colorIdentity)+"。请确认该行业映射与需求一致。");
+    card.appendChild(warning)
+  }
+  const buttons=document.createElement("div");buttons.className="engine-candidate-actions";
+  const exportButton=document.createElement("button");exportButton.type="button";exportButton.className="btn small";exportButton.textContent="下载此方向 JSON";exportButton.addEventListener("click",()=>{const blob=new Blob([JSON.stringify(candidate,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="davylab-designos-candidate-"+(index+1)+".json";a.click();URL.revokeObjectURL(url)});buttons.appendChild(exportButton);
+  const markdownButton=document.createElement("button");markdownButton.type="button";markdownButton.className="btn small";markdownButton.textContent="下载此方向 Markdown";markdownButton.addEventListener("click",()=>{const ds=candidate.result?.design_system||{};const md=["# "+(profile.name||entry.direction.name),"","- 产品需求："+lastEngineQuery,"- 方向："+entry.direction.name,"- 风格："+(ds.style?.name||ds.style?.id||"未提供"),"- 产品类别："+(ds.category||profile.productType||"未提供"),"- 上游 Skill："+(candidate.engine?.repository||candidate.source?.repository||"UI UX Pro Max")+" "+(candidate.engine?.skillVersion||candidate.source?.skillVersion||""),"","## 配色","",...Object.entries(ds.colors||{}).map(([k,v])=>"- "+k+": "+v),"","## 字体","","- 标题："+(ds.typography?.heading||"未提供"),"- 正文："+(ds.typography?.body||"未提供"),"","## 页面结构","",ds.pattern?.sections||"请人工复核上游原始输出","","## 规则与取舍","",...(profile.rules||[]).map(x=>"- "+x),"","## 验收说明","","- 该文件是由真实 Skill 生成、尚待人工评审的设计系统候选，不代表目标应用已实现。","- 请检查行业映射、颜色对比度、键盘操作、响应式布局、字体加载与性能。",""].join("\n");const blob=new Blob([md],{type:"text/markdown;charset=utf-8"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="davylab-designos-candidate-"+(index+1)+".md";a.click();URL.revokeObjectURL(url)});buttons.appendChild(markdownButton);
+  card.appendChild(buttons);grid.appendChild(card)
+ });
+ host.appendChild(grid)
 }
 async function generateEngineCandidate(){
  if(!lastEngineQuery){toast("请先描述产品并完成官方 Skill 检索。");return}
  const button=$("generateEngineCandidate");button.disabled=true;$("engineCandidateStatus").textContent="正在调用官方设计系统生成器…";
- try{const project=$("projectType")?.value||"Product design candidate";const tech=($("techStack")?.value||"").toLowerCase();const stackMap=[["react","react"],["next","nextjs"],["vue","vue"],["svelte","svelte"],["angular","angular"],["flutter","flutter"],["swift","swiftui"],["tailwind","html-tailwind"],["shadcn","shadcn"]];const found=stackMap.find(([key])=>tech.includes(key));const payload={query:lastEngineQuery,project,...(found?{stack:found[1]}:{})};const response=await fetch(ENGINE_API_BASE+"/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});const data=await response.json();if(!response.ok)throw new Error(data.message||data.error||("HTTP "+response.status));renderEngineCandidate(data,null)}catch(error){renderEngineCandidate(null,error)}finally{button.disabled=false}
+ try{
+  const project=$("projectType")?.value||"Product design candidate";const tech=($("techStack")?.value||"").toLowerCase();
+  const stackMap=[["react","react"],["next","nextjs"],["vue","vue"],["svelte","svelte"],["angular","angular"],["flutter","flutter"],["swift","swiftui"],["tailwind","html-tailwind"],["shadcn","shadcn"]];
+  const found=stackMap.find(([key])=>tech.includes(key));const directions=getCandidateDirections();
+  const selected=directions.length?directions:[{id:"unclassified",name:"官方通用方向",reason:"未能从风格搜索结果中提取可确认的 active 风格；因此不强行套用固定风格。"}];
+  const candidates=await Promise.all(selected.map(async(direction,index)=>{
+   const query=direction.id==="unclassified"?lastEngineQuery:lastEngineQuery+"\nDesign direction requested from official Skill search: "+direction.name+". Use this style only if it remains suitable for the product category, user tasks, platform, and accessibility constraints. Preserve the original product intent.";
+   const payload={query,project:project+" — "+direction.name,...(found?{stack:found[1]}:{})};
+   const response=await fetch(ENGINE_API_BASE+"/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+   const data=await response.json();if(!response.ok)throw new Error(data.message||data.error||("HTTP "+response.status));
+   if(data.status!=="candidate"||!data.result?.design_system)throw new Error("引擎返回格式未通过候选校验");
+   return {direction,candidate:data}
+  }));
+  renderEngineCandidate(candidates,null)
+ }catch(error){renderEngineCandidate([],error)}finally{button.disabled=false}
 }
 async function queryOfficialEngine(query){
  lastEngineQuery=query;$("generateEngineCandidate").disabled=false;$("engineCandidate").hidden=true;$("engineCandidateStatus").textContent="可生成真实设计系统候选";
  const results=await Promise.all(ENGINE_DOMAINS.map(async domain=>{const response=await fetch(ENGINE_API_BASE+"/api/search",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({query,domain:domain.id})});if(!response.ok)throw new Error("engine_"+domain.id+"_"+response.status);return {...domain,data:await response.json()}}));
- renderEngineEvidence(results,null);return results
+ lastEngineSearchResults=results;renderEngineEvidence(results,null);return results
 }
 $("generateEngineCandidate").addEventListener("click",generateEngineCandidate);$("matchIntent").addEventListener("click",async()=>{const value=$("intentInput").value.trim();if(!value){toast("先描述你想做的产品，或点击一个快捷标签。");$("intentInput").focus();return}const engineStatus=$("engineStatus");engineStatus.textContent="正在查询官方 Skill…";engineStatus.className="status-pill";$("engineEvidenceBody").textContent="正在检索风格、行业配色、字体配对和 UX 指南…";queryOfficialEngine(value).catch(error=>renderEngineEvidence(null,error));$("search").value=value;$("category").value="all";$("deviceFilter").value="all";$("favoritesOnly").setAttribute("aria-pressed","false");$("favoritesOnly").textContent="☆ 收藏";render();const ranked=getRankedProfiles(value).filter(x=>x.score>0);const summary=$("matchSummary");summary.classList.add("visible");if(ranked.length){activeProfile=ranked[0].profile.id;renderPreview(activeProfile);showDetail(activeProfile);summary.textContent="已根据你的描述推荐 "+ranked.slice(0,3).map(x=>x.profile.name).join("、")+"。卡片中会说明匹配理由；选择主方案后可查看预览并生成指令。";$("cards").scrollIntoView({behavior:"smooth",block:"start"})}else{summary.textContent="没有高度匹配项。已显示可用候选和恢复入口，请尝试更具体的场景或快捷标签。"} });document.querySelectorAll("[data-intent]").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll("[data-intent]").forEach(x=>x.classList.toggle("active",x===b));const current=$("intentInput").value.trim();$("intentInput").value=current?current+" "+b.dataset.intent:b.dataset.intent;$("intentInput").focus()}));$("browseAll").addEventListener("click",()=>{$("intentInput").value="";$("search").value="";$("category").value="all";$("deviceFilter").value="all";$("favoritesOnly").setAttribute("aria-pressed","false");$("favoritesOnly").textContent="☆ 收藏";render();$("cards").scrollIntoView({behavior:"smooth",block:"start"})});$("search").addEventListener("input",render);$("category").addEventListener("change",render);$("deviceFilter").addEventListener("change",render);$("favoritesOnly").addEventListener("click",()=>{$("favoritesOnly").setAttribute("aria-pressed",$("favoritesOnly").getAttribute("aria-pressed")!=="true");$("favoritesOnly").textContent=$("favoritesOnly").getAttribute("aria-pressed")==="true"?"★ 仅收藏":"☆ 收藏";render()});$("exportAll").addEventListener("click",()=>openExport(true));$("exportSelected").addEventListener("click",()=>selected.size?openExport(false):toast("请先选择至少一个设计方案。"));$("toggleBrief").addEventListener("click",()=>{const open=$("briefFields").classList.toggle("hidden")===false;$("toggleBrief").textContent=open?"收起需求":"展开需求"});document.querySelectorAll("[data-device]").forEach(b=>b.addEventListener("click",()=>{previewDevice=b.dataset.device;renderPreview(activeProfile)}));$("goPrompt").addEventListener("click",openPrompt);$("closeModal").addEventListener("click",()=>$("exportModal").style.display="none");$("exportModal").addEventListener("click",e=>{if(e.target===$("exportModal"))$("exportModal").style.display="none"});document.querySelectorAll(".navbtn").forEach(b=>b.addEventListener("click",()=>{const v=b.dataset.view;if(v==="profiles"){switchNav(v);$("heading").textContent="选择视觉方案";$("subheading").textContent="先看实际界面示例，再选择适合你的设计方向。";$("cards").classList.remove("hidden");$("filters").classList.remove("hidden");$("previewWorkspace").classList.remove("hidden");render();showDetail(activeProfile)}else if(v==="compare")showCompare();else if(v==="prompt")openPrompt();else showGovernance()}));
 // Mobile keyboard safety: keep focused controls visible and remove the fixed action dock while typing.
