@@ -206,3 +206,12 @@ test("candidate export includes a stack-aware coding Agent implementation brief"
   assert.match(html, /Explicit boundary/);
   assert.match(html, /does not mean any Agent has been called/);
 });
+
+test("JSON candidate export wraps upstream output in the versioned provenance schema", () => {
+  assert.match(html, /function normalizeCandidate\(candidate,entry,index\)/);
+  assert.match(html, /schemaVersion:"1\.0\.0"/);
+  assert.match(html, /reviewStatus:"not-reviewed"/);
+  assert.match(html, /softPreferenceScore:null/);
+  assert.match(html, /rawEngineOutput:candidate/);
+  assert.match(html, /JSON\.stringify\(normalizeCandidate\(candidate,entry,index\),null,2\)/);
+});
