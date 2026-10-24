@@ -75,6 +75,8 @@ jobs:
           grep -q "DAVYLAB DesignOS" /tmp/designos.html
           grep -q "设计档案" /tmp/designos.html
           echo "PASS: deployed DesignOS page responded and content checks passed: $PAGE_URL"
+      - name: Checkout repository for deployed browser test
+        uses: actions/checkout@v4
       - name: Setup Node for deployed browser test
         uses: actions/setup-node@v4
         with:
