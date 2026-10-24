@@ -153,7 +153,7 @@ class Handler(BaseHTTPRequestHandler):
                         return
                     args += ["--stack", stack]
                 result = read_json_output(args)
-                self._json(200, {"kind": "designos-engine-search", "engine": "ui-ux-pro-max", "result": result})
+                self._json(200, result)
             elif path == "/api/generate":
                 project = payload.get("project", "DesignOS candidate")
                 stack = payload.get("stack")
