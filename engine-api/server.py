@@ -178,7 +178,7 @@ class Handler(BaseHTTPRequestHandler):
     def log_message(self, fmt, *args):
         # Keep user-entered product briefs out of application logs.
         if args:
-            safe = tuple(str(arg)[:120] for arg in args)
+            safe = tuple(str(arg)[:120] if isinstance(arg, str) else arg for arg in args)
             super().log_message(fmt, *safe)
 
 
