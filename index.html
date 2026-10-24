@@ -164,7 +164,7 @@ function getCandidateDirections(){
  return records.filter(record=>{
    const status=String(record.status||record.Status||"").toLowerCase();
    const name=engineText(record.name||record.title||record["Style Category"]||record.style_name||record.id);
-   if(!name||used.has(name.toLowerCase())||status==="deprecated"||status==="supplemental")return false;
+   if(!name||used.has(name.toLowerCase())||(status&&status!=="active"))return false;
    used.add(name.toLowerCase());return true
  }).slice(0,3).map((record,index)=>({id:engineText(record.id||record["Style ID"]||"style-"+index),name:engineText(record.name||record.title||record["Style Category"]||record.style_name||record.id),reason:engineText(record.description||record["Best For"]||record["Keywords"]||record["Best For"]||"由官方 Skill 风格检索返回")}))
 }
