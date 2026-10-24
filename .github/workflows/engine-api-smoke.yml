@@ -50,6 +50,21 @@ jobs:
           console.log(JSON.stringify(x.summary,null,2));
           NODE
 
+      - name: Verify searchable source-backed capability records
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error 'https://davylab-designos-engine.onrender.com/api/capabilities?domain=styles.csv&limit=10&offset=0' -o catalog.json
+          node - <<'NODE'
+          const fs=require('fs');
+          const x=JSON.parse(fs.readFileSync('catalog.json','utf8'));
+          const d=x.domains?.[0];
+          if(x.selectedDomain!=='styles.csv' || x.domains.length!==1 || d?.id!=='styles.csv') throw new Error('capability domain filter is not applied');
+          if(!Array.isArray(d.records) || d.records.length===0 || d.records.length>10) throw new Error('capability pagination failed');
+          if(!d.records[0].fields || typeof d.records[0].fields!=='object') throw new Error('raw source fields are missing');
+          console.log(JSON.stringify({domain:d.id,totalMatches:d.totalMatches,returnedRecords:d.returnedRecords,sourcePath:d.sourcePath},null,2));
+          NODE
+
       - name: Verify live official Skill search
         shell: bash
         run: |
