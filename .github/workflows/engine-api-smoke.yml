@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: davylab-designos-live-engine-smoke
+  cancel-in-progress: false
+
 jobs:
   smoke:
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
@@ -96,15 +100,24 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          curl --fail --silent --show-error https://davylab-designos-engine.onrender.com/api/search \
-            -H 'Content-Type: application/json' \
-            -d '{"query":"AI travel app for young travelers and hidden destinations","domain":"style"}' \
-            -o search.json
+          http_code=000
+          for attempt in 1 2 3; do
+            http_code=$(curl --silent --show-error --max-time 45 -w '%{http_code}' https://davylab-designos-engine.onrender.com/api/search \
+              -H 'Content-Type: application/json' \
+              -d '{"query":"AI travel app for young travelers and hidden destinations","domain":"style"}' \
+              -o search.json || true)
+            if [ "$http_code" = "200" ]; then break; fi
+            echo "Live Skill search attempt $attempt returned HTTP $http_code"
+            if [ "$attempt" -lt 3 ]; then sleep $((attempt * 10)); fi
+          done
+          echo "Live Skill search HTTP status: $http_code"
+          if [ "$http_code" != "200" ]; then cat search.json; exit 1; fi
           node - <<'NODE'
           const fs=require('fs');
           const x=JSON.parse(fs.readFileSync('search.json','utf8'));
           if(!x || typeof x!=='object' || Object.keys(x).length===0) throw new Error('empty search output');
-          console.log('Live Skill search returned JSON keys:',Object.keys(x).join(', '));
+          if(x.engine?.skillVersion!=='2.15.0' || !x.result || !Array.isArray(x.result.results) || x.result.results.length===0) throw new Error('live Skill search returned no source-backed records');
+          console.log(JSON.stringify({skillVersion:x.engine.skillVersion,domain:x.result.domain,count:x.result.count,firstRecord:x.result.results[0]},null,2));
           NODE
 
       - name: Verify live design-system generation and product-category mapping
@@ -140,21 +153,22 @@ jobs:
           set -euo pipefail
           http_code=000
           for attempt in 1 2 3; do
-            http_code=$(curl --silent --show-error --max-time 90 -w '%{http_code}' https://davylab-designos-engine.onrender.com/api/generate \
+            http_code=$(curl --silent --show-error --max-time 45 -w '%{http_code}' https://davylab-designos-engine.onrender.com/api/search \
               -H 'Content-Type: application/json' \
-              -d '{"query":"Use useReducer for complex state","project":"DesignOS React Stack Smoke","stack":"react"}' \
-              -o stack-candidate.json || true)
+              -d '{"query":"Use useReducer for complex state","domain":"style","stack":"react"}' \
+              -o stack-guidance.json || true)
             if [ "$http_code" = "200" ]; then break; fi
-            echo "React guidance attempt $attempt returned HTTP $http_code"
-            if [ "$attempt" -lt 3 ]; then sleep $((attempt * 5)); fi
+            echo "React guidance search attempt $attempt returned HTTP $http_code"
+            if [ "$attempt" -lt 3 ]; then sleep $((attempt * 10)); fi
           done
-          echo "Stack generation HTTP status: $http_code"
-          if [ "$http_code" != "200" ]; then cat stack-candidate.json; exit 1; fi
+          echo "Stack guidance HTTP status: $http_code"
+          if [ "$http_code" != "200" ]; then cat stack-guidance.json; exit 1; fi
           node - <<'NODE'
           const fs=require('fs');
-          const x=JSON.parse(fs.readFileSync('stack-candidate.json','utf8'));
-          if(x.status!=='candidate' || x.engine?.skillVersion!=='2.15.0' || !x.stackGuidelines) throw new Error('stack-specific guidelines are missing');
-          if(x.stackGuidelines.stack!=='react' || !Number.isInteger(x.stackGuidelines.count) || x.stackGuidelines.count<1 || !Array.isArray(x.stackGuidelines.results) || x.stackGuidelines.results.length<1) throw new Error('React stack search returned no real guidance records: '+JSON.stringify(x.stackGuidelines));
-          if(!x.stackGuidelines.results.some(row=>String(row.Status||'').toLowerCase()==='active')) throw new Error('React stack search returned no active guidance records');
-          console.log(JSON.stringify({stack:x.stackGuidelines.stack,count:x.stackGuidelines.count,firstGuideline:x.stackGuidelines.results[0].Guideline,status:x.stackGuidelines.results[0].Status},null,2));
+          const x=JSON.parse(fs.readFileSync('stack-guidance.json','utf8'));
+          const guidance=x.result;
+          if(x.status!=='success' || x.engine?.skillVersion!=='2.15.0' || !guidance) throw new Error('stack-specific guidelines are missing');
+          if(guidance.domain!=='stack' || guidance.stack!=='react' || !Number.isInteger(guidance.count) || guidance.count<1 || !Array.isArray(guidance.results) || guidance.results.length<1) throw new Error('React stack search returned no real guidance records: '+JSON.stringify(guidance));
+          if(!guidance.results.some(row=>String(row.Status||'').toLowerCase()==='active')) throw new Error('React stack search returned no active guidance records');
+          console.log(JSON.stringify({stack:guidance.stack,count:guidance.count,firstGuideline:guidance.results[0].Guideline,status:guidance.results[0].Status},null,2));
           NODE
