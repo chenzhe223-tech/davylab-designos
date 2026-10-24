@@ -73,3 +73,15 @@ jobs:
           grep -q "DAVYLAB DesignOS" /tmp/designos.html
           grep -q "设计档案" /tmp/designos.html
           echo "PASS: deployed DesignOS page responded and content checks passed: $PAGE_URL"
+      - name: Setup Node for deployed browser test
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright for deployed browser test
+        run: npm install --no-save @playwright/test
+      - name: Install Chromium for deployed browser test
+        run: npx playwright install --with-deps chromium
+      - name: Run browser acceptance against deployed GitHub Pages preview
+        env:
+          BASE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: npx playwright test
