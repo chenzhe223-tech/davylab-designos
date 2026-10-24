@@ -87,9 +87,10 @@ Do not represent authored profiles as the complete Skill. Keep the upstream Skil
 ## Multi-direction candidate and spec export tranche (2026-10-24)
 
 - The candidate action now reads the active style records returned by the live official Skill style search and requests up to three separate official design-system generations. It does not use a hard-coded set of style names; only records returned from the search are eligible.
+- Each candidate now includes a responsive desktop/mobile layout preview styled from the actual returned design tokens. This is explicitly labelled as a layout prototype, not a complete implementation. Google Fonts are named in the candidate but the preview does not claim the fonts are loaded.
 - Each candidate shows the returned style, palette swatches, typography, page pattern, a short rule excerpt, and available stack-guideline status. The UI explicitly warns when the upstream engine returns a generic product category or a potentially mismatched industry color mapping.
 - Each candidate can be exported as JSON or as a Markdown design-system brief with palette, typography, structure, rules, source/version and manual acceptance notes. This Markdown export is a useful candidate brief, but it is not yet the full implementation-ready specification described in the final acceptance criteria.
-- Code commits: `7e434dac0b6ef046c61038c951432e4400b2ed0c` and `5be9c1ac9d3aa364b154793fafdb98fb81cf8672`. CI is running against these latest frontend changes; do not claim acceptance until the current workflow completes.
+- Code commits: `7e434dac0b6ef046c61038c951432e4400b2ed0c`, `5be9c1ac9d3aa364b154793fafdb98fb81cf8672`, `768a2d434e288087a1524fd2ee33e79bdd1a1a92`, and `88ff41570946eed19c1369bbe4c9f23710554f91`. CI [40100560976](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40100560976) passed unit tests, Playwright desktop/mobile flows, real inventory generation and real engine output validation. Live API smoke [40100586827](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40100586827) also passed.
 - Remaining work: make candidate comparisons actionable (select/reject/refine), strengthen semantic validation of product category and color mapping, improve stack-specific candidate evidence, build responsive previews from candidate data, and export the complete stack-aware specification. The candidate UI is not yet equivalent to a full app preview or a finished design decision workflow.
 
 ## Current product/UI change
@@ -144,7 +145,7 @@ This is a first UI direction change, not a completed engine integration or full 
 | Complete Skill data inventory | Generated and verified in CI; corrected status semantics pending re-run | Artifact reports 35 domains, 4,319 rows and 50 active styles; counts and hashes come from the pinned upstream CSVs |
 | Browser uses full upstream engine | Not yet connected | Server-side API bridge has been added but deploy and frontend integration remain unverified |
 | Product-first entry UI | First tranche implemented | Commit `bae04a069d1e3fb98eff574033cca81a589959ae`; requires workflow and browser verification |
-| End-to-end design decision workflow | In progress | Live search, real candidate generation and JSON export work; grounded multi-direction comparison, responsive candidate previews, and full Markdown spec export remain incomplete |
+| End-to-end design decision workflow | In progress | Live search, up to three Skill-derived candidate generations, responsive token-driven previews, JSON and Markdown candidate exports work; decision refinement and complete implementation-ready specification remain incomplete |
 | Physical iPhone/iPad acceptance | Not performed in recorded work | Playwright viewport tests are not physical-device acceptance |
 
 ## Rules for updating this ledger
