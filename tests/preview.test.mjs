@@ -76,7 +76,7 @@ test("mobile quick-action dock exposes preview, phone view, and Agent prompt act
 test("intent-led search provides synonym matching and explainable recommendations", () => {
   const profileStart = html.indexOf("const profiles=[");
   const agentsStart = html.indexOf("const agents=[", profileStart);
-  const searchStart = html.indexOf("const searchTaxonomy={");
+  const searchStart = html.indexOf("const searchTaxonomy=");
   const renderStart = html.indexOf("function render(){", searchStart);
   assert.ok(profileStart >= 0 && agentsStart > profileStart, "profile data exists");
   assert.ok(searchStart >= 0 && renderStart > searchStart, "search engine exists");
