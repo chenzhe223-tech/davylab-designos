@@ -173,7 +173,9 @@ class Handler(BaseHTTPRequestHandler):
         except subprocess.TimeoutExpired:
             self._json(504, {"error": "engine_timeout", "message": "The design engine took too long; retry with a narrower brief."})
         except Exception as exc:
-            self._json(502, {"error": "engine_failed", "message": str(exc)[:1800]})
+            safe_error = str(exc).replace(query, "[redacted-query]")[:800]
+            print(f"Engine operation failed ({type(exc).__name__}): {safe_error}", flush=True)
+            self._json(502, {"error": "engine_failed", "message": safe_error})
 
     def log_message(self, fmt, *args):
         # Keep user-entered product briefs out of application logs.
