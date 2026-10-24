@@ -83,11 +83,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Cache-Control", "no-store")
-        if origin in ALLOWED_ORIGINS:
-            self.send_header("Access-Control-Allow-Origin", origin)
-            self.send_header("Vary", "Origin")
-        # CORS preflight may originate from project-owned branch preview URLs.
-        # Echo the exact validated origin, never a wildcard.
+        # CORS responses must echo the exact validated origin, never a wildcard.
+        # This includes approved project-owned Pages preview hostnames.
         if origin and allowed_request(self):
             self.send_header("Access-Control-Allow-Origin", origin)
             self.send_header("Vary", "Origin")
