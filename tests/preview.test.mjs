@@ -70,7 +70,7 @@ test("responsive layout covers tablet and mobile breakpoints", () => {
 });
 
 test("inline application JavaScript parses without syntax errors", () => {
-  const match = html.match(/<script>([\\s\\S]*?)<\\/script>/);
+  const match = html.match(/<script>([\s\S]*?)<\/script>/);
   assert.ok(match, "inline application script exists");
   assert.doesNotThrow(() => new Script(match[1]), "inline application script should parse");
 });
