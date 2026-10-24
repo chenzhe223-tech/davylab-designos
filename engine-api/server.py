@@ -8,7 +8,7 @@ import uuid
 from collections import defaultdict, deque
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
 PORT = int(os.environ.get("PORT", "10000"))
@@ -119,7 +119,41 @@ class Handler(BaseHTTPRequestHandler):
         elif path == "/api/capabilities":
             inventory_path = ROOT / "generated" / "skill-capability-inventory.json"
             try:
-                self._json(200, json.loads(inventory_path.read_text(encoding="utf-8")))
+                inventory = json.loads(inventory_path.read_text(encoding="utf-8"))
+                params = parse_qs(urlparse(self.path).query)
+                requested_domain = params.get("domain", [""])[0].strip()
+                query = params.get("q", [""])[0].strip().lower()[:200]
+                metadata = []
+                selected = []
+                for domain in inventory.get("domains", []):
+                    records = domain.get("records", [])
+                    metadata.append({
+                        key: domain.get(key) for key in ("id", "domain", "sourcePath", "available", "recordCount", "sha256")
+                    } | {
+                        "statusCounts": {
+                            status: sum(1 for record in records if str(record.get("status", "not-specified")).lower() == status)
+                            for status in sorted({str(record.get("status", "not-specified")).lower() for record in records})
+                        }
+                    })
+                    if requested_domain and requested_domain not in {domain.get("id"), domain.get("domain")}:
+                        continue
+                    filtered = records
+                    if query:
+                        def matches(record):
+                            fields = record.get("fields", {})
+                            haystack = " ".join([str(record.get("id", "")), str(record.get("name", "")), str(record.get("status", "")), *[str(v) for v in fields.values()]])
+                            return query in haystack.lower()
+                        filtered = [record for record in records if matches(record)]
+                    selected.append({**domain, "records": filtered, "returnedRecords": len(filtered), "query": query})
+                self._json(200, {
+                    "schemaVersion": inventory.get("schemaVersion"),
+                    "generatedFrom": inventory.get("generatedFrom"),
+                    "summary": inventory.get("summary"),
+                    "domains": selected if requested_domain else metadata,
+                    "selectedDomain": requested_domain or None,
+                    "query": query,
+                    "returnedRecords": sum(domain.get("returnedRecords", domain.get("recordCount", 0)) for domain in selected) if requested_domain else 0
+                })
             except Exception:
                 self._json(503, {"error": "capability_inventory_unavailable", "hint": "Check build logs"})
         else:
