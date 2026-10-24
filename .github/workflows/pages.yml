@@ -11,6 +11,7 @@ on:
       - "scripts/**"
       - "engine.lock.json"
       - "package.json"
+      - "playwright.config.mjs"
       - "tests/**"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
@@ -36,8 +37,14 @@ jobs:
           node-version: 22
       - name: Validate profiles
         run: npm run validate:rules
+      - name: Install Playwright for browser acceptance
+        run: npm install --no-save @playwright/test
+      - name: Install Chromium browser
+        run: npx playwright install --with-deps chromium
       - name: Test preview
         run: npm test
+      - name: Run desktop and mobile end-to-end tests
+        run: npx playwright test
       - name: Build static site
         run: npm run build
       - name: Configure GitHub Pages
