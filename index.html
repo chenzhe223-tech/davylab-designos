@@ -33,7 +33,23 @@
 .engine-candidate-cell strong{display:block;font-size:11px;color:var(--muted,#687386);margin-bottom:4px}
 .engine-candidate-cell span{font-size:13px;overflow-wrap:anywhere}
 @media(max-width:560px){.engine-candidate-grid{grid-template-columns:1fr}}
-</style>
+.candidate-live-preview{margin:12px 0;padding:14px;border:1px solid var(--line,#dedbd4);border-radius:12px;transition:width .2s ease;max-width:100%;overflow:hidden}
+.candidate-live-preview.is-mobile{width:300px;max-width:100%;margin-left:auto;margin-right:auto;border-radius:22px;padding:12px}
+.candidate-live-preview-top{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:10px;opacity:.8}
+.candidate-live-preview h5{font-size:clamp(17px,2vw,24px);line-height:1.15;margin:15px 0 8px;letter-spacing:-.03em}
+.candidate-live-preview.is-mobile h5{font-size:19px}
+.candidate-live-preview p{font-size:12px;line-height:1.55;margin:0 0 12px;overflow-wrap:anywhere}
+.candidate-preview-cta{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}
+.candidate-preview-cta span{display:inline-flex;padding:7px 10px;border-radius:7px;font-size:11px;font-weight:650}
+.candidate-preview-sections{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:14px}
+.candidate-live-preview.is-mobile .candidate-preview-sections{grid-template-columns:1fr}
+.candidate-preview-section{padding:10px 8px;border-radius:8px;min-width:0;font-size:10px;overflow-wrap:anywhere}
+.candidate-preview-section b{display:block;font-size:12px;margin-bottom:4px}
+.candidate-preview-notice{font-size:10px!important;opacity:.7;margin-top:10px!important}
+.candidate-preview-device{display:flex;gap:6px;margin:10px 0;justify-content:flex-end}
+.candidate-preview-device button{font-size:10px;padding:5px 8px;border:1px solid var(--line,#dedbd4);border-radius:7px;background:transparent}
+.candidate-preview-device button[aria-pressed="true"]{background:var(--ink,#182235);color:#fff;border-color:var(--ink,#182235)}
+@media(max-width:560px){.candidate-preview-sections{grid-template-columns:1fr}.candidate-live-preview h5{font-size:19px}}</style>
 </head>
 <body><div class="shell">
 <header class="top"><div class="brand"><div class="mark">D/OS</div><div>DAVYLAB<small>DESIGN OPERATING SYSTEM</small></div></div><div class="status"><i class="dot"></i>可视化设计工作台</div></header>
@@ -179,6 +195,15 @@ function renderEngineCandidate(candidates,error){
   const card=document.createElement("article");card.className="engine-candidate-card";
   const title=document.createElement("h4");title.textContent=entry.direction.name||profile.name||("设计方向 "+(index+1));card.appendChild(title);
   const summary=document.createElement("p");summary.textContent="Skill 风格："+(style.name||style.id||entry.direction.name||"上游输出未提供")+" · 产品类别："+(profile.productType||"未分类")+" · 状态："+(profile.status||candidate.status||"candidate");card.appendChild(summary);
+  const previewControls=document.createElement("div");previewControls.className="candidate-preview-device";
+  const preview=document.createElement("div");preview.className="candidate-live-preview";preview.style.backgroundColor=colors.background||"#ffffff";preview.style.color=colors.foreground||"#182235";preview.style.borderColor=colors.border||"#dedbd4";preview.style.fontFamily="system-ui, sans-serif";
+  const previewTop=document.createElement("div");previewTop.className="candidate-live-preview-top";const brand=document.createElement("span");brand.textContent=profile.name||entry.direction.name;const styleTag=document.createElement("span");styleTag.textContent=style.name||style.id||"Design direction";previewTop.append(brand,styleTag);preview.appendChild(previewTop);
+  const hero=document.createElement("h5");hero.textContent=lastEngineQuery.length>88?lastEngineQuery.slice(0,85)+"…":lastEngineQuery||"产品设计方向预览";preview.appendChild(hero);
+  const subtitle=document.createElement("p");subtitle.textContent="基于上游设计系统生成的布局示意。以下内容用于评估视觉层级、配色与信息组织。";preview.appendChild(subtitle);
+  const cta=document.createElement("div");cta.className="candidate-preview-cta";const primaryCta=document.createElement("span");primaryCta.textContent="主要操作";primaryCta.style.backgroundColor=colors.primary||colors.accent||"#4168d8";primaryCta.style.color=colors.onPrimary||colors.on_primary||"#ffffff";const secondaryCta=document.createElement("span");secondaryCta.textContent="次要操作";secondaryCta.style.border="1px solid "+(colors.border||"#dedbd4");cta.append(primaryCta,secondaryCta);preview.appendChild(cta);
+  const sectionGrid=document.createElement("div");sectionGrid.className="candidate-preview-sections";const sectionLabels=String(pattern.sections||pattern.name||"核心内容 > 主要功能 > 下一步").split(/[>→]/).map(x=>x.trim()).filter(Boolean).slice(0,3);while(sectionLabels.length<3)sectionLabels.push(["核心内容","主要功能","下一步"][sectionLabels.length]);sectionLabels.forEach((label,i)=>{const tile=document.createElement("div");tile.className="candidate-preview-section";tile.style.backgroundColor=colors.card||"#ffffff";tile.style.color=colors.cardForeground||colors.card_foreground||colors.foreground||"#182235";tile.style.border="1px solid "+(colors.border||"#dedbd4");const b=document.createElement("b");b.textContent=label;const p=document.createElement("span");p.textContent=["信息层级","关键内容","后续操作"][i];tile.append(b,p);sectionGrid.appendChild(tile)});preview.appendChild(sectionGrid);
+  const notice=document.createElement("p");notice.className="candidate-preview-notice";notice.textContent="布局原型 · 使用真实引擎 Token 的示意预览，不是已实现的目标应用。字体名称会展示，但此处不保证 Google Fonts 已加载。";preview.appendChild(notice);
+  const desktopButton=document.createElement("button");desktopButton.type="button";desktopButton.textContent="桌面";desktopButton.setAttribute("aria-pressed","true");const mobileButton=document.createElement("button");mobileButton.type="button";mobileButton.textContent="手机";mobileButton.setAttribute("aria-pressed","false");desktopButton.addEventListener("click",()=>{preview.classList.remove("is-mobile");desktopButton.setAttribute("aria-pressed","true");mobileButton.setAttribute("aria-pressed","false")});mobileButton.addEventListener("click",()=>{preview.classList.add("is-mobile");desktopButton.setAttribute("aria-pressed","false");mobileButton.setAttribute("aria-pressed","true")});previewControls.append(desktopButton,mobileButton);card.append(previewControls,preview);
   const swatches=document.createElement("div");swatches.className="engine-candidate-swatches";
   Object.entries(colors).filter(([k,v])=>typeof v==="string"&&/^#([0-9a-f]{3,8})$/i.test(v)).slice(0,6).forEach(([key,value])=>{const el=document.createElement("div");el.className="engine-swatch";el.style.backgroundColor=value;el.style.color=["#fff","#ffffff","#f8fafc","#f5f5f5"].includes(value.toLowerCase())?"#222":"#fff";el.textContent=key+" "+value;swatches.appendChild(el)});
   if(swatches.childElementCount)card.appendChild(swatches);
