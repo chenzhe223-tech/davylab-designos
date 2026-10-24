@@ -48,7 +48,22 @@ def read_json_output(args, timeout=60):
 
 def allowed_request(handler):
     origin = handler.headers.get("Origin", "")
-    return not origin or origin in ALLOWED_ORIGINS
+    if not origin or origin in ALLOWED_ORIGINS:
+        return True
+    # Cloudflare Pages generates unique preview hostnames for branches/deployments.
+    # Allow only HTTPS hosts inside this exact project-owned Pages subdomain.
+    try:
+        parsed = urlparse(origin)
+        return (
+            parsed.scheme == "https"
+            and parsed.hostname is not None
+            and parsed.hostname.endswith(".davylab-designos.pages.dev")
+            and parsed.port is None
+            and parsed.username is None
+            and parsed.password is None
+        )
+    except ValueError:
+        return False
 
 
 class Handler(BaseHTTPRequestHandler):
