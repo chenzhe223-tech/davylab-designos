@@ -58,8 +58,8 @@ test('capability endpoint supports source-backed filtering and bounded paginatio
   assert.match(inventory, /"fields": row/);
 });
 
-test('official CLI forwards native design dials only within 1-10 bounds', () => {
-  const cli = require('node:fs').readFileSync(new URL('../scripts/designos.mjs', import.meta.url), 'utf8');
+test('official CLI forwards native design dials only within 1-10 bounds', async () => {
+  const cli = await readFile(new URL('../scripts/designos.mjs', import.meta.url), 'utf8');
   assert.match(cli, /for \(const dial of \['variance', 'motion', 'density'\]\)/);
   assert.match(cli, /value < 1 \|\| value > 10/);
   assert.match(cli, /engineArgs\.push\('--' \+ dial, String\(value\)\)/);
