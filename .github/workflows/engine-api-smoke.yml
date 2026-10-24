@@ -167,7 +167,7 @@ jobs:
           const fs=require('fs');
           const x=JSON.parse(fs.readFileSync('stack-guidance.json','utf8'));
           const guidance=x.result;
-          if(x.status!=='success' || x.engine?.skillVersion!=='2.15.0' || !guidance) throw new Error('stack-specific guidelines are missing');
+          if(x.kind!=='designos-engine-search' || x.engine?.skillVersion!=='2.15.0' || !guidance) throw new Error('stack-specific guidelines are missing');
           if(guidance.domain!=='stack' || guidance.stack!=='react' || !Number.isInteger(guidance.count) || guidance.count<1 || !Array.isArray(guidance.results) || guidance.results.length<1) throw new Error('React stack search returned no real guidance records: '+JSON.stringify(guidance));
           if(!guidance.results.some(row=>String(row.Status||'').toLowerCase()==='active')) throw new Error('React stack search returned no active guidance records');
           console.log(JSON.stringify({stack:guidance.stack,count:guidance.count,firstGuideline:guidance.results[0].Guideline,status:guidance.results[0].Status},null,2));
