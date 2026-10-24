@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { Script } from "node:vm";
 
 const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
 
@@ -66,4 +67,10 @@ test("responsive layout covers tablet and mobile breakpoints", () => {
   assert.match(html, /@media\(max-width:900px\)/);
   assert.match(html, /@media\(max-width:560px\)/);
   assert.match(html, /env\(safe-area-inset-bottom\)/);
+});
+
+test("inline application JavaScript parses without syntax errors", () => {
+  const match = html.match(/<script>([\\s\\S]*?)<\\/script>/);
+  assert.ok(match, "inline application script exists");
+  assert.doesNotThrow(() => new Script(match[1]), "inline application script should parse");
 });
