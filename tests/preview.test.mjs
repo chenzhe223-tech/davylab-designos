@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import { Script } from "node:vm";
+import { Script, runInNewContext } from "node:vm";
 
 const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
 
@@ -71,6 +71,37 @@ test("mobile quick-action dock exposes preview, phone view, and Agent prompt act
   assert.match(html, /\$\("mobilePreview"\)\.addEventListener\("click"/);
   assert.match(html, /\$\("mobileDevice"\)\.addEventListener\("click"/);
   assert.match(html, /\$\("mobilePrompt"\)\.addEventListener\("click",openPrompt\)/);
+});
+
+test("intent-led search provides synonym matching and explainable recommendations", () => {
+  const profileStart = html.indexOf("const profiles=[");
+  const agentsStart = html.indexOf("const agents=[", profileStart);
+  const searchStart = html.indexOf("const searchTaxonomy={");
+  const renderStart = html.indexOf("function render(){", searchStart);
+  assert.ok(profileStart >= 0 && agentsStart > profileStart, "profile data exists");
+  assert.ok(searchStart >= 0 && renderStart > searchStart, "search engine exists");
+  const profileBlock = html.slice(profileStart, agentsStart);
+  const searchBlock = html.slice(searchStart, renderStart);
+  const sandbox = {};
+  runInNewContext(profileBlock + searchBlock + "globalThis.__searchTest={profiles,getRankedProfiles,scoreProfile,searchTaxonomy};", sandbox);
+  const ranked = query => sandbox.__searchTest.getRankedProfiles(query).filter(item => item.score > 0);
+  assert.ok(ranked("科技感").some(item => item.profile.id === "analytics-dashboard" || item.profile.id === "balanced-saas"), "technology query finds relevant profiles");
+  const complex = ranked("高级、有科技感、适合手机的 AI 数据看板");
+  assert.equal(complex[0].profile.id, "analytics-dashboard", "compound dashboard query ranks analytics first");
+  assert.ok(complex[0].reasons.length > 0, "recommendation includes explanation");
+  assert.ok(ranked("温暖品牌官网").some(item => item.profile.id === "warm-editorial"), "warm brand-site query finds editorial profile");
+  assert.ok(!ranked("手机数据看板").some(item => item.profile.id === "dashboard-studio"), "read-only audit profile is excluded from ordinary recommendations");
+  assert.ok(ranked("现有项目规则对照审查").some(item => item.profile.id === "dashboard-studio"), "read-only profile remains discoverable for explicit audit intent");
+});
+
+test("intent discovery UI includes natural-language examples, shortcut chips, and no-result recovery", () => {
+  assert.match(html, /id="intentInput"/);
+  assert.match(html, /id="matchIntent"/);
+  assert.match(html, /data-intent="科技感"/);
+  assert.match(html, /data-intent="移动端优先"/);
+  assert.match(html, /id="browseAll"/);
+  assert.match(html, /没有找到直接匹配的档案/);
+  assert.match(html, /id="clearSearch"/);
 });
 
 test("responsive layout covers tablet and mobile breakpoints", () => {
