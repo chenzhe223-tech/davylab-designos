@@ -141,6 +141,27 @@ The user has now authorized a full product rebuild: reposition DesignOS from a U
 - Added `tests/engine-api-contract.test.mjs` to check API routes and safety limits.
 - Next: check latest CI, Cloudflare and GitHub Pages runs; inspect Render deployment/build logs after the inventory fix; run the real capability inventory and inspect its output; then connect product-first UI to the bridge, normalize the real engine output into multiple candidates, and validate the full journey. Never bundle secrets into the static client.
 
+## 9. Live Skill integration tranche (2026-10-24)
+
+The rebuild is actively progressing beyond the product-first homepage:
+
+- `engine-api/server.py` exposes `/health`, `/api/status`, `/api/capabilities`, `/api/search`, and `/api/generate`, invoking the pinned CLI server-side. It bounds request bodies, rate-limits POSTs, restricts CORS origins and avoids logging prompt bodies.
+- `engine-api/Dockerfile` packages the pinned upstream engine and generated inventory. The first Render build failed: logs show `npm run engine:setup` printed `ready: true`, but the following inventory step said the source was missing. Dockerfile now explicitly verifies the installed search script and inventory file; a subsequent Render build is still required to prove the fix.
+- Render service created: `davylab-designos-engine`, ID `srv-dbe8obss728c73bdno40`, URL `https://davylab-designos-engine.onrender.com`. Its first deployment failed. Do not treat the API as live until a fresh deploy is successful and health/status/search/generate endpoints are verified.
+- Homepage now requests official upstream search for style, color, typography and UX when a user submits a product brief. API failure is visibly labeled; the UI must not claim local profile matches are live Skill output.
+- Homepage now exposes an explicit real-engine candidate generation action and JSON export. Candidate output is labeled as pending review, not a completed implementation.
+- CI now preserves `generated/skill-capability-inventory.json` as an artifact for 30 days so the actual catalog counts can be audited.
+- A complete CI run on an earlier commit `a8da3c6b` passed rule validation, unit tests, desktop/mobile Playwright tests, build, pinned Skill setup, real inventory generation, real engine generation and output validation. Later UI/API commits have their own new CI runs; check their final status before claiming the current main passes.
+- Current source of truth for remaining tasks: [docs/REBUILD_AUDIT.md](REBUILD_AUDIT.md). The product still needs real multi-direction generation, normalized evidence-aware candidate comparison, preview renderer integration, and complete JSON/Markdown design-spec delivery.
+
+Next sequence:
+1. Verify the newest GitHub CI run and repair any actual test failure.
+2. Trigger/verify a new Render build after the Dockerfile correction. If auto-deploy does not pick up the pushed commit, use Render's deployment action only after confirming no deploy is queued.
+3. Verify `/health`, `/api/status`, `/api/capabilities`, a real `/api/search` request, and a real `/api/generate` request.
+4. Check the generated inventory artifact and record real upstream counts in the audit ledger.
+5. Continue the product decision flow: candidate schema → multiple grounded candidates → meaningful preview/compare → complete spec export → browser acceptance.
+6. Update this handoff again with exact current commit SHA, workflow URLs, Render deployment ID/status and API smoke-test results.
+
 ## 10. Useful file map
 
 - `docs/REBUILD_AUDIT.md` — full-rebuild evidence ledger and acceptance gaps
