@@ -2,31 +2,50 @@
 
 **Design with intent. Build with evidence.**
 
-DAVYLAB DesignOS is a design governance and UI decision workspace. This repository currently contains the interactive static preview and its GitHub Pages deployment workflow.
+DAVYLAB DesignOS is a design governance and UI decision workspace with versioned design profiles and a real UI UX Pro Max adapter.
 
-## Current preview
+## Current capabilities
 
-The preview provides:
-- Responsive design-profile browsing and filtering
-- Selection and comparison of design profiles
-- JSON export for all profiles or selected profiles
-- A read-only governance boundary for Dashboard Studio
-- Client-side interaction without account creation or backend writes
+- Responsive interactive preview for profile browsing, filtering, selection, comparison, and JSON export.
+- Versioned design profiles, schema, and inheritance validation.
+- Read-only Dashboard Studio audit profile; no automatic source or production writes.
+- Pinned upstream UI UX Pro Max adapter with commit and file-integrity checks.
+- Safe project-local output paths, preservation of raw engine results, and candidate-only promotion rules.
+- GitHub Actions checks for profiles, tests, static build, actual engine installation, real output generation, and output validation.
+- GitHub Pages preview workflow with a post-deploy HTTP/content check.
+- Manual Cloudflare Pages deployment workflow with credentials checks and a post-deploy HTTP/content check.
 
-## Verified release status
+## Local development
 
-- The static preview source is committed on `main`.
-- GitHub Pages deployment is configured in `.github/workflows/pages.yml`; the public URL must not be considered live until the workflow succeeds and its post-deploy HTTP checks pass.
-- The full local engineering package contains the pinned UI/UX Pro Max adapter, schemas, validation scripts, and automated tests. Those engine-integration files are not yet fully mirrored into this repository.
-- The upstream engine must be installed and must produce a real, validated output before the engine integration can be marked ready. Mock output is not accepted.
-- Cloudflare Pages remains the intended production target; no production release should be claimed before deployment and URL verification.
+Requires Node.js 20+ and Python 3. Run:
 
-## Safety boundary
+```sh
+npm run validate:rules
+npm test
+npm run build
+npm run engine:status
+```
 
-Dashboard Studio is marked read-only. This preview does not access or modify its source project, cloud data, credentials, or deployments. Any future write integration requires explicit authorization and independent verification.
+Install the actual upstream engine only when GitHub access is available:
 
-## Deployment workflow
+```sh
+npm run engine:setup
+node scripts/designos.mjs generate --query "SaaS dashboard" --project "My App" --output generated/candidate.json
+npm run verify:engine-output -- generated/candidate.json
+```
 
-A push to `main` that changes `index.html` or `.github/workflows/pages.yml` triggers the GitHub Pages workflow. The workflow uploads the static site, deploys it, then requests the resulting URL and checks for the DesignOS entry point.
+The engine is not ready until `npm run engine:status` reports `ready: true` and a real upstream output passes validation. Mock output is not accepted. Generated profiles remain drafts until reviewed.
 
-For Cloudflare Pages, configure `CLOUDFLARE_API_TOKEN` as a repository secret and `CLOUDFLARE_ACCOUNT_ID` as a repository variable/secret before enabling the production deployment workflow.
+## Deployment
+
+- Repository: https://github.com/chenzhe223-tech/davylab-designos
+- Expected GitHub Pages URL: https://chenzhe223-tech.github.io/davylab-designos/
+- Cloudflare Pages production target: https://davylab-designos.pages.dev/
+
+These URLs must not be treated as live until their respective workflow succeeds and its HTTP verification step passes.
+
+For Cloudflare deployment, add repository secret `CLOUDFLARE_API_TOKEN` with Pages project permissions and repository variable `CLOUDFLARE_ACCOUNT_ID`. Then run the `Deploy DesignOS to Cloudflare Pages` workflow manually.
+
+## Safety boundaries
+
+Dashboard Studio is a read-only audit candidate. This repository does not apply tokens to the source project, access its cloud data, or modify production. Production deployment is separate from profile generation and requires explicit configuration. See `engine.lock.json` and `THIRD_PARTY_NOTICES.md` for engine provenance.
