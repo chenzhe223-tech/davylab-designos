@@ -83,7 +83,8 @@ def summarize(name: str, path: Path, domain: str):
             "status": status,
             "active": status.lower() in {"active", "approved"} if status.lower() != "not-specified" else None,
             "searchable": searchable,
-            "sourceRow": index
+            "sourceRow": index,
+            "fields": row
         })
     return {
         "id": name, "domain": domain, "sourcePath": str(path.relative_to(SKILL)),
