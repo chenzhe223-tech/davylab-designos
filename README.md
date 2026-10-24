@@ -7,13 +7,15 @@ DAVYLAB DesignOS is a visual design selection workspace. Users can preview rule-
 ## DesignOS 2.0 experience
 
 - Profile-driven HTML/CSS visual previews with desktop/mobile viewport switching.
-- Four design examples: Balanced SaaS, Analytics Dashboard, Warm Editorial, and read-only Dashboard Studio audit.
+- Selectable profiles are generated at build time from `profiles/index.json`, the canonical source of truth. Legacy UI IDs remain stable through each profile's `presentation.id` mapping. The registry currently includes Balanced SaaS, SaaS Product, Analytics Dashboard, Warm Editorial, and read-only Dashboard Studio audit.
 - Search, category/device filters, selection, favorites (browser-local), and side-by-side comparison for up to four profiles.
 - Project brief form with optional project type, goal, target user, device, tech stack, repository URL, and style preference.
 - Agent instruction generation for Codex, Claude Code, Cursor, GitHub Copilot, Gemini CLI, WorkBuddy, and a generic coding agent.
 - Copy and Markdown download for generated instructions; generation/copy/export are explicitly distinguished from actual agent execution.
 - JSON export for all or selected design rules, with a preview and explanation of what the file contains.
 - Dashboard Studio remains read-only; the preview never connects to or modifies the protected project.
+- Canonical profiles include inherited tokens, source/evidence metadata, evidence status, and stable legacy IDs. Deprecated profiles are excluded from selectable runtime output.
+- Automated regression includes a 30-case recommendation matrix, canonical/runtime consistency checks, and Playwright desktop/mobile browser acceptance.
 - Existing versioned profile schema, inheritance validation, pinned UI UX Pro Max adapter, output-path guard, and engine-output validation remain in the repository.
 
 ### Preview integrity
@@ -51,8 +53,15 @@ The engine is not ready until `npm run engine:status` reports `ready: true` and 
 
 Treat a deployment as verified only after the corresponding workflow succeeds and its HTTP verification step passes.
 
-For Cloudflare deployment, add repository secret `CLOUDFLARE_API_TOKEN` with Pages project permissions and repository variable `CLOUDFLARE_ACCOUNT_ID`. Then run the `Deploy DesignOS to Cloudflare Pages` workflow manually.
+Cloudflare deployment is triggered automatically on pushes to `main` and can also be run manually. The workflow runs rule validation, unit/regression tests, and the production build before checking credentials and deploying. It verifies the production URL with an HTTP request. Required configuration: repository secret `CLOUDFLARE_API_TOKEN` with Pages project permissions and repository variable `CLOUDFLARE_ACCOUNT_ID`. If either is absent, deployment intentionally fails before publishing.
 
 ## Safety boundaries
 
 Dashboard Studio is a read-only audit candidate. This repository does not apply tokens to the source project, access its cloud data, or modify production. Production deployment is separate from profile generation and requires explicit configuration. See `engine.lock.json` and `THIRD_PARTY_NOTICES.md` for engine provenance.
+
+## Canonical profile data and migration compatibility
+
+- Canonical source: `profiles/index.json`. The build script resolves inherited tokens and generates the browser runtime profile list from records with a `presentation` mapping.
+- Legacy runtime ID mapping: `balanced-saas → davylab-default`, `saas-product → davylab-saas`, `analytics-dashboard → davylab-dashboard`, `warm-editorial → davylab-warm-editorial`, `dashboard-studio → dashboard-studio-live`.
+- Existing local favorite IDs remain stable through `presentation.id`; selected profiles remain session-local as before. No destructive local-storage migration is performed.
+- Evidence statuses: `draft`, `reviewed`, `validated`, and `deprecated` are distinct from workflow lifecycle `status`. Only rules with real evidence may claim validated status; illustrative previews remain clearly labeled.
