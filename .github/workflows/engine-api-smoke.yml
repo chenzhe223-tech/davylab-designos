@@ -69,10 +69,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          curl --fail --silent --show-error --max-time 90 https://davylab-designos-engine.onrender.com/api/generate \
+          http_code=$(curl --silent --show-error --max-time 90 -w '%{http_code}' https://davylab-designos-engine.onrender.com/api/generate \
             -H 'Content-Type: application/json' \
             -d '{"query":"AI travel app for young travelers, hidden destinations, itinerary planning and travel memories","project":"DesignOS Live API Smoke","stack":"react"}' \
-            -o candidate.json
+            -o candidate.json)
+          echo "Engine generation HTTP status: $http_code"
+          cat candidate.json
+          test "$http_code" = "200"
           node - <<'NODE'
           const fs=require('fs');
           const x=JSON.parse(fs.readFileSync('candidate.json','utf8'));
