@@ -1,4 +1,4 @@
-<escape>{
+{
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://davylab-designos.pages.dev/schemas/design-candidate.schema.json",
   "title": "DAVYLAB DesignOS Design Candidate",
@@ -92,4 +92,4 @@
     }
   },
   "additionalProperties": false
-}</escape>
+}
