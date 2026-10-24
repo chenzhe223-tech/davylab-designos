@@ -4,6 +4,20 @@
 >
 > Last handoff update: 2026-10-24 (Asia/Singapore / UTC+8). Treat GitHub `main` and the latest workflow runs as the source of truth; re-check them before making further claims.
 
+## Current cross-window checkpoint (2026-10-24)
+
+**Read this first when continuing in a new chat:** [`docs/CONVERSATION_CONTEXT_BRIDGE.md`](CONVERSATION_CONTEXT_BRIDGE.md). It consolidates the product vision, user working agreement, real Skill inventory, current implementation, verified run IDs, and prioritized next actions. The full rebuild ledger remains [`docs/REBUILD_AUDIT.md`](REBUILD_AUDIT.md).
+
+Latest known main SHA at the previous live check: `2f06aa1083b59de74562661613b8448a21aafb3a`. Re-check main before relying on it.
+
+- CI [40104641077](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40104641077): passed.
+- GitHub Pages [40104641112](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40104641112): passed.
+- Cloudflare production [40104641171](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40104641171): deploy and production URL check passed; deployed browser regression was still running at last check. Re-check its final result.
+- Render API service `davylab-designos-engine` (`srv-dbe8obss728c73bdno40`) was live at deployment `dep-dbebr7rrjlhs73f6hpqg`, source commit `867fc5e2`. Re-check latest Render deployment and API health/status before relying on this state.
+- Live API smoke [40101896777](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40101896777) previously passed the filtered capability endpoint and raw-field pagination checks. A skipped smoke run is not a passing run.
+
+The newest source-backed catalogue UI and filtered/paginated capability API are in the repository. Candidate previews, JSON/Markdown exports, and Agent instruction export are implemented, but automatic hard-constraint evaluation, a complete implemented target application, and physical-device acceptance remain incomplete.
+
 ## 1. Project identity and live links
 
 - Repository: https://github.com/chenzhe223-tech/davylab-designos
