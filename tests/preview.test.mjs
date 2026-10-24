@@ -168,3 +168,14 @@ test("real design-system generation is an explicit action and labels its output 
   assert.match(html, /待评审/);
   assert.match(html, /下载候选 JSON/);
 });
+
+test("candidate generation uses active styles returned by live Skill search and exports JSON plus Markdown", () => {
+  assert.match(html, /function getCandidateDirections\(\)/);
+  assert.match(html, /lastEngineSearchResults/);
+  assert.match(html, /async function generateEngineCandidate\(\)/);
+  assert.match(html, /Promise\.all\(selected\.map/);
+  assert.match(html, /下载此方向 JSON/);
+  assert.match(html, /下载此方向 Markdown/);
+  assert.match(html, /该文件是由真实 Skill 生成、尚待人工评审的设计系统候选/);
+  assert.match(html, /需要复核：引擎将产品归类为 General/);
+});
