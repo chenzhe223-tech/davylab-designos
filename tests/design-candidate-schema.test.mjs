@@ -21,3 +21,11 @@ test('candidate contract explicitly distinguishes upstream engine mode from auth
   assert.deepEqual(schema.properties.evidence.properties.engine.properties.mode.enum, ['live', 'cli', 'build-time', 'authored-fallback', 'unknown']);
   assert.deepEqual(schema.properties.preview.properties.kind.enum, ['interactive-prototype', 'static-illustration', 'implemented-application']);
 });
+
+test('unreviewed candidates preserve unknown evaluation scores instead of fabricating them', () => {
+  assert.deepEqual(schema.properties.decision.properties.eligible.type, ['boolean', 'null']);
+  assert.deepEqual(schema.properties.decision.properties.softPreferenceScore.type, ['number', 'null']);
+  assert.ok(schema.properties.decision.properties.reviewStatus.enum.includes('not-reviewed'));
+  assert.ok(schema.required.includes('rawEngineOutput'));
+  assert.equal(schema.properties.rawEngineOutput.type, 'object');
+});
