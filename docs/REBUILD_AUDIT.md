@@ -55,6 +55,15 @@ Do not represent authored profiles as the complete Skill. Keep the upstream Skil
 - `tests/design-candidate-schema.test.mjs` checks the candidate contract's required evidence and preview distinctions.
 - `tests/e2e/designos.spec.mjs` now has a regression test guarding the product-first, non-dashboard-first entry experience.
 
+## Live upstream API bridge tranche (2026-10-24)
+
+- Added `engine-api/server.py`: a server-side HTTP bridge that invokes the existing pinned CLI, exposes health/status/capabilities/search/generate routes, applies request-size bounds, a per-IP rate limit and an explicit CORS origin allowlist, and avoids logging request bodies. Search results are returned in the official normalized envelope without extra nesting.
+- Added `engine-api/Dockerfile` and `.dockerignore` to package the pinned Skill server-side. The initial Render build at commit `6172ccbf` failed because the inventory step reported the source absent immediately after the setup command reported `ready: true`; logs prove the initial failure. The Dockerfile was then strengthened to explicitly test the installed search script path and the generated inventory file. This corrected Dockerfile still requires a fresh Render build to prove it works.
+- Render service was created: `davylab-designos-engine`, service ID `srv-dbe8obss728c73bdno40`, URL `https://davylab-designos-engine.onrender.com`. Its first deployment failed; do not treat the service as live until a later deploy and health/API probes succeed.
+- The homepage now calls the server-side Skill search for four domains (style, color, typography and UX) when a user submits a product brief. If the API is unavailable, the UI explicitly labels the engine as unavailable and keeps local Profile browsing as a fallback rather than fabricating Skill results.
+- The homepage also has an explicit “generate real design-system candidate” action, which calls the official CLI generation route and displays a candidate summary with source/version/status and downloadable JSON. The UI explicitly labels this as a candidate awaiting review, not an implemented app.
+- Relevant source files: `engine-api/server.py`, `engine-api/Dockerfile`, `index.html`, `tests/engine-api-contract.test.mjs`, `tests/preview.test.mjs`. Latest workflow runs must be checked before reporting this tranche as accepted.
+
 ## Current product/UI change
 
 Commit `bae04a069d1e3fb98eff574033cca81a589959ae` updated the homepage copy and first-run workflow to lead with product goals rather than dashboard design. The first-run prompt now demonstrates an AI travel app and includes category entry points for travel/lifestyle apps, AI-native tools, brand websites and creator communities. The project-type choices cover a broader set of product categories and no longer put Dashboard first.
@@ -107,7 +116,7 @@ This is a first UI direction change, not a completed engine integration or full 
 | Complete Skill data inventory | Not yet implemented | Must count pinned upstream records programmatically |
 | Browser uses full upstream engine | Not yet connected | Server-side API bridge has been added but deploy and frontend integration remain unverified |
 | Product-first entry UI | First tranche implemented | Commit `bae04a069d1e3fb98eff574033cca81a589959ae`; requires workflow and browser verification |
-| End-to-end design decision workflow | Incomplete | Needs real engine adapter, candidate model and dynamic previews |
+| End-to-end design decision workflow | In progress | Live search and explicit real candidate-generation UI added; multi-direction comparison and full preview/export workflow remain incomplete |
 | Physical iPhone/iPad acceptance | Not performed in recorded work | Playwright viewport tests are not physical-device acceptance |
 
 ## Rules for updating this ledger
