@@ -123,6 +123,11 @@ class Handler(BaseHTTPRequestHandler):
                 params = parse_qs(urlparse(self.path).query)
                 requested_domain = params.get("domain", [""])[0].strip()
                 query = params.get("q", [""])[0].strip().lower()[:200]
+                try:
+                    limit = max(1, min(100, int(params.get("limit", ["50"])[0])))
+                    offset = max(0, int(params.get("offset", ["0"])[0]))
+                except ValueError:
+                    limit, offset = 50, 0
                 metadata = []
                 selected = []
                 for domain in inventory.get("domains", []):
@@ -144,7 +149,10 @@ class Handler(BaseHTTPRequestHandler):
                             haystack = " ".join([str(record.get("id", "")), str(record.get("name", "")), str(record.get("status", "")), *[str(v) for v in fields.values()]])
                             return query in haystack.lower()
                         filtered = [record for record in records if matches(record)]
-                    selected.append({**domain, "records": filtered, "returnedRecords": len(filtered), "query": query})
+                    total_matches = len(filtered)
+                    page_records = filtered[offset:offset + limit]
+                    next_offset = offset + len(page_records) if offset + len(page_records) < total_matches else None
+                    selected.append({**domain, "records": page_records, "returnedRecords": len(page_records), "totalMatches": total_matches, "offset": offset, "nextOffset": next_offset, "query": query})
                 self._json(200, {
                     "schemaVersion": inventory.get("schemaVersion"),
                     "generatedFrom": inventory.get("generatedFrom"),
@@ -152,7 +160,9 @@ class Handler(BaseHTTPRequestHandler):
                     "domains": selected if requested_domain else metadata,
                     "selectedDomain": requested_domain or None,
                     "query": query,
-                    "returnedRecords": sum(domain.get("returnedRecords", domain.get("recordCount", 0)) for domain in selected) if requested_domain else 0
+                    "returnedRecords": sum(domain.get("returnedRecords", domain.get("recordCount", 0)) for domain in selected) if requested_domain else 0,
+                    "pageSize": limit if requested_domain else None,
+                    "offset": offset if requested_domain else None
                 })
             except Exception:
                 self._json(503, {"error": "capability_inventory_unavailable", "hint": "Check build logs"})
