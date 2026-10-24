@@ -29,6 +29,33 @@ jobs:
           echo "Engine API did not become healthy within 3 minutes."
           exit 1
 
+      - name: Verify strict single-origin CORS headers
+        shell: bash
+        run: |
+          set -euo pipefail
+          API='https://davylab-designos-engine.onrender.com'
+          for origin in \
+            'https://davylab-designos.pages.dev' \
+            'https://preview-branch.davylab-designos.pages.dev'; do
+            curl --fail --silent --show-error -D response-headers.txt -o /dev/null \
+              -H "Origin: $origin" "$API/health"
+            count=$(grep -ic '^Access-Control-Allow-Origin:' response-headers.txt || true)
+            test "$count" = "1"
+            actual=$(grep -i '^Access-Control-Allow-Origin:' response-headers.txt | sed 's/\r$//' | sed 's/^[^:]*:[[:space:]]*//')
+            test "$actual" = "$origin"
+            echo "PASS: one exact Access-Control-Allow-Origin header for $origin"
+          done
+
+          status=$(curl --silent --show-error -o untrusted-origin.json -w '%{http_code}' \
+            -H 'Origin: https://untrusted.example' "$API/health")
+          test "$status" = "403"
+          if grep -qi '^Access-Control-Allow-Origin:' <(curl --silent --show-error -D - -o /dev/null \
+            -H 'Origin: https://untrusted.example' "$API/health"); then
+            echo "::error::Untrusted origin received an Access-Control-Allow-Origin header"
+            exit 1
+          fi
+          echo 'PASS: untrusted origins are rejected without CORS permission'
+
       - name: Verify pinned engine readiness
         shell: bash
         run: |
