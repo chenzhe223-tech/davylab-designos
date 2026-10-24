@@ -49,7 +49,14 @@
 .candidate-preview-device{display:flex;gap:6px;margin:10px 0;justify-content:flex-end}
 .candidate-preview-device button{font-size:10px;padding:5px 8px;border:1px solid var(--line,#dedbd4);border-radius:7px;background:transparent}
 .candidate-preview-device button[aria-pressed="true"]{background:var(--ink,#182235);color:#fff;border-color:var(--ink,#182235)}
-@media(max-width:560px){.candidate-preview-sections{grid-template-columns:1fr}.candidate-live-preview h5{font-size:19px}}</style>
+@media(max-width:560px){.candidate-preview-sections{grid-template-columns:1fr}.candidate-live-preview h5{font-size:19px}}
+.engine-candidate-card.is-selected{border-color:var(--blue,#4168d8);box-shadow:0 0 0 2px color-mix(in srgb,var(--blue,#4168d8) 18%,transparent)}
+.engine-refine{margin-top:18px;padding:14px;border:1px solid var(--line,#dedbd4);border-radius:12px}
+.engine-refine label{display:block;font-size:12px;font-weight:700;margin-bottom:8px}
+.engine-refine textarea{width:100%;min-height:84px;resize:vertical;padding:10px;border:1px solid var(--line,#dedbd4);border-radius:9px;background:var(--paper,#fffefa);color:var(--ink,#182235)}
+.engine-refine-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+.engine-refine-actions span{font-size:11px;color:var(--muted,#687386)}
+</style>
 </head>
 <body><div class="shell">
 <header class="top"><div class="brand"><div class="mark">D/OS</div><div>DAVYLAB<small>DESIGN OPERATING SYSTEM</small></div></div><div class="status"><i class="dot"></i>可视化设计工作台</div></header>
@@ -184,7 +191,9 @@ function getCandidateDirections(){
    used.add(name.toLowerCase());return true
  }).slice(0,3).map((record,index)=>({id:engineText(record.id||record["Style ID"]||"style-"+index),name:engineText(record.name||record.title||record["Style Category"]||record.style_name||record.id),reason:engineText(record.description||record["Best For"]||record["Keywords"]||record["Best For"]||"由官方 Skill 风格检索返回")}))
 }
+let selectedEngineCandidate=null;
 function renderEngineCandidate(candidates,error){
+ selectedEngineCandidate=null;
  const host=$("engineCandidate"),status=$("engineCandidateStatus");host.replaceChildren();host.hidden=false;
  if(error){status.textContent="候选生成失败："+String(error.message||error).slice(0,160);host.textContent="未能生成真实设计系统。请检查后端状态或稍后重试；没有生成模拟候选。";return}
  status.textContent="已生成 "+candidates.length+" 个真实引擎候选 · 待评审";
@@ -219,11 +228,21 @@ function renderEngineCandidate(candidates,error){
     card.appendChild(warning)
   }
   const buttons=document.createElement("div");buttons.className="engine-candidate-actions";
+  const chooseButton=document.createElement("button");chooseButton.type="button";chooseButton.className="btn small";chooseButton.textContent="选择此方向";chooseButton.setAttribute("aria-pressed","false");chooseButton.addEventListener("click",()=>{selectedEngineCandidate=candidate;document.querySelectorAll(".engine-candidate-card").forEach(node=>node.classList.remove("is-selected"));card.classList.add("is-selected");document.querySelectorAll(".engine-candidate-card [data-choose-direction]").forEach(node=>{node.setAttribute("aria-pressed","false");node.textContent="选择此方向"});chooseButton.setAttribute("aria-pressed","true");chooseButton.textContent="已选择";status.textContent="已选择方向："+(entry.direction.name||profile.name||"候选方向")+" · 可继续调整或导出"});
+  chooseButton.setAttribute("data-choose-direction","true");buttons.appendChild(chooseButton);
   const exportButton=document.createElement("button");exportButton.type="button";exportButton.className="btn small";exportButton.textContent="下载此方向 JSON";exportButton.addEventListener("click",()=>{const blob=new Blob([JSON.stringify(candidate,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="davylab-designos-candidate-"+(index+1)+".json";a.click();URL.revokeObjectURL(url)});buttons.appendChild(exportButton);
   const markdownButton=document.createElement("button");markdownButton.type="button";markdownButton.className="btn small";markdownButton.textContent="下载此方向 Markdown";markdownButton.addEventListener("click",()=>{const ds=candidate.result?.design_system||{};const md=["# "+(profile.name||entry.direction.name),"","- 产品需求："+lastEngineQuery,"- 方向："+entry.direction.name,"- 风格："+(ds.style?.name||ds.style?.id||"未提供"),"- 产品类别："+(ds.category||profile.productType||"未提供"),"- 上游 Skill："+(candidate.engine?.repository||candidate.source?.repository||"UI UX Pro Max")+" "+(candidate.engine?.skillVersion||candidate.source?.skillVersion||""),"","## 配色","",...Object.entries(ds.colors||{}).map(([k,v])=>"- "+k+": "+v),"","## 字体","","- 标题："+(ds.typography?.heading||"未提供"),"- 正文："+(ds.typography?.body||"未提供"),"","## 页面结构","",ds.pattern?.sections||"请人工复核上游原始输出","","## 规则与取舍","",...(profile.rules||[]).map(x=>"- "+x),"","## 验收说明","","- 该文件是由真实 Skill 生成、尚待人工评审的设计系统候选，不代表目标应用已实现。","- 请检查行业映射、颜色对比度、键盘操作、响应式布局、字体加载与性能。",""].join("\n");const blob=new Blob([md],{type:"text/markdown;charset=utf-8"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="davylab-designos-candidate-"+(index+1)+".md";a.click();URL.revokeObjectURL(url)});buttons.appendChild(markdownButton);
   card.appendChild(buttons);grid.appendChild(card)
  });
- host.appendChild(grid)
+ host.appendChild(grid);
+ const refine=document.createElement("div");refine.className="engine-refine";
+ const refineLabel=document.createElement("label");refineLabel.htmlFor="engineRefineFeedback";refineLabel.textContent="继续调整设计方向（可选）";
+ const refineInput=document.createElement("textarea");refineInput.id="engineRefineFeedback";refineInput.placeholder="例如：更适合年轻旅行者；减少营销感；强化地图探索和旅行记忆；保持高对比度与移动端可读性。";
+ const refineActions=document.createElement("div");refineActions.className="engine-refine-actions";
+ const refineButton=document.createElement("button");refineButton.type="button";refineButton.className="btn accent";refineButton.textContent="按反馈重新生成";
+ const refineNote=document.createElement("span");refineNote.textContent="将反馈加入需求，再重新检索真实 Skill 规则并生成候选。";
+ refineButton.addEventListener("click",async()=>{const feedback=refineInput.value.trim();if(!feedback){toast("先写下希望调整的方向。");refineInput.focus();return}refineButton.disabled=true;refineButton.textContent="正在重新检索…";lastEngineQuery=lastEngineQuery+"\n用户调整要求："+feedback;try{await queryOfficialEngine(lastEngineQuery);await generateEngineCandidate()}catch(error){renderEngineCandidate([],error)}finally{refineButton.disabled=false;refineButton.textContent="按反馈重新生成"}});
+ refineActions.append(refineButton,refineNote);refine.append(refineLabel,refineInput,refineActions);host.appendChild(refine)
 }
 async function generateEngineCandidate(){
  if(!lastEngineQuery){toast("请先描述产品并完成官方 Skill 检索。");return}
