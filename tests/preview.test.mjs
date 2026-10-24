@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { Script, runInNewContext } from "node:vm";
 
-const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+const html = await readFile(new URL("../dist/index.html", import.meta.url), "utf8");
 
 test("preview contains the DesignOS entry point and accessible landmarks", () => {
   assert.match(html, /<html lang="zh-CN">/);
