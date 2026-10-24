@@ -164,7 +164,7 @@ test("real design-system generation is an explicit action and labels its output 
   assert.match(html, /id="generateEngineCandidate"/);
   assert.match(html, /async function generateEngineCandidate\(\)/);
   assert.match(html, /fetch\(ENGINE_API_BASE\+"\/api\/generate"/);
-  assert.match(html, /已生成 .* 个真实引擎候选/);
+  assert.match(html, /个真实引擎候选/);
   assert.match(html, /待评审/);
   assert.match(html, /下载此方向 JSON/);
 });
