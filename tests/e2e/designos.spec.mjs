@@ -79,7 +79,7 @@ test('production UI: live Skill search, candidate generation, selection and capa
   await expect(page.locator('#engineCandidate .engine-candidate-card.is-selected')).toHaveCount(1);
   await expect(page.locator('#engineCandidate .engine-candidate-actions button').filter({ hasText: '下载此方向 JSON' }).first()).toBeVisible();
   await page.locator('#toggleSkillCatalog').click();
-  await expect(page.locator('#skillCatalogDomain option').first()).toBeVisible({ timeout: 30000 });
+  await expect(page.locator('#skillCatalogDomain option[value="styles.csv"]')).toHaveCount(1, { timeout: 30000 });
   await page.locator('#skillCatalogDomain').selectOption('styles.csv');
   await page.locator('#skillCatalogSearchButton').click();
   await expect(page.locator('#skillCatalogResults .engine-catalog-record').first()).toBeVisible({ timeout: 30000 });
