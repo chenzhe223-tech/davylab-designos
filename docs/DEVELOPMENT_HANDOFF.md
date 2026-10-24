@@ -1,0 +1,146 @@
+# DAVYLAB DesignOS — Cross-Chat Development Handoff
+
+> Purpose: preserve the product decisions, engineering changes, verification evidence, and remaining work so another ChatGPT conversation or coding agent can continue without reconstructing this conversation.
+>
+> Last handoff update: 2026-10-24 (Asia/Singapore / UTC+8). Treat GitHub `main` and the latest workflow runs as the source of truth; re-check them before making further claims.
+
+## 1. Project identity and live links
+
+- Repository: https://github.com/chenzhe223-tech/davylab-designos
+- Production website (Cloudflare Pages): https://davylab-designos.pages.dev/
+- GitHub Pages preview: https://chenzhe223-tech.github.io/davylab-designos/
+- CI workflow: https://github.com/chenzhe223-tech/davylab-designos/actions/workflows/ci.yml
+- Cloudflare deployment workflow: https://github.com/chenzhe223-tech/davylab-designos/actions/workflows/deploy-cloudflare.yml
+- GitHub Pages workflow: https://github.com/chenzhe223-tech/davylab-designos/actions/workflows/pages.yml
+
+Product purpose: a design selection and instruction-generation workspace. People describe a project, browse/compare design profiles, choose a direction, and generate structured instructions for coding agents.
+
+## 2. Working agreement for future sessions
+
+1. Continue implementation; do not stop after giving a plan or a progress report when the next step can be performed safely.
+2. Do not repeatedly ask for confirmation for routine, reversible engineering work. Ask only when a genuine blocker or an irreversible/product decision requires it.
+3. Never claim a feature is implemented, tests pass, a deployment succeeded, or acceptance is complete unless supported by code, workflow output, or live verification.
+4. Separate these states in reports: implemented, automated tests passed, deployed, production smoke-tested, and manually accepted on real devices.
+5. Keep existing behavior and local user data compatible. Prefer additive, reversible migrations and stable IDs.
+6. Never fabricate data, sources, profile evidence, test results, deployment URLs, or credentials. Never ask the user to paste API tokens into chat.
+7. After changes, run the relevant validation/test/build and browser checks, inspect workflow results, and update this handoff with the latest commit, evidence, and unresolved issues.
+8. Use Chinese for progress and handoff reports unless the user asks otherwise.
+
+## 3. Product decisions and data architecture
+
+### Canonical source of truth
+
+- `profiles/index.json` is the single canonical source for design profiles.
+- `scripts/build.mjs` reads this registry, resolves inherited tokens, and generates runtime profile data in the built `dist/index.html`.
+- Runtime search taxonomy is derived from profile tags, aliases, principles, and mobile-fit metadata rather than maintained as a second independent list.
+- Deprecated profiles must not be exposed as active runtime choices.
+- Preserve legacy presentation IDs so existing favorites/selection references do not silently break.
+
+### Known profile compatibility mapping
+
+- `balanced-saas → davylab-default`
+- `saas-product → davylab-saas`
+- `analytics-dashboard → davylab-dashboard`
+- `warm-editorial → davylab-warm-editorial`
+- `dashboard-studio → dashboard-studio-live` (read-only audit profile)
+
+The profile registry currently documents Balanced SaaS, SaaS Product, Analytics Dashboard, Warm Editorial, and read-only Dashboard Studio audit. Always confirm the latest `profiles/index.json` before editing.
+
+### Rule governance
+
+Evidence/status values include `draft`, `reviewed`, `validated`, and `deprecated`. Validation checks status values, required source/evidence, presentation ID format, and uniqueness. Do not mark rules `validated` merely because the schema is valid; validation must reflect actual supporting evidence and verification.
+
+### UX/feature scope
+
+- Profile previews with desktop/mobile viewport switching.
+- Search and category/device filters.
+- Selection, browser-local favorites, and side-by-side comparison (up to four profiles).
+- Project brief with optional project type, goal, target user, device, tech stack, repository URL, and style preference.
+- Agent instruction generation for Codex, Claude Code, Cursor, GitHub Copilot, Gemini CLI, WorkBuddy, and a generic coding agent.
+- Copy and Markdown download for generated instructions.
+- JSON export.
+- Design direction: clear, warm, premium, restrained, easy to scan; prioritize information hierarchy and usable workflows over decorative effects.
+
+## 4. Implemented engineering work recorded in this conversation
+
+The following work was committed to the repository before this handoff; re-check `main` and commit history for the newest state.
+
+- Expanded profile metadata and introduced Warm Editorial.
+- Reworked `scripts/build.mjs` to generate runtime profile data from `profiles/index.json`, resolve inherited tokens, omit deprecated profiles, and validate the injection point.
+- Derived runtime search taxonomy from the profile registry.
+- Added rule governance validation for evidence status, sources, presentation IDs, and ID uniqueness.
+- Added recommendation regression cases covering SaaS, analytics dashboards, mobile workspaces, warm editorial, content/idea management, admin, audit protection, ambiguous/short/unmatched queries.
+- Added profile consistency checks to compare built runtime profiles against canonical registry data and test legacy IDs/inheritance/read-only protection.
+- Updated preview tests to use built `dist/index.html`.
+- Added Playwright configuration and `tests/e2e/designos.spec.mjs` covering desktop search/recommendation/instruction generation, mobile viewport and overflow checks, and JSON export parsing.
+- Added Playwright/browser checks to CI, Cloudflare deployment, and GitHub Pages deployment workflows.
+- Added README documentation for the canonical source, ID compatibility, governance states, and test commands.
+
+## 5. Verification evidence and known workflow issue
+
+### App code commit previously verified
+
+- Application commit: `240e257b33e781f320d6f6fb020c1a99d776fed0`
+- CI run: https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40077856468
+- Cloudflare deployment run: https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40077856467
+
+The previous conversation record says the CI and Cloudflare workflow for `240e257b` completed successfully, including validation/tests/build, Playwright E2E, production URL checks, and post-deployment browser regression. These are historical results for that commit, not proof that the latest commit is green.
+
+### GitHub Pages preview workflow issue
+
+- A Pages workflow run failed at deployed browser acceptance because the deploy job did not check out test files (`Error: No tests found`).
+- A workflow-only fix was committed, adding checkout before running the deployed preview acceptance tests.
+- Latest commit known at the last checkpoint: `4ad04e82cb1861b034d9fb9fc44deadab1bca184`, message: “Checkout browser test files before running deployed preview acceptance”.
+- Latest action runs seen at the last checkpoint:
+  - CI: https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40077978393
+  - Cloudflare deployment: https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40077978267
+  - GitHub Pages deployment: https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40077978234
+- These runs were still in progress/pending at the last checkpoint. **First task in the next session: inspect the current latest `main` SHA and all three runs; do not assume these runs are still pending or successful.** Inspect failed job logs and fix any real regression, then re-run until green where feasible.
+
+## 6. Outstanding work / acceptance gaps
+
+1. Confirm the latest CI, Cloudflare deploy, and GitHub Pages deploy runs on current `main` are successful.
+2. Verify the current production site and deployed preview are serving the expected build; run deployed browser acceptance and check console/page errors.
+3. Continue auditing recommendation semantics: ensure hard constraints genuinely exclude incompatible options and soft preferences affect ranking transparently. Avoid tests that only encode current behavior without validating the intended product logic.
+4. Inspect all profiles for accurate evidence metadata and honest governance status. Schema validity alone is not evidence of design-rule validity.
+5. Review empty/no-match/error/loading states, keyboard navigation, labels/contrast, focus states, and responsive comparison layout.
+6. Automated mobile viewport checks are not real-device acceptance. No confirmed hands-on iPhone/iPad test was completed in the recorded work; label this clearly until actually done.
+7. Check compatibility of old favorites and selected-profile state with legacy IDs. Do not claim full migration acceptance until verified with representative old stored data.
+8. If any further changes are made, update this document with the actual current commit and the new test/deployment evidence.
+
+## 7. Recommended next-session runbook
+
+1. Read the current `main` commit and this file.
+2. Inspect the newest CI, Cloudflare Pages, and GitHub Pages workflow runs, including logs for failures.
+3. Fetch the current `profiles/index.json`, `scripts/build.mjs`, recommendation implementation, tests, and workflow files before changing them.
+4. Fix the smallest root cause, commit the fix, and wait for workflow evidence.
+5. Run/verify:
+   - rule/profile validation
+   - unit/regression tests
+   - production build
+   - Playwright desktop and mobile viewport E2E
+   - deployed URL smoke test and deployed browser regression
+   - JSON export parsing and legacy-ID compatibility
+6. Inspect live production and preview behavior; report exactly what was and was not verified.
+7. Update this file with current commit SHA, workflow links/results, changes, and remaining risks.
+
+## 8. Useful file map
+
+- `profiles/index.json` — canonical design profile registry
+- `scripts/build.mjs` — build-time profile generation/injection
+- `scripts/validate-rules.mjs` — profile/rule governance validation
+- `tests/recommendation.test.mjs` — recommendation regression matrix
+- `tests/profile-consistency.test.mjs` — registry/runtime consistency and compatibility
+- `tests/preview.test.mjs` — preview behavior tests
+- `tests/build-output.test.mjs` — built artifact checks
+- `tests/e2e/designos.spec.mjs` — Playwright browser tests
+- `playwright.config.mjs` — Playwright configuration
+- `.github/workflows/ci.yml` — CI quality gate
+- `.github/workflows/deploy-cloudflare.yml` — Cloudflare Pages deploy and production acceptance
+- `.github/workflows/pages.yml` — GitHub Pages preview deploy and acceptance
+
+---
+
+## Session continuation prompt
+
+When this file is supplied to a new ChatGPT conversation or coding agent, continue as the DAVYLAB DesignOS product/engineering lead. Start by checking the latest `main` commit and workflow statuses, then continue implementation and verification from the outstanding work above. Do not merely summarize this file; perform the next safe engineering actions and keep the handoff current.
