@@ -90,12 +90,25 @@ class Handler(BaseHTTPRequestHandler):
             return
         self._headers(204)
 
+    def do_HEAD(self):
+        if not allowed_request(self):
+            self.send_response(403)
+        elif urlparse(self.path).path in {"/", "/health"}:
+            self.send_response(200)
+        else:
+            self.send_response(404)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+
     def do_GET(self):
         if not allowed_request(self):
             self._json(403, {"error": "origin_not_allowed"})
             return
         path = urlparse(self.path).path
-        if path == "/health":
+        if path == "/":
+            self._json(200, {"ok": True, "service": "davylab-designos-engine", "health": "/health"})
+        elif path == "/health":
             self._json(200, {"ok": True, "service": "davylab-designos-engine"})
         elif path == "/api/status":
             try:
