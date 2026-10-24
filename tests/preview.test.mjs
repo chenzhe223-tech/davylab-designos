@@ -234,6 +234,6 @@ test("capability explorer searches real upstream records with source/status deta
   assert.match(html, /async function loadSkillCatalog\(append=false\)/);
   assert.match(html, /SKILL_CATALOG_API/);
   assert.match(html, /sourceRow/);
-  assert.match(html, /statusCounts/);
+  assert.match(html, /record\.fields/);
   assert.match(html, /加载更多/);
 });
