@@ -132,3 +132,29 @@ When continuing in a different ChatGPT window:
 ## 9. Copy/paste continuation command
 
 > 你现在是 DAVYLAB DesignOS 的长期产品负责人、UI/UX 设计总监、AI 架构师和全栈工程负责人。先读取仓库里的 `docs/CONVERSATION_CONTEXT_BRIDGE.md`、`docs/DEVELOPMENT_HANDOFF.md`、`docs/REBUILD_AUDIT.md`，再检查 GitHub main 最新 commit、所有相关 Actions 状态和 Render 最新部署。严格遵守仓库里记录的产品定位和用户指令：平台面向所有产品类别，不与 Dashboard 项目绑定；真实调用 UI UX Pro Max Skill；不伪造数据/评分/验收。不要只给计划，不要擅自暂停或反复请示；持续执行当前最高优先级任务，修复真实问题，测试、部署、验证，并将实际结果和未完成项写回这三份上下文文件。只有遇到必须由我授权或提供的真实阻塞时才询问我。
+
+
+## Latest verified checkpoint — 2026-10-24 23:40 SGT (15:40 UTC)
+
+This checkpoint supersedes older pending-deployment or transient-failure notes above. Latest repository source of truth at the time of this update: `main` commit `83a9488a298cc387e418fe89a16d3090422671ab`.
+
+### Latest successful evidence
+
+- **DesignOS CI passed** on the current source commit: [run 40107578430](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40107578430). Includes Python unit tests for proxy-aware client identity, JavaScript test suite, browser E2E, build, pinned Skill installation, real dataset inventory and generated-output checks.
+- **Cloudflare production deployment passed** on the current source commit: [run 40107578397](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40107578397).
+- **Live Engine API smoke passed** on the current source commit: [run 40107678857](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40107678857). Verified exact CORS allow-origin headers, rejected untrusted origins, confirmed Skill v2.15.0 and data inventory, source-backed search, travel-category generation, and non-empty active React stack guidance.
+- **GitHub Pages deployed browser acceptance passed on retry attempt 2** for the current source commit: [run 40107578422](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40107578422). First attempt started during the previous Render service version / rate-limit incident and failed with “引擎暂不可用”; the rerun after the new Render deployment completed successfully.
+- **Render engine deployment is live** at commit `83a9488a298cc387e418fe89a16d3090422671ab`, deployment `dep-dbed0ea9lscs73aokph0`, completed 2026-10-24 15:35:57 UTC.
+- Production Render logs during the latest GitHub Pages run recorded successful `POST /api/search` (HTTP 200), `POST /api/generate` (HTTP 200), and `GET /api/capabilities` (HTTP 200); browser preflights returned 204. No 429 occurred in that accepted rerun.
+- The stricter travel-generation assertion returned product type/category/palette source all as `Travel/Tourism Agency`.
+- The React stack query returned 3 real records; the first was an active `Use useReducer for complex state` rule. Empty stack guidance no longer qualifies as compatibility.
+- The real upstream inventory remains 35 configured domains, 4,319 records and no missing configured domains: styles 88 rows (50 active, 9 deprecated, 29 supplemental), palettes 192, typography pairings 74, chart recommendations 25, UX guidelines 119, industry reasoning rules 192, and 22 stack datasets.
+- Rate limiting now keys traffic by a validated Cloudflare client IP only when the socket peer is the trusted local proxy; direct peers do not get to spoof forwarding headers. It retains a per-client limit of 60 requests/minute and returns `Retry-After` for 429 responses. New tests cover loopback proxy, forged/invalid headers and IPv6 normalization.
+
+### Acceptance boundary
+
+- Automated CI, live engine smoke, Cloudflare production deployment and production-browser regressions are green for this code revision.
+- **Physical iPhone/iPad validation and human-led visual acceptance remain outstanding.** Do not claim either was performed.
+- Candidate previews are still previews of generated design systems, not complete generated user applications. Exporting an Agent brief does not prove that an external coding agent executed it.
+- Continue with cross-category quality evaluation (SaaS, mobile, e-commerce, content, AI product and dashboard), candidate comparison/decision-rationale quality, export consistency, accessibility and viewport edge cases before final product-wide acceptance.
+
