@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 LOCK = json.loads((ROOT / "engine.lock.json").read_text(encoding="utf-8"))
 SKILL = ROOT / LOCK["expectedSkillPath"]
 SCRIPTS = SKILL / "scripts"
-if not (SCRIPTS / LOCK["searchEntry"]).is_file():
+if not (SKILL / LOCK["searchEntry"]).is_file():
     raise SystemExit(
         "Pinned UI UX Pro Max source is not installed. Run npm run engine:setup first."
     )
