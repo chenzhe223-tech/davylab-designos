@@ -9,7 +9,10 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY . /app
-RUN npm run engine:setup && npm run inventory:skill
+RUN npm run engine:setup \
+    && test -f /app/.agents/skills/ui-ux-pro-max/scripts/search.py \
+    && python3 /app/scripts/capability-inventory.py /app/generated/skill-capability-inventory.json \
+    && test -s /app/generated/skill-capability-inventory.json
 
 EXPOSE 10000
 CMD ["python3", "engine-api/server.py"]
