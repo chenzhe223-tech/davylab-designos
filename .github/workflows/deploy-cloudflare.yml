@@ -29,6 +29,12 @@ jobs:
           npm run validate:rules
           npm test
           npm run build
+      - name: Install Playwright for production gate
+        run: npm install --no-save @playwright/test
+      - name: Install Chromium for production gate
+        run: npx playwright install --with-deps chromium
+      - name: Verify desktop and mobile flows before production deploy
+        run: npx playwright test
       - name: Verify deployment credentials
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
