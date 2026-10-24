@@ -2,20 +2,25 @@
 
 **Design with intent. Build with evidence.**
 
-DAVYLAB DesignOS is a design governance and UI decision workspace with versioned design profiles and a real UI UX Pro Max adapter.
+DAVYLAB DesignOS is a visual design selection workspace. Users can preview rule-based UI examples, compare design profiles, describe project goals, and generate structured execution instructions for major AI coding agents.
 
-## Current capabilities
+## DesignOS 2.0 experience
 
-See [the delivery checkpoint](docs/DELIVERY_CHECKPOINT.md) for verified repository evidence and release gates.
+- Profile-driven HTML/CSS visual previews with desktop/mobile viewport switching.
+- Four design examples: Balanced SaaS, Analytics Dashboard, Warm Editorial, and read-only Dashboard Studio audit.
+- Search, category/device filters, selection, favorites (browser-local), and side-by-side comparison for up to four profiles.
+- Project brief form with optional project type, goal, target user, device, tech stack, repository URL, and style preference.
+- Agent instruction generation for Codex, Claude Code, Cursor, GitHub Copilot, Gemini CLI, WorkBuddy, and a generic coding agent.
+- Copy and Markdown download for generated instructions; generation/copy/export are explicitly distinguished from actual agent execution.
+- JSON export for all or selected design rules, with a preview and explanation of what the file contains.
+- Dashboard Studio remains read-only; the preview never connects to or modifies the protected project.
+- Existing versioned profile schema, inheritance validation, pinned UI UX Pro Max adapter, output-path guard, and engine-output validation remain in the repository.
 
-- Responsive interactive preview for profile browsing, filtering, selection, comparison, and JSON export.
-- Versioned design profiles, schema, and inheritance validation.
-- Read-only Dashboard Studio audit profile; no automatic source or production writes.
-- Pinned upstream UI UX Pro Max adapter with commit and file-integrity checks.
-- Safe project-local output paths, preservation of raw engine results, and candidate-only promotion rules.
-- GitHub Actions checks for profiles, tests, static build, actual engine installation, real output generation, and output validation.
-- GitHub Pages preview workflow with a post-deploy HTTP/content check.
-- Manual Cloudflare Pages deployment workflow with credentials checks and a post-deploy HTTP/content check.
+### Preview integrity
+
+The UI examples are locally rendered HTML/CSS templates based on documented profile descriptions and tokens. They are illustrative previews, not screenshots of a target application. KPI values and activity rows are example data. Where a profile is only an audit candidate, the interface labels its read-only boundary and does not apply it to a production project.
+
+The generated agent prompt includes the selected profile rules, source notes, project brief, implementation steps, safety constraints, and acceptance criteria. It is generated locally in the browser. Copying or downloading it does not send it to an agent or claim the agent has executed it.
 
 ## Local development
 
@@ -42,9 +47,9 @@ The engine is not ready until `npm run engine:status` reports `ready: true` and 
 
 - Repository: https://github.com/chenzhe223-tech/davylab-designos
 - Expected GitHub Pages URL: https://chenzhe223-tech.github.io/davylab-designos/
-- Cloudflare Pages production target: https://davylab-designos.pages.dev/
+- Cloudflare Pages target: https://davylab-designos.pages.dev/
 
-These URLs must not be treated as live until their respective workflow succeeds and its HTTP verification step passes.
+Treat a deployment as verified only after the corresponding workflow succeeds and its HTTP verification step passes.
 
 For Cloudflare deployment, add repository secret `CLOUDFLARE_API_TOKEN` with Pages project permissions and repository variable `CLOUDFLARE_ACCOUNT_ID`. Then run the `Deploy DesignOS to Cloudflare Pages` workflow manually.
 
