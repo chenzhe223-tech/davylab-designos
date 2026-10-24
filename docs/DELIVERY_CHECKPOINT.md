@@ -45,3 +45,13 @@ Updated: 2026-10-24
 3. Run the manual Cloudflare deployment workflow for the latest `main` commit.
 4. Open the deployed URL in a real browser and test search, filters, selection, comparison, preview viewport, instruction generation/copy/download, and JSON export.
 5. Perform desktop/mobile visual checks and repair any discovered issues before calling the release complete.
+## Intent-led discovery upgrade — 2026-10-24
+
+- Added a first-screen natural-language goal input with shortcut chips for common styles, product types, and device preferences; users can also browse all profiles without entering a prompt.
+- Added deterministic local synonym expansion and weighted profile ranking across tags, descriptions, use cases, layout/interaction notes, and device intent. The ranking is explainable in the UI; it does not claim to use AI semantic search.
+- Added match-reason explanations, profile tags, clearer search help, and explicit recovery actions for no-result states.
+- Added regression tests that execute the extracted profile ranking functions against `科技感`, `高级、有科技感、适合手机的 AI 数据看板`, `温暖品牌官网`, `手机数据看板`, and explicit read-only audit intent.
+- Kept `Dashboard Studio` out of ordinary project recommendations unless the user explicitly asks for audit/review of an existing project.
+- JavaScript parse check and focused in-session matching probes passed. The full repository `npm test` / `npm run check` suite has not yet been observed passing in GitHub Actions.
+- Latest implementation commits: `4dc552fe771f0d7257b90bba83740d71a4492bdb` (intent-led discovery), `ab8d358269fa83c75ddc6e134eaa3211928215f2` (read-only recommendation guard), `68cde7e522102d160e0ac06e59a9fe0b377a4ef6` (whitespace normalization fix), `e387a6bf9303848845f5420945d63c9134dd6895` (matching tests).
+- Deployment and real mobile-browser verification remain separate gates; do not mark the production site updated until the Cloudflare workflow and live checks confirm it.
