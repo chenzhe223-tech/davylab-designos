@@ -6,7 +6,7 @@ const schema = JSON.parse(await readFile(new URL('../schemas/design-candidate.sc
 
 test('design candidate contract requires traceable reasoning, evidence, preview and delivery', () => {
   assert.equal(schema.properties.schemaVersion.const, '1.0.0');
-  assert.deepEqual(schema.required, ['schemaVersion', 'candidateId', 'brief', 'direction', 'decision', 'evidence', 'preview', 'delivery']);
+  assert.deepEqual(schema.required, ['schemaVersion', 'candidateId', 'brief', 'direction', 'decision', 'evidence', 'preview', 'delivery', 'rawEngineOutput']);
   assert.ok(schema.properties.brief.properties.productCategory);
   assert.ok(schema.properties.direction.properties.style);
   assert.ok(schema.properties.direction.properties.palette);
