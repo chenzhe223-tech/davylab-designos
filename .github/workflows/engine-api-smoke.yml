@@ -1,0 +1,81 @@
+name: DesignOS Live Engine API Smoke Test
+
+on:
+  workflow_run:
+    workflows: ["Deploy DesignOS to Cloudflare Pages"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for Render API to wake up
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 18); do
+            if curl --fail --silent --show-error https://davylab-designos-engine.onrender.com/health; then
+              echo
+              exit 0
+            fi
+            echo "API not ready yet ($attempt/18); retrying in 10 seconds."
+            sleep 10
+          done
+          echo "Engine API did not become healthy within 3 minutes."
+          exit 1
+
+      - name: Verify pinned engine readiness
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error https://davylab-designos-engine.onrender.com/api/status -o status.json
+          cat status.json
+          node -e "const s=require('./status.json'); if(!s.ready || s.expectedSkillVersion!=='2.15.0' || s.searchScriptExists!==true) process.exit(1)"
+
+      - name: Verify generated capability inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error https://davylab-designos-engine.onrender.com/api/capabilities -o capabilities.json
+          node - <<'NODE'
+          const fs=require('fs');
+          const x=JSON.parse(fs.readFileSync('capabilities.json','utf8'));
+          if(x.generatedFrom?.skillVersion!=='2.15.0') throw new Error('unexpected Skill version');
+          if(!x.summary || x.summary.missingDomains?.length) throw new Error('capability inventory incomplete');
+          console.log(JSON.stringify(x.summary,null,2));
+          NODE
+
+      - name: Verify live official Skill search
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error https://davylab-designos-engine.onrender.com/api/search \
+            -H 'Content-Type: application/json' \
+            -d '{"query":"AI travel app for young travelers and hidden destinations","domain":"style"}' \
+            -o search.json
+          node - <<'NODE'
+          const fs=require('fs');
+          const x=JSON.parse(fs.readFileSync('search.json','utf8'));
+          if(!x || typeof x!=='object' || Object.keys(x).length===0) throw new Error('empty search output');
+          console.log('Live Skill search returned JSON keys:',Object.keys(x).join(', '));
+          NODE
+
+      - name: Verify live design-system generation
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --max-time 90 https://davylab-designos-engine.onrender.com/api/generate \
+            -H 'Content-Type: application/json' \
+            -d '{"query":"AI travel app for young travelers, hidden destinations, itinerary planning and travel memories","project":"DesignOS Live API Smoke","stack":"react"}' \
+            -o candidate.json
+          node - <<'NODE'
+          const fs=require('fs');
+          const x=JSON.parse(fs.readFileSync('candidate.json','utf8'));
+          if(x.status!=='candidate' || x.engine?.skillVersion!=='2.15.0' || !x.profile || !x.result?.design_system) throw new Error('candidate does not match expected official-engine contract');
+          console.log(JSON.stringify({status:x.status,engine:x.engine,profile:x.profile.name,productType:x.profile.productType},null,2));
+          NODE
