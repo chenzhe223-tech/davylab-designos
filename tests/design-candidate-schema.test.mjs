@@ -29,3 +29,13 @@ test('unreviewed candidates preserve unknown evaluation scores instead of fabric
   assert.ok(schema.required.includes('rawEngineOutput'));
   assert.equal(schema.properties.rawEngineOutput.type, 'object');
 });
+
+test('stack compatibility stays unknown until evidence proves compatibility', async () => {
+  assert.deepEqual(schema.properties.direction.properties.techStackFit.items.properties.compatible.type, ['boolean', 'null']);
+  assert.deepEqual(schema.properties.direction.properties.techStackFit.items.properties.guidanceStatus.enum, ['not-requested', 'matched', 'no-matches']);
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  assert.match(html, /stackGuidelineCount/);
+  assert.match(html, /stackGuidelineResults\.length>0/);
+  assert.match(html, /compatible:null,guidanceStatus:stackGuidanceStatus/);
+  assert.doesNotMatch(html, /compatible:!!stack/);
+});

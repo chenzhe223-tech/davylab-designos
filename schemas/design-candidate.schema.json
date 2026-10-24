@@ -38,7 +38,7 @@
         "interactionStrategy": { "type": "string" },
         "chartRecommendations": { "type": "array", "items": { "type": "object", "required": ["purpose", "reason"], "properties": { "type": { "type": "string" }, "purpose": { "type": "string" }, "reason": { "type": "string" }, "evidenceIds": { "type": "array", "items": { "type": "string" } } }, "additionalProperties": false } },
         "uxGuidelines": { "type": "array", "items": { "type": "object", "required": ["statement", "verification"], "properties": { "id": { "type": "string" }, "statement": { "type": "string" }, "verification": { "type": "string", "enum": ["automated", "manual", "not-applicable"] }, "evidenceId": { "type": "string" } }, "additionalProperties": false } },
-        "techStackFit": { "type": "array", "items": { "type": "object", "required": ["stack", "compatible", "reason"], "properties": { "stack": { "type": "string" }, "compatible": { "type": "boolean" }, "reason": { "type": "string" } }, "additionalProperties": false } },
+        "techStackFit": { "type": "array", "items": { "type": "object", "required": ["stack", "compatible", "reason"], "properties": { "stack": { "type": "string" }, "compatible": { "type": ["boolean", "null"], "description": "Null until actual compatibility is verified; retrieved guidance alone is not proof of compatibility." }, "guidanceStatus": { "type": "string", "enum": ["not-requested", "matched", "no-matches"] }, "guidelineCount": { "type": "integer", "minimum": 0 }, "reason": { "type": "string" } }, "additionalProperties": false } },
         "tradeoffs": { "type": "array", "items": { "type": "string" } }
       },
       "additionalProperties": false

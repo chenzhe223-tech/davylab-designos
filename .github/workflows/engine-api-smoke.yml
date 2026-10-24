@@ -125,20 +125,21 @@ jobs:
           console.log(JSON.stringify({status:x.status,engine:x.engine,profile:x.profile.name,productType:x.profile.productType},null,2));
           NODE
 
-      - name: Verify stack-specific design-system generation
+      - name: Verify non-empty live React stack guidance
         shell: bash
         run: |
           set -euo pipefail
           http_code=$(curl --silent --show-error --max-time 90 -w '%{http_code}' https://davylab-designos-engine.onrender.com/api/generate \
             -H 'Content-Type: application/json' \
-            -d '{"query":"AI travel app for young travelers","project":"DesignOS React Stack Smoke","stack":"react"}' \
+            -d '{"query":"Use useReducer for complex state","project":"DesignOS React Stack Smoke","stack":"react"}' \
             -o stack-candidate.json)
           echo "Stack generation HTTP status: $http_code"
-          cat stack-candidate.json
           test "$http_code" = "200"
           node - <<'NODE'
           const fs=require('fs');
           const x=JSON.parse(fs.readFileSync('stack-candidate.json','utf8'));
           if(x.status!=='candidate' || x.engine?.skillVersion!=='2.15.0' || !x.stackGuidelines) throw new Error('stack-specific guidelines are missing');
-          console.log('Stack-specific guidance verified for React.');
+          if(x.stackGuidelines.stack!=='react' || !Number.isInteger(x.stackGuidelines.count) || x.stackGuidelines.count<1 || !Array.isArray(x.stackGuidelines.results) || x.stackGuidelines.results.length<1) throw new Error('React stack search returned no real guidance records');
+          if(!x.stackGuidelines.results.some(row=>String(row.Status||'').toLowerCase()==='active')) throw new Error('React stack search returned no active guidance records');
+          console.log(JSON.stringify({stack:x.stackGuidelines.stack,count:x.stackGuidelines.count,firstGuideline:x.stackGuidelines.results[0].Guideline,status:x.stackGuidelines.results[0].Status},null,2));
           NODE
