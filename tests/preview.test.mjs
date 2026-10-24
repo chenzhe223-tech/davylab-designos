@@ -237,3 +237,12 @@ test("capability explorer searches real upstream records with source/status deta
   assert.match(html, /record\.fields/);
   assert.match(html, /加载更多/);
 });
+
+test("candidate review calculates WCAG text contrast and records unknown or failing constraints honestly", () => {
+  assert.match(html, /function parseHexColor\(value\)/);
+  assert.match(html, /function contrastCheck\(foreground,background,label\)/);
+  assert.match(html, /ratio>=4\.5/);
+  assert.match(html, /hardConstraints:\[bodyContrast,buttonContrast\]/);
+  assert.match(html, /正文对比度：无法自动计算，需人工检查/);
+  assert.match(html, /低于 4\.5:1，需调整/);
+});
