@@ -59,3 +59,31 @@ test('first-run experience is product-category agnostic, not dashboard-first', a
   expect(firstProjectType).not.toMatch(/dashboard|看板/i);
   await expect(page.locator('[data-intent="AI 旅行 App，探索小众目的地并记录旅行记忆"]')).toBeVisible();
 });
+
+test('production UI: live Skill search, candidate generation, selection and capability catalog', async ({ page }) => {
+  test.skip(!process.env.BASE_URL, 'Real external engine acceptance runs only after deployment against the configured live URL.');
+  test.setTimeout(180000);
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto(appUrl);
+  await page.locator('#intentInput').fill('Travel app for young travelers: discover hidden destinations, plan routes and save travel memories');
+  await page.locator('#matchIntent').click();
+  await expect(page.locator('#engineStatus')).toContainText('已完成真实检索', { timeout: 90000 });
+  await expect(page.locator('#engineEvidenceBody')).toContainText('产品类别映射');
+  await page.locator('#generateEngineCandidate').click();
+  await expect(page.locator('#engineCandidate .engine-candidate-card').first()).toBeVisible({ timeout: 120000 });
+  await expect(page.locator('#engineCandidate .candidate-live-preview').first()).toBeVisible();
+  await expect(page.locator('#engineCandidate .candidate-preview-notice').first()).toContainText('对比度');
+  await page.locator('#engineCandidate .engine-candidate-card [data-choose-direction]').first().click();
+  await expect(page.locator('#engineCandidate .engine-candidate-card.is-selected')).toHaveCount(1);
+  await expect(page.locator('#engineCandidate .engine-candidate-actions button').filter({ hasText: '下载此方向 JSON' }).first()).toBeVisible();
+  await page.locator('#toggleSkillCatalog').click();
+  await expect(page.locator('#skillCatalogDomain option').first()).toBeVisible({ timeout: 30000 });
+  await page.locator('#skillCatalogDomain').selectOption('styles.csv');
+  await page.locator('#skillCatalogSearchButton').click();
+  await expect(page.locator('#skillCatalogResults .engine-catalog-record').first()).toBeVisible({ timeout: 30000 });
+  await page.locator('#skillCatalogResults .engine-catalog-record summary').first().click();
+  await expect(page.locator('#skillCatalogResults .engine-catalog-record pre').first()).toBeVisible();
+  expect(errors).toEqual([]);
+});
