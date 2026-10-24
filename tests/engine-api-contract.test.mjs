@@ -32,3 +32,13 @@ test('Docker image installs the pinned engine before starting the API bridge', (
   assert.match(docker, /test -s \/app\/generated\/skill-capability-inventory\.json/);
   assert.match(docker, /engine-api\/server\.py/);
 });
+
+test('capability endpoint supports source-backed filtering and bounded pagination', () => {
+  assert.match(api, /parse_qs/);
+  assert.match(api, /requested_domain/);
+  assert.match(api, /params.get\("q"/);
+  assert.match(api, /max\(1, min\(100/);
+  assert.match(api, /totalMatches/);
+  assert.match(api, /nextOffset/);
+  assert.match(api, /"fields": row/);
+});
