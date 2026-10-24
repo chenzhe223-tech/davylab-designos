@@ -198,3 +198,11 @@ test("candidate decisions support selecting a direction and regenerating from us
   assert.match(html, /用户调整要求/);
   assert.match(html, /selectedEngineCandidate/);
 });
+
+test("candidate export includes a stack-aware coding Agent implementation brief", () => {
+  assert.match(html, /下载 Agent 执行指令/);
+  assert.match(html, /DAVYLAB DesignOS — Agent Implementation Brief/);
+  assert.match(html, /Target stack/);
+  assert.match(html, /Explicit boundary/);
+  assert.match(html, /does not mean any Agent has been called/);
+});
