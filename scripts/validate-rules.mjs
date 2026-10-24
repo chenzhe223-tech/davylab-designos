@@ -8,6 +8,7 @@ const profiles = JSON.parse(readFileSync(sourcePath, 'utf8'))
 const errors = []
 const ids = new Set()
 const allowedStatuses = new Set(['draft', 'review', 'approved', 'deprecated'])
+const allowedEvidenceStatuses = new Set(['draft', 'reviewed', 'validated', 'deprecated'])
 if (!Array.isArray(profiles) || profiles.length === 0) errors.push('profiles/index.json must be a non-empty array')
 const byId = new Map((Array.isArray(profiles) ? profiles : []).map(p => [p.profileId, p]))
 for (const [i, p] of profiles.entries()) {
@@ -21,10 +22,15 @@ for (const [i, p] of profiles.entries()) {
   if (!/^#[0-9a-f]{6}$/i.test(p.accent ?? '')) errors.push(`${at}: accent must be a six-digit hex color`)
   if (!p.tokens || typeof p.tokens !== 'object' || Array.isArray(p.tokens)) errors.push(`${at}: tokens must be an object`)
   if (!Array.isArray(p.rules) || p.rules.length === 0 || p.rules.some(r => typeof r !== 'string' || !r.trim())) errors.push(`${at}: rules must be a non-empty string array`)
+  if (p.evidenceStatus && !allowedEvidenceStatuses.has(p.evidenceStatus)) errors.push(`${at}: invalid evidenceStatus ${p.evidenceStatus}`)
+  if (!p.source || typeof p.source.kind !== 'string' || typeof p.source.evidence !== 'string') errors.push(`${at}: source.kind and source.evidence are required`)
+  if (p.presentation && (!p.presentation.id || !/^[a-z0-9-]+$/.test(p.presentation.id))) errors.push(`${at}: presentation.id must be a valid stable legacy UI ID`)
   if (p.extends && !byId.has(p.extends)) errors.push(`${at}: extends unknown profile ${p.extends}`)
   if (p.extends === p.profileId) errors.push(`${at}: profile cannot extend itself`)
 }
+const presentationIds = new Set()
 for (const p of profiles) {
+  if (p.presentation?.id) { if (presentationIds.has(p.presentation.id)) errors.push(`${p.profileId}: duplicate presentation ID ${p.presentation.id}`); presentationIds.add(p.presentation.id) }
   const seen = new Set([p.profileId]); let parent = p.extends
   while (parent) {
     if (seen.has(parent)) { errors.push(`${p.profileId}: inheritance cycle detected at ${parent}`); break }
