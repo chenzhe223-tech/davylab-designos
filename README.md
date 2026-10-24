@@ -6,6 +6,8 @@ DAVYLAB DesignOS is a design governance and UI decision workspace with versioned
 
 ## Current capabilities
 
+See [the delivery checkpoint](docs/DELIVERY_CHECKPOINT.md) for verified repository evidence and release gates.
+
 - Responsive interactive preview for profile browsing, filtering, selection, comparison, and JSON export.
 - Versioned design profiles, schema, and inheritance validation.
 - Read-only Dashboard Studio audit profile; no automatic source or production writes.
