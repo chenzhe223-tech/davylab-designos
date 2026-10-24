@@ -46,11 +46,20 @@ Do not represent authored profiles as the complete Skill. Keep the upstream Skil
 7. **Runtime boundary**
    - Keep the static frontend free of secrets. Decide and document whether engine calls happen through an explicitly deployed server-side endpoint, a user-run local CLI flow, or generated build-time artifacts. Do not pretend a static page can invoke Python directly.
 
+## Added implementation artifacts
+
+- `scripts/capability-inventory.py` imports the pinned upstream `core.CSV_CONFIG`, `STACK_CONFIG`, and `design_system.REASONING_FILE`, then reads the real CSVs and emits record-level IDs/names/status/searchability, per-file SHA-256 hashes, counts by domain, and pinned provenance. It fails clearly if the engine has not been installed or a configured data file is missing.
+- `npm run inventory:skill` invokes the inventory generator after the real engine is installed.
+- `.github/workflows/ci.yml` now runs the inventory as a CI step after pinned engine setup. The inventory has not yet been reported as passing until the new workflow completes.
+- `schemas/design-candidate.schema.json` defines a normalized candidate contract for product brief, style/palette/typography, hard constraints, explainable scoring, evidence, preview status, and delivery status.
+- `tests/design-candidate-schema.test.mjs` checks the candidate contract's required evidence and preview distinctions.
+- `tests/e2e/designos.spec.mjs` now has a regression test guarding the product-first, non-dashboard-first entry experience.
+
 ## Current product/UI change
 
 Commit `bae04a069d1e3fb98eff574033cca81a589959ae` updated the homepage copy and first-run workflow to lead with product goals rather than dashboard design. The first-run prompt now demonstrates an AI travel app and includes category entry points for travel/lifestyle apps, AI-native tools, brand websites and creator communities. The project-type choices cover a broader set of product categories and no longer put Dashboard first.
 
-This is a first UI direction change, not a completed engine integration or full rebuild.
+This is a first UI direction change, not a completed engine integration or full rebuild. Commits after the first UI commit add a programmatic upstream data inventory, CI invocation, a normalized candidate schema, and regression tests; their final CI status must be checked before claiming acceptance.
 
 ## Remaining implementation sequence
 
