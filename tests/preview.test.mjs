@@ -189,3 +189,12 @@ test("candidate cards render a responsive token-driven preview with explicit pro
   assert.match(html, /不是已实现的目标应用/);
   assert.match(html, /不保证 Google Fonts 已加载/);
 });
+
+test("candidate decisions support selecting a direction and regenerating from user feedback", () => {
+  assert.match(html, /选择此方向/);
+  assert.match(html, /已选择/);
+  assert.match(html, /id="engineRefineFeedback"/);
+  assert.match(html, /按反馈重新生成/);
+  assert.match(html, /用户调整要求/);
+  assert.match(html, /selectedEngineCandidate/);
+});
