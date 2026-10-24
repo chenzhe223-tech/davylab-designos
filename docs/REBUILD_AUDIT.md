@@ -1,0 +1,98 @@
+# DesignOS Full Rebuild — Baseline Audit and Execution Ledger
+
+Updated: 2026-10-24
+
+## Purpose
+
+This document tracks the rebuild from a profile selector to a product-category-agnostic AI product design decision and preview platform. It records observed repository facts separately from target architecture and verified delivery.
+
+## Verified repository facts
+
+- Upstream engine is pinned in `engine.lock.json` to `nextlevelbuilder/ui-ux-pro-max-skill`, Skill version `2.15.0`, upstream commit `d14efff8ed1faa4187f004f79926f428c8074ec7`, CLI version `2.5.0`.
+- `scripts/designos.mjs` installs the pinned upstream source on demand, validates the upstream commit, version and selected Git blob hashes, and invokes the upstream `scripts/search.py` using Python.
+- The real Skill is **not present as repository content at `.agents/skills/ui-ux-pro-max` on the current main branch** (the path lookup returned 404). Therefore the static production site does not currently have a bundled copy of the engine or a direct runtime call to it.
+- CI installs the pinned real engine and runs a real engine generation smoke test; the generated output is checked by `scripts/verify-engine-output.mjs`. This proves an automated CLI path exists when CI can fetch the upstream source. It does not prove the browser UI uses the full engine for live recommendations.
+- `profiles/index.json` currently contains a small number of authored UI presentation profiles. It is not the complete 79-style / 192-palette / 74-font / 119-UX-guide / 25-chart / 22-stack Skill dataset.
+- `index.html` is a static client-side application. Its current recommendation logic is profile metadata matching, while full engine generation is a separate CLI path. The product gap is therefore architectural, not just a visual problem.
+- Deployment targets are Cloudflare Pages and GitHub Pages. A browser-side integration must not expose private credentials; a static site cannot execute the Python CLI directly without an explicit server-side/runtime architecture.
+
+## Rebuild principle
+
+Do not represent authored profiles as the complete Skill. Keep the upstream Skill as the source of truth for its knowledge, version, status and output. Build an adapter that makes engine outputs inspectable, traceable and usable in the product. Any client-visible catalog must be generated from or indexed against verified upstream records, with provenance and a generated-at/version marker.
+
+## Target architecture
+
+1. **Capability inventory / provenance**
+   - A reproducible script reads the pinned upstream data files and counts real records by domain.
+   - It emits an auditable inventory containing source path, source hash, record ID/name, domain, active/available state when the upstream data defines one, associated categories/stacks, and limitations.
+   - Counts must be calculated from actual source data, not hard-coded badges.
+2. **Product brief**
+   - Natural-language input is primary; optional details include target audience, platform, constraints, brand preferences and tech stack.
+   - Inference is labeled as an assumption; do not make long forms mandatory.
+3. **Design reasoning**
+   - Hard constraints first (platform, required stack, explicit requirements, active state and safety/accessibility constraints).
+   - Industry/product reasoning and domain search second.
+   - Soft preferences and explainable ranking third.
+   - Every recommendation records retrieved evidence IDs and reasons; ungrounded claims are omitted.
+4. **Candidate design directions**
+   - Multiple meaningfully different directions when the source rules support them.
+   - Each candidate records style, palette, typography, structure, interaction guidance, stack, UX rules, trade-offs and evidence references.
+   - Distinguish official engine output from DesignOS normalization and authored preview scaffolding.
+5. **Preview and decision**
+   - A preview renderer consumes normalized candidate data, not a fixed five-profile allowlist.
+   - Preview labels distinguish interactive prototype, static illustration and real implementation; sample data is explicitly illustrative.
+6. **Delivery**
+   - Export structured JSON and readable Markdown containing design tokens, page hierarchy, component states, responsive rules, accessibility checks, stack-specific guidance, provenance, assumptions and unresolved risks.
+7. **Runtime boundary**
+   - Keep the static frontend free of secrets. Decide and document whether engine calls happen through an explicitly deployed server-side endpoint, a user-run local CLI flow, or generated build-time artifacts. Do not pretend a static page can invoke Python directly.
+
+## Current product/UI change
+
+Commit `bae04a069d1e3fb98eff574033cca81a589959ae` updated the homepage copy and first-run workflow to lead with product goals rather than dashboard design. The first-run prompt now demonstrates an AI travel app and includes category entry points for travel/lifestyle apps, AI-native tools, brand websites and creator communities. The project-type choices cover a broader set of product categories and no longer put Dashboard first.
+
+This is a first UI direction change, not a completed engine integration or full rebuild.
+
+## Remaining implementation sequence
+
+### P0 — establish live status and real data
+- Check current main SHA and all latest CI / Cloudflare / GitHub Pages workflow runs.
+- Run or inspect `npm run engine:status` in a clean environment; record the exact output.
+- Ensure CI's pinned engine setup and real generation smoke test pass at the current SHA.
+- Inspect upstream source at the pinned commit and enumerate the real data files/domains. Add a reproducible inventory generator; do not manually copy the counts.
+- Document whether the browser product uses live engine calls or the profile-only fallback.
+
+### P1 — adapter and candidate schema
+- Define versioned normalized schemas for product brief, retrieved evidence, candidate design direction, scoring explanation, design tokens, UX findings and export artifacts.
+- Preserve the raw official engine output and provenance alongside normalized results.
+- Add tests for hard-constraint exclusions, preference ranking, missing/contradictory requirements, and evidence-to-explanation consistency.
+- Make engine unavailable/error states explicit; never silently replace an engine failure with mock output.
+
+### P2 — user journey and preview
+- Make product brief the main entry point.
+- Provide a design strategy summary before presenting candidates.
+- Generate candidate directions using real engine results, not just the authored `profiles/index.json`.
+- Add product-appropriate preview templates and interactive states; avoid rendering every category as a dashboard.
+- Support side-by-side comparison, desktop/tablet/mobile previews, design token inspection and iteration on preferences.
+
+### P3 — delivery and quality gates
+- Generate stack-aware JSON and Markdown deliverables.
+- Turn automatable UX rules into checks and keep manual review items distinct.
+- Add tests across product categories, styles, color palettes, typography, stacks, accessibility and error handling.
+- Validate production and preview after deployment; do not report real-device acceptance unless performed on physical devices.
+
+## Acceptance status
+
+| Area | Status | Evidence / caveat |
+|---|---|---|
+| Upstream identity and pin | Verified in repository | `engine.lock.json`, `THIRD_PARTY_NOTICES.md` |
+| Local/CI CLI adapter exists | Verified in code | `scripts/designos.mjs`; CI runs pinned engine smoke test |
+| Engine source present in current main | Not present | `.agents/skills/ui-ux-pro-max` path lookup returned 404 |
+| Complete Skill data inventory | Not yet implemented | Must count pinned upstream records programmatically |
+| Browser uses full upstream engine | Not verified / current architecture says no direct invocation | Static client app uses local profiles; CLI is separate |
+| Product-first entry UI | First tranche implemented | Commit `bae04a069d1e3fb98eff574033cca81a589959ae`; requires workflow and browser verification |
+| End-to-end design decision workflow | Incomplete | Needs real engine adapter, candidate model and dynamic previews |
+| Physical iPhone/iPad acceptance | Not performed in recorded work | Playwright viewport tests are not physical-device acceptance |
+
+## Rules for updating this ledger
+
+Every follow-up must record the exact commit SHA, files changed, real source/version used, test commands and results, workflow URLs, deployment verification, and remaining gaps. Do not convert an unknown or unverified status into a success claim.
