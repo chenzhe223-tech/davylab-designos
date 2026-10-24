@@ -137,3 +137,12 @@ test("workflow step indicators respond to navigation and project brief editing",
   assert.match(html, /setStep\(4\)/);
   assert.match(html, /data-step="4"><b>4<\/b><span>生成 Agent 指令<\/span>/);
 });
+
+test("profile details and comparison expose evidence status and full design tokens", () => {
+  assert.match(html, /function profileEvidenceLabel\(p\)/);
+  assert.match(html, /治理状态/);
+  assert.match(html, /真实项目已验证/);
+  assert.match(html, /Typography|字体/);
+  assert.match(html, /间距 \/ 圆角/);
+  assert.match(html, /JSON\.stringify\(sp\)/);
+});
