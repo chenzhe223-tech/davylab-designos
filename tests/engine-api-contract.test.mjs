@@ -12,6 +12,8 @@ test('engine API exposes only the explicit health, status, capabilities and offi
   assert.match(api, /path == "\/api\/search"/);
   assert.match(api, /self\._json\(200, result\)/);
   assert.match(api, /path == "\/api\/generate"/);
+  assert.match(api, /def read_json_output\(args, timeout=60\)/);
+  assert.match(api, /timeout=timeout/);
   assert.match(api, /node.*designos\.mjs/);
   assert.match(api, /engine-status/);
 });
