@@ -9,7 +9,7 @@ test('engine API exposes only the explicit health, status, capabilities and offi
   assert.match(api, /path == "\/health"/);
   assert.match(api, /path == "\/api\/status"/);
   assert.match(api, /path == "\/api\/capabilities"/);
-  assert.match(api, /path == "\/api\/search"/);
+  assert.match(api, /path == "\/api\/search"/);\n  assert.match(api, /self\._json\(200, result\)/);
   assert.match(api, /path == "\/api\/generate"/);
   assert.match(api, /node.*designos\.mjs/);
   assert.match(api, /ui-ux-pro-max/);
