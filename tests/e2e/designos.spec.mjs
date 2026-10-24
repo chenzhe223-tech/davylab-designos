@@ -15,7 +15,7 @@ test('desktop: search, select, preview, compare and generate an agent prompt', a
   await expect(page.locator('#matchSummary')).toContainText('Analytics Dashboard');
   await page.locator('#confirmDesign').click();
   await expect(page.locator('#promptOutput')).toBeVisible();
-  await expect(page.locator('#promptOutput')).toContainText('Analytics Dashboard');
+  await expect(page.locator('#promptOutput')).toHaveValue(/Analytics Dashboard/);
   expect(errors).toEqual([]);
 });
 
