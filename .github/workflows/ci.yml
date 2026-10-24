@@ -1,4 +1,4 @@
-name: DesignOS preview checks
+name: DesignOS CI
 
 on:
   push:
@@ -9,11 +9,22 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - run: npm run validate:rules
       - run: npm test
+      - run: npm run build
+      - name: Install pinned real UI UX Pro Max engine
+        run: npm run engine:setup
+      - name: Generate real engine smoke output
+        run: node scripts/designos.mjs generate --query "SaaS dashboard for project tracking" --project "DesignOS CI Smoke" --output generated/engine-smoke.json
+      - name: Validate real engine output
+        run: npm run verify:engine-output -- generated/engine-smoke.json
