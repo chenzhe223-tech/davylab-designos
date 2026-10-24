@@ -124,7 +124,17 @@ The previous conversation record says the CI and Cloudflare workflow for `240e25
 6. Inspect live production and preview behavior; report exactly what was and was not verified.
 7. Update this file with current commit SHA, workflow links/results, changes, and remaining risks.
 
-## 8. Useful file map
+## 8. Full rebuild continuation (2026-10-24)
+
+The user has now authorized a full product rebuild: reposition DesignOS from a UI profile selector into a product-category-agnostic AI product design decision and preview platform. Dashboard must not be the default category or define the product experience.
+
+- New audit ledger: [docs/REBUILD_AUDIT.md](REBUILD_AUDIT.md). Read this before further implementation; it records verified engine facts, the target architecture, the acceptance status and the next sequence.
+- Homepage first tranche commit: `bae04a069d1e3fb98eff574033cca81a589959ae`. It changes the hero to product-first language, changes the step sequence to product brief → design directions → preview/compare → design spec, updates the first example to an AI travel app, adds broader product-category shortcuts and broadens the project-type options.
+- Audit ledger commit: `f872ad63d491cb3e3f3ebf7de7ef7f1edefa35ea`.
+- Important verified gap: `engine.lock.json` pins UI UX Pro Max Skill v2.15.0 at upstream commit `d14efff8ed1faa4187f004f79926f428c8074ec7`; `scripts/designos.mjs` has a real pinned CLI setup/search/generate path, and CI installs it for a real generation smoke test. However, `.agents/skills/ui-ux-pro-max` is not present on repository main (path lookup returned 404), and the static browser application currently relies on its local profile matcher rather than directly invoking the full engine. Do not claim the browser UI already uses all upstream capabilities.
+- Next: check current Actions runs on the new main SHA; validate the homepage change with browser tests; inspect upstream pinned data files and implement a programmatic capability inventory (real counts, paths, hashes and statuses); then design a safe runtime bridge or an honest user-run CLI handoff for full-engine results. Do not bundle secrets into the static client.
+
+## 9. Useful file map
 
 - `profiles/index.json` — canonical design profile registry
 - `scripts/build.mjs` — build-time profile generation/injection
