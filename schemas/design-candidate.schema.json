@@ -31,6 +31,18 @@
       "properties": {
         "name": { "type": "string" },
         "summary": { "type": "string" },
+        "designDials": {
+          "type": "object",
+          "properties": {
+            "variance": { "type": ["integer", "null"], "minimum": 1, "maximum": 10 },
+            "variance_label": { "type": ["string", "null"] },
+            "motion": { "type": ["integer", "null"], "minimum": 1, "maximum": 10 },
+            "motion_label": { "type": ["string", "null"] },
+            "density": { "type": ["integer", "null"], "minimum": 1, "maximum": 10 },
+            "density_label": { "type": ["string", "null"] }
+          },
+          "additionalProperties": true
+        },
         "style": { "type": ["object", "null"], "properties": { "id": { "type": "string" }, "name": { "type": "string" }, "status": { "type": "string" } }, "additionalProperties": true },
         "palette": { "type": ["object", "null"], "properties": { "id": { "type": "string" }, "name": { "type": "string" }, "tokens": { "type": "object", "additionalProperties": { "type": "string" } } }, "additionalProperties": true },
         "typography": { "type": ["object", "null"], "properties": { "id": { "type": "string" }, "name": { "type": "string" }, "headingFont": { "type": "string" }, "bodyFont": { "type": "string" }, "loadingNotes": { "type": "array", "items": { "type": "string" } } }, "additionalProperties": true },

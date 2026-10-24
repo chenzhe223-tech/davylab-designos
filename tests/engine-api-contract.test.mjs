@@ -16,6 +16,9 @@ test('engine API exposes only the explicit health, status, capabilities and offi
   assert.match(api, /invalid_max_results/);
   assert.match(api, /self\._json\(200, result\)/);
   assert.match(api, /path == "\/api\/generate"/);
+  assert.match(api, /invalid_design_dial/);
+  assert.match(api, /for dial in \("variance", "motion", "density"\)/);
+  assert.match(api, /args \+= \["--" \+ dial, str\(value\)\]/);
   assert.match(api, /def read_json_output\(args, timeout=60\)/);
   assert.match(api, /timeout=timeout/);
   assert.match(api, /node.*designos\.mjs/);
@@ -53,4 +56,11 @@ test('capability endpoint supports source-backed filtering and bounded paginatio
   assert.match(api, /nextOffset/);
   assert.match(api, /record\.get\("fields", \{\}\)/);
   assert.match(inventory, /"fields": row/);
+});
+
+test('official CLI forwards native design dials only within 1-10 bounds', () => {
+  const cli = require('node:fs').readFileSync(new URL('../scripts/designos.mjs', import.meta.url), 'utf8');
+  assert.match(cli, /for \(const dial of \['variance', 'motion', 'density'\]\)/);
+  assert.match(cli, /value < 1 \|\| value > 10/);
+  assert.match(cli, /engineArgs\.push\('--' \+ dial, String\(value\)\)/);
 });

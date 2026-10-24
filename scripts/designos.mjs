@@ -91,8 +91,19 @@ else if (command === 'generate' || command === 'search') {
   try { output = resolveProjectOutput(root, opt('--output', `generated/${command}-${Date.now()}.json`)) }
   catch (error) { console.error(error.message); process.exit(2) }
   const engineArgs = [searchScript, query]
-  if (command === 'generate') engineArgs.push('--design-system', '--json', '--project-name', project)
-  else {
+  if (command === 'generate') {
+    engineArgs.push('--design-system', '--json', '--project-name', project)
+    for (const dial of ['variance', 'motion', 'density']) {
+      const raw = opt('--' + dial)
+      if (raw === undefined) continue
+      const value = Number(raw)
+      if (!Number.isInteger(value) || value < 1 || value > 10) {
+        console.error(`Invalid --${dial}; expected an integer from 1 to 10.`)
+        process.exit(2)
+      }
+      engineArgs.push('--' + dial, String(value))
+    }
+  } else {
     const maxResults = Number(opt('--max-results', '3'))
     if (!Number.isInteger(maxResults) || maxResults < 1 || maxResults > 20) {
       console.error('Invalid --max-results; expected an integer from 1 to 20.')

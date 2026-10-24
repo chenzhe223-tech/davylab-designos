@@ -272,6 +272,14 @@ class Handler(BaseHTTPRequestHandler):
                     self._json(400, {"error": "invalid_project_name"})
                     return
                 args = ["generate", "--query", query, "--project", project.strip()]
+                for dial in ("variance", "motion", "density"):
+                    value = payload.get(dial)
+                    if value is None:
+                        continue
+                    if isinstance(value, bool) or not isinstance(value, int) or not 1 <= value <= 10:
+                        self._json(400, {"error": "invalid_design_dial", "dial": dial, "min": 1, "max": 10})
+                        return
+                    args += ["--" + dial, str(value)]
                 if stack:
                     if not isinstance(stack, str) or len(stack) > 60:
                         self._json(400, {"error": "invalid_stack"})

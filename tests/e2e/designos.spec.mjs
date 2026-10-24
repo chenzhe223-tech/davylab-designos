@@ -75,6 +75,7 @@ test('production UI: live Skill search, candidate generation, selection and capa
   await expect(page.locator('#engineCandidate .engine-candidate-card').first()).toBeVisible({ timeout: 120000 });
   const candidateCards = page.locator('#engineCandidate .engine-candidate-card');
   await expect(candidateCards).toHaveCount(3);
+  await expect(candidateCards.locator('h4')).toHaveText(['均衡现代', '大胆表达', '克制留白']);
   const firstCandidate = candidateCards.first();
   await expect(firstCandidate.locator('.candidate-live-preview')).toBeVisible();
   await expect(firstCandidate.locator('.candidate-preview-notice').first()).toContainText('对比度');
@@ -94,6 +95,8 @@ test('production UI: live Skill search, candidate generation, selection and capa
   expect(candidateJson.schemaVersion).toBe('1.0.0');
   expect(candidateJson.brief.productCategory).toMatch(/travel|tourism/i);
   expect(candidateJson.evidence.engine.version).toBe('2.15.0');
+  expect(candidateJson.direction.designDials).toMatchObject({ variance: 5, motion: 5, density: 5 });
+  expect(candidateJson.rawEngineOutput.result.design_system.dials).toMatchObject({ variance: 5, motion: 5, density: 5 });
   expect(candidateJson.delivery.agentExecutionPerformed).toBe(false);
   expect(candidateJson.delivery.designSpecAvailable).toBe(false);
 
