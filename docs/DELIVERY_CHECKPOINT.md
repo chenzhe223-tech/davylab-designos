@@ -55,3 +55,21 @@ Updated: 2026-10-24
 - JavaScript parse check and focused in-session matching probes passed. GitHub Actions `DesignOS CI` completed successfully for latest commit `815af42cd5f5e024f82b103a0793a68e09561038` (run `40075271999`), and the GitHub Pages preview deployment completed successfully for code commit `68cde7e522102d160e0ac06e59a9fe0b377a4ef6` (run `40075236557`).
 - Latest implementation commits: `4dc552fe771f0d7257b90bba83740d71a4492bdb` (intent-led discovery), `ab8d358269fa83c75ddc6e134eaa3211928215f2` (read-only recommendation guard), `68cde7e522102d160e0ac06e59a9fe0b377a4ef6` (whitespace normalization fix), `e387a6bf9303848845f5420945d63c9134dd6895` (matching tests).
 - The automated GitHub Pages preview deploy is green. Cloudflare production deployment is still a separate manual workflow and has not been triggered for the latest code. This connector session exposes read-only workflow inspection but no workflow-dispatch action, so do not claim Cloudflare production is updated. Real iPhone/browser interaction verification also remains pending.
+
+
+## Latest verified checkpoint — 2026-10-24 23:22 SGT (15:22 UTC)
+
+This section supersedes the older “pending verification” statements above. The docs below are evidence snapshots taken before this documentation-sync commit; re-check workflows and Render for the new HEAD before making any fresh deployment claim.
+
+- Current main before this documentation sync: 96e13b9f5ec0da98c2fe6a78fd76f2e0f09c30e7.
+- Engine API safe logging fix: 2710bce8e46aef39aeac03e5f7d9710c0c810885; CORS headers fix: 84732ed26e2003278e87df7b179ff7f6577b7940.
+- Cloudflare production deployment + post-deploy desktop/mobile browser regression: [run 40106461152](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40106461152) — success for frontend source commit 2710bce8e46aef39aeac03e5f7d9710c0c810885.
+- DesignOS CI: [run 40106475350](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40106475350) — success; includes validation, test suite, browser E2E, build, installation of pinned UI UX Pro Max 2.15.0, real dataset inventory and candidate-output validation.
+- Live Engine API Smoke Test: [run 40106551875](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40106551875) — success; checks exact CORS headers for production and approved preview origins, rejects untrusted origins, verifies Skill readiness/version, inventory, raw record pagination, live search, generation and React stack guidance.
+- Render deployment dep-dbecpr8473hc73ct3610 for commit 96e13b9f5ec0da98c2fe6a78fd76f2e0f09c30e7 is **live** (finished 15:22:06 UTC on 2026-10-24).
+- Render logs showed successful live /api/search, /api/generate and /api/capabilities requests during deployed production browser acceptance. The old “engine unavailable” regression is resolved for this verified run; continue monitoring rather than assuming permanent availability.
+- Real upstream source counts verified by CI: 35 configured domains, 4,319 records, no missing configured domains; styles 88 rows = 50 active + 9 deprecated + 29 supplemental; palettes 192; typography pairings 74; charts 25; UX guidelines 119; reasoning rules 192; tech-stack datasets 22.
+
+### Still not accepted
+
+Automated production browser acceptance has passed, but physical iPhone/iPad and user-led visual acceptance have not been performed here. Candidate previews remain design-system previews, not completed target applications; copied/exported Agent prompts are not evidence of external agent execution. Continue cross-product-category quality checks, candidate reasoning/trade-off coverage, export consistency and mobile/accessibility checks.

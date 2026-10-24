@@ -80,31 +80,44 @@ Important files:
 - `tests/preview.test.mjs`, `tests/engine-api-contract.test.mjs`, `tests/design-candidate-schema.test.mjs`
 - `.github/workflows/ci.yml`, `.github/workflows/deploy-cloudflare.yml`, `.github/workflows/pages.yml`, `.github/workflows/engine-api-smoke.yml`
 
-## 6. Latest known verification checkpoint
+## 6. Latest verified checkpoint — 2026-10-24 23:22 SGT (15:22 UTC)
 
-Latest main commit at the checkpoint: `2f06aa1083b59de74562661613b8448a21aafb3a`.
+This checkpoint supersedes the older status notes in this file. The code, workflow and Render revisions below were verified through GitHub Actions and Render records. This documentation synchronization will itself create a follow-up commit; query current HEAD again in the next session.
 
-- CI: [run 40104641077](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40104641077) — **success**.
-- GitHub Pages preview: [run 40104641112](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40104641112) — **success**.
-- Cloudflare production deploy: [run 40104641171](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40104641171) — deployment and production URL checks succeeded; deployed browser regression was still in progress at last inspection. Re-check final conclusion before claiming the whole workflow passed.
-- Render engine: deployment `dep-dbebr7rrjlhs73f6hpqg` was **live** on commit `867fc5e2b546c924e1d9f3e0ec72083bd95e4f07`.
-- Previous live API smoke [run 40101896777](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40101896777) was recorded as passing filtered capability API, raw fields, pagination, search and generation checks. Re-run smoke after backend code changes or if the service revision changes.
-- Earlier workflow failures exposed two stale test assertions after the inventory API/UI changed; those assertions were corrected. Latest CI run above passed.
-- Smoke workflow runs may show `skipped` when the trigger is tied to a successful Cloudflare workflow and the relevant deployment has not completed yet; a skipped run is not a passing smoke test.
+### Current revisions and deployments
 
-## 7. Remaining work — continue from here
+- Main before this documentation sync: 96e13b9f5ec0da98c2fe6a78fd76f2e0f09c30e7 (strict live CORS smoke checks).
+- Engine API source fix: 2710bce8e46aef39aeac03e5f7d9710c0c810885 — consolidated safe request logging so a disconnected client/log pipe does not create another handler traceback.
+- CORS fix: 84732ed26e2003278e87df7b179ff7f6577b7940 — reflect only the exact allowed origin once; no wildcard.
+- Cloudflare production deployment of the current frontend source: [workflow run 40106461152](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40106461152), commit 2710bce8e46aef39aeac03e5f7d9710c0c810885 — **success**, including production URL verification and deployed desktop/mobile Playwright regression.
+- DesignOS CI: [workflow run 40106475350](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40106475350), commit 96e13b9f5ec0da98c2fe6a78fd76f2e0f09c30e7 — **success**.
+- Live Engine API Smoke Test: [workflow run 40106551875](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40106551875), commit 96e13b9f5ec0da98c2fe6a78fd76f2e0f09c30e7 — **success**.
+- Render live deployment: dep-dbecpr8473hc73ct3610, commit 96e13b9f5ec0da98c2fe6a78fd76f2e0f09c30e7, state **live**, finished 2026-10-24 15:22:06 UTC.
 
-Priority order:
-1. **Close the current Cloudflare workflow:** inspect run 40104641171 until the deployed desktop/mobile browser regression reaches a final result. Fix any actual failure and rerun.
-2. **Re-verify the live API**: health, pinned version/readiness, catalog metadata, filtered/paginated raw records, official search, base design-system generation and a stack-specific generation. If the Render service is not at the expected source revision, trigger a rebuild and verify the exact deployment.
-3. **Validate the capability explorer in the production browser**, including selecting a domain, searching raw fields, paging through results, empty/error states and mobile layout.
-4. Improve candidate reasoning: industry/category mapping, active/deprecated filtering, explicit hard constraints, evidence-linked reasons, trade-offs and explainable scoring. Do not produce scores unless actually computed and validated.
-5. Improve candidate comparison and full implementation-ready specification generation; ensure selected direction is the one used by all exports.
-6. Check candidate schema against actual JSON exports and validate exports programmatically, not only via static string tests.
-7. Add/verify accessibility and responsive acceptance: keyboard, focus, contrast, long strings, reduced motion, empty/error/loading states, mobile overflow.
-8. Verify legacy profile/favorite ID compatibility.
-9. Manually inspect the live production and preview sites; physical iPhone/iPad acceptance has not been confirmed and must not be claimed.
-10. Update this file and `docs/DEVELOPMENT_HANDOFF.md` with actual current SHA, workflows, Render deployment, evidence and remaining gaps.
+### Verified behavior
+
+- CI passed repository rule validation, unit/contract tests, desktop/mobile browser E2E, build, pinned upstream Skill installation, real dataset inventory, CLI generation and output contract validation.
+- The Cloudflare workflow's post-deploy browser regression is **green**. It had previously failed at the real Skill search UI state (“引擎暂不可用”); after the CORS and safe logging fixes, the same production regression completed successfully.
+- The engine smoke workflow verifies /health, readiness at UI UX Pro Max **2.15.0**, source-backed capability inventory with no missing configured domains, filtered/paginated raw records, live /api/search, real /api/generate, and React stack-specific guidance.
+- CORS smoke verification passed for https://davylab-designos.pages.dev and an approved project-owned Pages preview origin, with exactly one matching Access-Control-Allow-Origin header. https://untrusted.example is rejected with HTTP 403 and no CORS permission.
+- Render logs from production browser acceptance show successful POST /api/search (HTTP 200), POST /api/generate (HTTP 200), and GET /api/capabilities (HTTP 200). Approved-origin preflights returned 204.
+- The live inventory's measured source counts are 35 configured domains and 4,319 total records; UI styles are 88 rows (50 active, 9 deprecated, 29 supplemental), not 79 active styles. Other verified counts: palettes 192, typography pairings 74, chart recommendations 25, UX guidelines 119, industry reasoning rules 192, and tech-stack datasets 22.
+
+### Status that must remain distinct
+
+- **Implemented and automated tests passed:** pinned real engine integration, source-backed capability explorer, candidate generation, preview/comparison and export workflow covered by current automated gates.
+- **Deployed and production browser-tested:** Cloudflare production source for commit 2710bce8e46aef39aeac03e5f7d9710c0c810885 passed the workflow's post-deploy browser regression.
+- **Render engine live:** commit 96e13b9f5ec0da98c2fe6a78fd76f2e0f09c30e7.
+- **Not manually accepted:** no independent physical iPhone/iPad or human visual acceptance was performed in this session. Do not claim such device acceptance.
+- A design-system candidate and locally rendered preview are not a full implementation of the user's target application. Agent instructions/exports do not execute an external coding agent.
+
+## 7. Remaining work — continue from verified production state
+
+1. After this documentation sync, check the new latest main SHA, CI, Cloudflare production browser regression, live engine smoke and Render deployment. Documentation-only changes should not be assumed deployed until workflows prove it.
+2. Perform additional targeted quality checks for requirement-to-candidate mapping across different product categories (SaaS, mobile, e-commerce, content, AI tool, dashboard), active/deprecated handling, meaningful differences between multiple candidates, and design rationale/trade-offs.
+3. Validate that the selected direction remains consistent through comparison, candidate JSON, design-spec and Agent instruction exports; extend schema-backed tests where needed.
+4. Review loading, timeout, error and rate-limit states, keyboard/focus behavior, viewport overflow and accessibility. Physical iPhone/iPad validation remains pending.
+5. Keep the versioned context bridge, development handoff and delivery checkpoint synchronized with evidence-backed status. Do not mark the whole product “finally accepted” until the remaining quality and human/device acceptance gates are completed.
 
 ## 8. Session startup protocol
 

@@ -213,6 +213,23 @@ Next sequence:
 
 ---
 
+## Latest verified production checkpoint — 2026-10-24 23:22 SGT (15:22 UTC)
+
+This addendum supersedes older deployment-status notes above. Snapshot was verified from GitHub Actions and Render before a follow-up commit synchronizes this checkpoint into the documentation.
+
+- Branch main before this doc-sync commit: 96e13b9f5ec0da98c2fe6a78fd76f2e0f09c30e7.
+- Engine server safe request logging fix: 2710bce8e46aef39aeac03e5f7d9710c0c810885; validated CORS headers fix: 84732ed26e2003278e87df7b179ff7f6577b7940.
+- Cloudflare production deploy workflow [40106461152](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40106461152) completed successfully and its post-deploy production browser regression passed for deployed commit 2710bce8e46aef39aeac03e5f7d9710c0c810885.
+- CI [40106475350](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40106475350) passed against 96e13b9f5ec0da98c2fe6a78fd76f2e0f09c30e7, including unit/contract/E2E/build and actual pinned Skill installation/inventory/generation validation.
+- Live Engine API smoke [40106551875](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40106551875) passed: strict CORS, untrusted-origin rejection, Skill 2.15.0 readiness, source-backed raw capability records and pagination, official search, generation and React guidance.
+- Render deployment dep-dbecpr8473hc73ct3610 is **live** at commit 96e13b9f5ec0da98c2fe6a78fd76f2e0f09c30e7, finished at 15:22:06 UTC.
+- Production logs show /api/search HTTP 200, /api/generate HTTP 200, /api/capabilities HTTP 200 and approved CORS preflights HTTP 204. Prior browser timeout/error observations were traced to disconnected-request handling and strict-origin behavior; the current production workflow passed after correction.
+- Source inventory: 35 configured domains and 4,319 records; styles 88 rows (50 active, 9 deprecated, 29 supplemental), palettes 192, typography pairings 74, chart recommendations 25, UX guidelines 119, reasoning rules 192 and stack datasets 22.
+
+**Remaining acceptance gap:** automated production browser tests passed, but physical iPhone/iPad and user-led visual acceptance have not been confirmed. Do not describe previews as finished target applications or exports as external Agent execution. Resume by checking workflows created by this doc-sync commit, then test candidate quality across non-dashboard product types, exports' consistency and mobile/accessibility/error states.
+
+---
+
 ## Session continuation prompt
 
 When this file is supplied to a new ChatGPT conversation or coding agent, continue as the DAVYLAB DesignOS product/engineering lead. Start by checking the latest `main` commit and workflow statuses, then continue implementation and verification from the outstanding work above. Do not merely summarize this file; perform the next safe engineering actions and keep the handoff current.
