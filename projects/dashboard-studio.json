@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectId": "dashboard-studio",
+  "name": "Dashboard Studio · 私有项目审查样例",
+  "status": "audit-candidate-not-applied",
+  "visibility": "private",
+  "designProfile": "dashboard-studio-live",
+  "layoutPreservation": {"enabled": true, "mode": "strict"},
+  "publicSummary": "已完成只读源码审查，候选规则保护现有布局、用户设置与生产发布边界。具体仓库、PR、提交和运行记录仅保留在内部交付文档。",
+  "verification": {
+    "repositoryRead": true,
+    "layoutRulesRead": true,
+    "openPrChecked": true,
+    "designosAppliedToSource": false,
+    "productionModified": false,
+    "realBrowserVisualAudit": false
+  },
+  "lastReviewedAt": "2026-10-23"
+}
