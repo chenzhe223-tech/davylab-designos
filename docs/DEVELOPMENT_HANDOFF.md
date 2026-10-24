@@ -136,7 +136,10 @@ The user has now authorized a full product rebuild: reposition DesignOS from a U
 - Added `schemas/design-candidate.schema.json` and `tests/design-candidate-schema.test.mjs` to establish a provenance-aware candidate contract.
 - Added a product-first E2E regression in `tests/e2e/designos.spec.mjs`.
 - Latest implementation commits include `04bf39bd82e2da2ec06ba41dd1d70e71edd12761`, `c53c76a5d345b6e135e24065d7a93ee80383857e`, `9167eee2b2b042f8a31de6450692034c22097787`, and `feddd8fdd0e6b201414f1a2b57109df5cbc5dd6a`; check current main SHA and workflows before proceeding.
-- Next: verify CI and deploy workflows on current main; fix any actual failure; run the real capability inventory and inspect the resulting counts; then design a safe runtime bridge or honest user-run CLI handoff for full-engine results. Do not bundle secrets into the static client.
+- Added `engine-api/server.py` plus Docker/Render configuration and created Render service `davylab-designos-engine` (Singapore, free plan). The first build successfully installed the pinned Skill and confirmed `ready: true`, but failed in the inventory step because the script checked `scripts/scripts/search.py`. Fixed this in `a8da3c6b245493a0f5619f7f72c46aa4d15149ab`; next automatic Render deployment still needs verification.
+- The frontend is not yet wired to the bridge. Do not claim the live UI uses the upstream engine until the service health/status and browser integration are verified.
+- Added `tests/engine-api-contract.test.mjs` to check API routes and safety limits.
+- Next: check latest CI, Cloudflare and GitHub Pages runs; inspect Render deployment/build logs after the inventory fix; run the real capability inventory and inspect its output; then connect product-first UI to the bridge, normalize the real engine output into multiple candidates, and validate the full journey. Never bundle secrets into the static client.
 
 ## 10. Useful file map
 
