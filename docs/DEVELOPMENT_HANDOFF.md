@@ -132,10 +132,17 @@ The user has now authorized a full product rebuild: reposition DesignOS from a U
 - Homepage first tranche commit: `bae04a069d1e3fb98eff574033cca81a589959ae`. It changes the hero to product-first language, changes the step sequence to product brief → design directions → preview/compare → design spec, updates the first example to an AI travel app, adds broader product-category shortcuts and broadens the project-type options.
 - Audit ledger commit: `f872ad63d491cb3e3f3ebf7de7ef7f1edefa35ea`.
 - Important verified gap: `engine.lock.json` pins UI UX Pro Max Skill v2.15.0 at upstream commit `d14efff8ed1faa4187f004f79926f428c8074ec7`; `scripts/designos.mjs` has a real pinned CLI setup/search/generate path, and CI installs it for a real generation smoke test. However, `.agents/skills/ui-ux-pro-max` is not present on repository main (path lookup returned 404), and the static browser application currently relies on its local profile matcher rather than directly invoking the full engine. Do not claim the browser UI already uses all upstream capabilities.
-- Next: check current Actions runs on the new main SHA; validate the homepage change with browser tests; inspect upstream pinned data files and implement a programmatic capability inventory (real counts, paths, hashes and statuses); then design a safe runtime bridge or an honest user-run CLI handoff for full-engine results. Do not bundle secrets into the static client.
+- Added `scripts/capability-inventory.py`, `npm run inventory:skill`, and a CI step after pinned engine setup. It reads actual upstream CSVs via the upstream Python configuration, calculates record counts and SHA-256 hashes, and records style statuses; its new workflow result must still be checked before claiming it passes.
+- Added `schemas/design-candidate.schema.json` and `tests/design-candidate-schema.test.mjs` to establish a provenance-aware candidate contract.
+- Added a product-first E2E regression in `tests/e2e/designos.spec.mjs`.
+- Latest implementation commits include `04bf39bd82e2da2ec06ba41dd1d70e71edd12761`, `c53c76a5d345b6e135e24065d7a93ee80383857e`, `9167eee2b2b042f8a31de6450692034c22097787`, and `feddd8fdd0e6b201414f1a2b57109df5cbc5dd6a`; check current main SHA and workflows before proceeding.
+- Next: verify CI and deploy workflows on current main; fix any actual failure; run the real capability inventory and inspect the resulting counts; then design a safe runtime bridge or honest user-run CLI handoff for full-engine results. Do not bundle secrets into the static client.
 
-## 9. Useful file map
+## 10. Useful file map
 
+- `docs/REBUILD_AUDIT.md` — full-rebuild evidence ledger and acceptance gaps
+- `schemas/design-candidate.schema.json` — normalized candidate schema
+- `scripts/capability-inventory.py` — actual upstream dataset inventory generator
 - `profiles/index.json` — canonical design profile registry
 - `scripts/build.mjs` — build-time profile generation/injection
 - `scripts/validate-rules.mjs` — profile/rule governance validation
