@@ -84,6 +84,14 @@ Do not represent authored profiles as the complete Skill. Keep the upstream Skil
 - The homepage also has an explicit “generate real design-system candidate” action, which calls the official CLI generation route and displays a candidate summary with source/version/status and downloadable JSON. The UI explicitly labels this as a candidate awaiting review, not an implemented app. The live API smoke workflow verified both generation without a stack override and stack-specific generation for React.
 - Relevant source files: `engine-api/server.py`, `engine-api/Dockerfile`, `index.html`, `tests/engine-api-contract.test.mjs`, `tests/preview.test.mjs`. Latest workflow runs must be checked before reporting this tranche as accepted.
 
+## Multi-direction candidate and spec export tranche (2026-10-24)
+
+- The candidate action now reads the active style records returned by the live official Skill style search and requests up to three separate official design-system generations. It does not use a hard-coded set of style names; only records returned from the search are eligible.
+- Each candidate shows the returned style, palette swatches, typography, page pattern, a short rule excerpt, and available stack-guideline status. The UI explicitly warns when the upstream engine returns a generic product category or a potentially mismatched industry color mapping.
+- Each candidate can be exported as JSON or as a Markdown design-system brief with palette, typography, structure, rules, source/version and manual acceptance notes. This Markdown export is a useful candidate brief, but it is not yet the full implementation-ready specification described in the final acceptance criteria.
+- Code commits: `7e434dac0b6ef046c61038c951432e4400b2ed0c` and `5be9c1ac9d3aa364b154793fafdb98fb81cf8672`. CI is running against these latest frontend changes; do not claim acceptance until the current workflow completes.
+- Remaining work: make candidate comparisons actionable (select/reject/refine), strengthen semantic validation of product category and color mapping, improve stack-specific candidate evidence, build responsive previews from candidate data, and export the complete stack-aware specification. The candidate UI is not yet equivalent to a full app preview or a finished design decision workflow.
+
 ## Current product/UI change
 
 Commit `bae04a069d1e3fb98eff574033cca81a589959ae` updated the homepage copy and first-run workflow to lead with product goals rather than dashboard design. The first-run prompt now demonstrates an AI travel app and includes category entry points for travel/lifestyle apps, AI-native tools, brand websites and creator communities. The project-type choices cover a broader set of product categories and no longer put Dashboard first.
