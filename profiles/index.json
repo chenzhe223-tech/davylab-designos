@@ -9,15 +9,101 @@
     "extends": null,
     "accent": "#617e9c",
     "tokens": {
-      "color": {"canvas":"#F7F7F4","surface":"#FFFFFF","text":"#202630","muted":"#7A818B","border":"#E7E8E4","accent":"#20364E","success":"#328568","warning":"#A67B30","danger":"#B44D4D"},
-      "typography": {"fontFamily":"DM Sans, Noto Sans SC, sans-serif","bodySize":"14px","smallSize":"12px","lineHeight":1.6},
-      "spacing": {"unit":"4px","section":"24px","panel":"20px","control":"12px"},
-      "radius": {"sm":"6px","md":"10px","lg":"14px"},
-      "shadow": {"panel":"0 8px 30px rgba(26,45,74,.06)"},
-      "layout": {"contentMaxWidth":"1440px","mobileBreakpoint":"760px","tabletBreakpoint":"1100px"}
+      "color": {
+        "canvas": "#F7F7F4",
+        "surface": "#FFFFFF",
+        "text": "#202630",
+        "muted": "#7A818B",
+        "border": "#E7E8E4",
+        "accent": "#20364E",
+        "success": "#328568",
+        "warning": "#A67B30",
+        "danger": "#B44D4D"
+      },
+      "typography": {
+        "fontFamily": "DM Sans, Noto Sans SC, sans-serif",
+        "bodySize": "14px",
+        "smallSize": "12px",
+        "lineHeight": 1.6
+      },
+      "spacing": {
+        "unit": "4px",
+        "section": "24px",
+        "panel": "20px",
+        "control": "12px"
+      },
+      "radius": {
+        "sm": "6px",
+        "md": "10px",
+        "lg": "14px"
+      },
+      "shadow": {
+        "panel": "0 8px 30px rgba(26,45,74,.06)"
+      },
+      "layout": {
+        "contentMaxWidth": "1440px",
+        "mobileBreakpoint": "760px",
+        "tabletBreakpoint": "1100px"
+      }
     },
-    "rules": ["先建立清晰的信息层级，再添加视觉装饰。","颜色用于表达状态与层级，不以高饱和渐变填满页面。","交互控件需要明确的 hover、focus、disabled、loading 状态。","移动端优先保证阅读、触控和内容顺序。","使用语义化 HTML 与可访问的表单标签。","页面规则必须经过真实页面验证后才能晋级。"],
-    "source": {"kind":"davylab-authored","evidence":"Initial product design baseline; review before promoting future changes."}
+    "rules": [
+      "先建立清晰的信息层级，再添加视觉装饰。",
+      "颜色用于表达状态与层级，不以高饱和渐变填满页面。",
+      "交互控件需要明确的 hover、focus、disabled、loading 状态。",
+      "移动端优先保证阅读、触控和内容顺序。",
+      "使用语义化 HTML 与可访问的表单标签。",
+      "页面规则必须经过真实页面验证后才能晋级。"
+    ],
+    "source": {
+      "kind": "davylab-authored",
+      "evidence": "Initial product design baseline; review before promoting future changes."
+    },
+    "presentation": {
+      "id": "balanced-saas",
+      "category": "product",
+      "type": "产品界面",
+      "style": "清晰 · 克制 · 高效",
+      "use": "工作台、设置页、业务工具",
+      "device": "desktop",
+      "layout": "侧边导航 + 主要工作区 + 指标卡片与明细区",
+      "interaction": "明确的主操作、表单验证反馈、focus 与 disabled 状态",
+      "limitations": "不适合将大量实时指标塞入狭窄手机屏幕；需按任务优先级重排内容。",
+      "principles": [
+        "清晰的信息层级",
+        "稳定的间距系统",
+        "操作反馈可见"
+      ],
+      "tags": [
+        "高级简洁",
+        "商务专业",
+        "SaaS 产品",
+        "AI 工具",
+        "工作台",
+        "科技感",
+        "专业",
+        "克制",
+        "清晰"
+      ],
+      "aliases": [
+        "高级",
+        "精致",
+        "品质感",
+        "极简",
+        "清爽",
+        "科技",
+        "未来感",
+        "智能",
+        "数字化",
+        "后台",
+        "企业工具",
+        "移动端",
+        "手机",
+        "响应式"
+      ],
+      "mobileFit": "需针对手机重排",
+      "protected": false
+    },
+    "evidenceStatus": "reviewed"
   },
   {
     "profileId": "davylab-dashboard",
@@ -28,9 +114,82 @@
     "version": "0.1.0",
     "extends": "davylab-default",
     "accent": "#648b78",
-    "tokens": {"color":{"accent":"#315D50","canvas":"#F6F7F5","warning":"#A67B30"},"spacing":{"panel":"20px","grid":"14px"},"radius":{"card":"10px","control":"7px"}},
-    "rules": ["每个页面只设定一个主要操作，其余操作降级为次要操作。","将指标摘要、趋势分析和明细表格分层呈现。","表格列宽、数字对齐与空状态必须明确。","避免把每个字段和按钮都放进独立卡片。","数据状态应使用文字与图形双重表达，不只依赖颜色。","加载、无数据、错误和成功状态均需设计。"],
-    "source": {"kind":"davylab-authored","evidence":"Candidate profile. Must be validated on a real dashboard before approval."}
+    "tokens": {
+      "color": {
+        "accent": "#315D50",
+        "canvas": "#F6F7F5",
+        "warning": "#A67B30"
+      },
+      "spacing": {
+        "panel": "20px",
+        "grid": "14px"
+      },
+      "radius": {
+        "card": "10px",
+        "control": "7px"
+      }
+    },
+    "rules": [
+      "每个页面只设定一个主要操作，其余操作降级为次要操作。",
+      "将指标摘要、趋势分析和明细表格分层呈现。",
+      "表格列宽、数字对齐与空状态必须明确。",
+      "避免把每个字段和按钮都放进独立卡片。",
+      "数据状态应使用文字与图形双重表达，不只依赖颜色。",
+      "加载、无数据、错误和成功状态均需设计。"
+    ],
+    "source": {
+      "kind": "davylab-authored",
+      "evidence": "Candidate profile. Must be validated on a real dashboard before approval."
+    },
+    "presentation": {
+      "id": "analytics-dashboard",
+      "category": "dashboard",
+      "type": "数据看板",
+      "style": "精确 · 高密度 · 可读",
+      "use": "运营看板、商业分析、监控台",
+      "device": "desktop",
+      "layout": "指标摘要 + 趋势图 + 关键明细，按决策顺序分层",
+      "interaction": "筛选、时间范围、指标说明、加载/无数据/错误状态",
+      "limitations": "高密度布局在手机端必须改为纵向堆叠与优先级排序。",
+      "principles": [
+        "指标口径可追溯",
+        "图表服务于决策",
+        "异常状态优先显现"
+      ],
+      "tags": [
+        "科技感",
+        "数据密集",
+        "数据看板",
+        "AI 工具",
+        "商务专业",
+        "监控台",
+        "商业分析"
+      ],
+      "aliases": [
+        "科技",
+        "未来感",
+        "数字感",
+        "智能感",
+        "AI",
+        "人工智能",
+        "仪表盘",
+        "dashboard",
+        "bi",
+        "运营看板",
+        "分析看板",
+        "指标",
+        "图表",
+        "数据分析",
+        "监控",
+        "手机数据看板",
+        "手机",
+        "移动端",
+        "响应式"
+      ],
+      "mobileFit": "需将高密度信息纵向堆叠",
+      "protected": false
+    },
+    "evidenceStatus": "draft"
   },
   {
     "profileId": "davylab-saas",
@@ -41,9 +200,74 @@
     "version": "0.1.0",
     "extends": "davylab-default",
     "accent": "#7b76ad",
-    "tokens": {"color":{"accent":"#435D7A"},"radius":{"control":"8px","panel":"12px"},"spacing":{"section":"24px","control":"12px"}},
-    "rules": ["导航结构应反映用户任务而非组织架构。","表单按任务分组并提供清晰的验证反馈。","危险操作需明确说明影响并提供确认机制。","页面刷新后应能恢复已保存的服务端状态。","权限和不可用功能应有可理解的反馈。","键盘导航和焦点可见性必须纳入验收。"],
-    "source": {"kind":"davylab-authored","evidence":"Candidate profile. Validate against real SaaS projects before approval."}
+    "tokens": {
+      "color": {
+        "accent": "#435D7A"
+      },
+      "radius": {
+        "control": "8px",
+        "panel": "12px"
+      },
+      "spacing": {
+        "section": "24px",
+        "control": "12px"
+      }
+    },
+    "rules": [
+      "导航结构应反映用户任务而非组织架构。",
+      "表单按任务分组并提供清晰的验证反馈。",
+      "危险操作需明确说明影响并提供确认机制。",
+      "页面刷新后应能恢复已保存的服务端状态。",
+      "权限和不可用功能应有可理解的反馈。",
+      "键盘导航和焦点可见性必须纳入验收。"
+    ],
+    "source": {
+      "kind": "davylab-authored",
+      "evidence": "Candidate profile. Validate against real SaaS projects before approval."
+    },
+    "presentation": {
+      "id": "warm-editorial",
+      "category": "marketing",
+      "type": "营销页面",
+      "style": "温润 · 编辑感 · 有呼吸",
+      "use": "品牌站、专题页、内容产品",
+      "device": "mobile",
+      "layout": "叙事型标题区 + 内容分段 + 视觉主图 + 明确 CTA",
+      "interaction": "清晰的阅读路径、短表单、可见的 CTA 和键盘焦点",
+      "limitations": "不适合需要极高数据密度的操作型后台；需以真实品牌素材替换占位内容。",
+      "principles": [
+        "先讲价值，再讲功能",
+        "段落短而有节奏",
+        "图像服务于故事"
+      ],
+      "tags": [
+        "温暖有质感",
+        "活泼有趣",
+        "品牌官网",
+        "极简留白",
+        "内容产品"
+      ],
+      "aliases": [
+        "温暖",
+        "亲和",
+        "柔和",
+        "有温度",
+        "高级",
+        "品牌",
+        "官网",
+        "品牌站",
+        "专题页",
+        "叙事",
+        "编辑式排版",
+        "留白",
+        "大留白",
+        "温润",
+        "生活方式"
+      ],
+      "mobileFit": "移动优先的叙事布局",
+      "protected": false
+    },
+    "evidenceStatus": "draft"
   },
   {
     "profileId": "dashboard-studio-live",
@@ -55,12 +279,186 @@
     "extends": "davylab-dashboard",
     "accent": "#356dff",
     "tokens": {
-      "color":{"canvas":"#F5F7FB","surface":"#FFFFFF","text":"#172B4D","muted":"#718096","border":"#E4EAF2","accent":"#356DFF","success":"#14967D","warning":"#B77A20"},
-      "shadow":{"panel":"0 8px 30px rgba(26,45,74,0.04)"},
-      "typography":{"fontFamily":"Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif","bodySize":"14px","lineHeight":1.55}
+      "color": {
+        "canvas": "#F5F7FB",
+        "surface": "#FFFFFF",
+        "text": "#172B4D",
+        "muted": "#718096",
+        "border": "#E4EAF2",
+        "accent": "#356DFF",
+        "success": "#14967D",
+        "warning": "#B77A20"
+      },
+      "shadow": {
+        "panel": "0 8px 30px rgba(26,45,74,0.04)"
+      },
+      "typography": {
+        "fontFamily": "Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "bodySize": "14px",
+        "lineHeight": 1.55
+      }
     },
-    "rules": ["工作台自身布局冻结：保留左侧导航、右侧主工作区、吸顶顶栏与现有阶段顺序。","只允许在现有 DOM 结构内改善可读性、可访问性、视觉状态与局部间距。","不得重置 layout、style、palette、density、applicationDepth 用户选择。","预览、Design Spec、JSON、草稿与开发指令必须使用同一份配置。","仅将当前仓库的实际颜色与排版作为审计基线，不自动将设计 Token 覆盖到生产页面。","生产发布必须与 PR 预览分离，未明确授权不得覆盖线上版本。"],
-    "layoutPreservation": {"enabled":true,"sourceFile":"LAYOUT_PRESERVATION_RULES.md","mode":"strict","allowedChanges":["color","typography","accessibility","focus-states","local-spacing-without-reflow"],"forbiddenChanges":["dom-skeleton","navigation-order","stage-order","grid-relationships","responsive-breakpoints","mobile-navigation","user-selected-design-settings"]},
-    "source": {"kind":"repository-audit","evidence":"Read-only review of a private source baseline. Detailed repository references are retained in internal documentation; this candidate has not been applied to production.","verifiedAt":"2026-10-23"}
+    "rules": [
+      "工作台自身布局冻结：保留左侧导航、右侧主工作区、吸顶顶栏与现有阶段顺序。",
+      "只允许在现有 DOM 结构内改善可读性、可访问性、视觉状态与局部间距。",
+      "不得重置 layout、style、palette、density、applicationDepth 用户选择。",
+      "预览、Design Spec、JSON、草稿与开发指令必须使用同一份配置。",
+      "仅将当前仓库的实际颜色与排版作为审计基线，不自动将设计 Token 覆盖到生产页面。",
+      "生产发布必须与 PR 预览分离，未明确授权不得覆盖线上版本。"
+    ],
+    "layoutPreservation": {
+      "enabled": true,
+      "sourceFile": "LAYOUT_PRESERVATION_RULES.md",
+      "mode": "strict",
+      "allowedChanges": [
+        "color",
+        "typography",
+        "accessibility",
+        "focus-states",
+        "local-spacing-without-reflow"
+      ],
+      "forbiddenChanges": [
+        "dom-skeleton",
+        "navigation-order",
+        "stage-order",
+        "grid-relationships",
+        "responsive-breakpoints",
+        "mobile-navigation",
+        "user-selected-design-settings"
+      ]
+    },
+    "source": {
+      "kind": "repository-audit",
+      "evidence": "Read-only review of a private source baseline. Detailed repository references are retained in internal documentation; this candidate has not been applied to production.",
+      "verifiedAt": "2026-10-23"
+    },
+    "presentation": {
+      "id": "dashboard-studio",
+      "category": "dashboard",
+      "type": "项目专属档案",
+      "style": "继承现有规范 · 只读保护",
+      "use": "既有项目审计、回归检查",
+      "device": "desktop",
+      "layout": "保留既有导航、工作区和阶段顺序，只在审计预览中展示规则",
+      "interaction": "以证据为依据标注差异；任何生产写入均须单独授权",
+      "limitations": "严格只读候选档案；不得将示例预览应用到目标项目或自动覆盖生产页面。",
+      "principles": [
+        "继承现有规范",
+        "差异与证据",
+        "只读保护"
+      ],
+      "tags": [
+        "数据看板",
+        "项目审查",
+        "只读保护"
+      ],
+      "aliases": [
+        "现有dashboard",
+        "审查",
+        "审计",
+        "规则对照",
+        "既有项目"
+      ],
+      "mobileFit": "只读审查，不自动写入",
+      "protected": true
+    },
+    "evidenceStatus": "reviewed"
+  },
+  {
+    "profileId": "davylab-warm-editorial",
+    "name": "Warm Editorial",
+    "description": "通过温暖底色、强标题层级与简洁叙事，构建更有人情味的品牌体验。",
+    "productType": "marketing",
+    "status": "draft",
+    "version": "0.1.0",
+    "extends": "davylab-default",
+    "accent": "#B56E47",
+    "tokens": {
+      "color": {
+        "canvas": "#F8F4EC",
+        "surface": "#FFFFFF",
+        "text": "#302B27",
+        "muted": "#7C746D",
+        "border": "#E8DED1",
+        "accent": "#B56E47"
+      },
+      "typography": {
+        "fontFamily": "DM Sans, Noto Sans SC, sans-serif",
+        "bodySize": "14px",
+        "lineHeight": 1.65
+      },
+      "spacing": {
+        "unit": "4px",
+        "section": "28px",
+        "panel": "20px",
+        "control": "12px"
+      },
+      "radius": {
+        "sm": "6px",
+        "md": "10px",
+        "lg": "16px"
+      },
+      "shadow": {
+        "panel": "0 8px 30px rgba(48,43,39,.06)"
+      },
+      "layout": {
+        "contentMaxWidth": "1200px",
+        "mobileBreakpoint": "760px",
+        "tabletBreakpoint": "1100px"
+      }
+    },
+    "rules": [
+      "先讲价值，再讲功能。",
+      "段落短而有节奏，标题层级清晰。",
+      "图像服务于故事，不以装饰性图片填满页面。",
+      "移动端优先保证阅读节奏与清晰 CTA。"
+    ],
+    "source": {
+      "kind": "davylab-authored",
+      "evidence": "候选品牌内容档案；尚未在真实品牌项目完成验证。"
+    },
+    "evidenceStatus": "draft",
+    "presentation": {
+      "id": "warm-editorial",
+      "category": "marketing",
+      "type": "营销页面",
+      "style": "温润 · 编辑感 · 有呼吸",
+      "use": "品牌站、专题页、内容产品",
+      "device": "mobile",
+      "layout": "叙事型标题区 + 内容分段 + 视觉主图 + 明确 CTA",
+      "interaction": "清晰的阅读路径、短表单、可见的 CTA 和键盘焦点",
+      "limitations": "不适合需要极高数据密度的操作型后台；需以真实品牌素材替换占位内容。",
+      "principles": [
+        "先讲价值，再讲功能",
+        "段落短而有节奏",
+        "图像服务于故事"
+      ],
+      "tags": [
+        "温暖有质感",
+        "活泼有趣",
+        "品牌官网",
+        "极简留白",
+        "内容产品"
+      ],
+      "aliases": [
+        "温暖",
+        "亲和",
+        "柔和",
+        "有温度",
+        "高级",
+        "品牌",
+        "官网",
+        "品牌站",
+        "专题页",
+        "叙事",
+        "编辑式排版",
+        "留白",
+        "大留白",
+        "温润",
+        "生活方式"
+      ],
+      "mobileFit": "移动优先的叙事布局",
+      "protected": false
+    }
   }
 ]
