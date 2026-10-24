@@ -1,0 +1,18 @@
+{
+  "provider": "nextlevelbuilder/ui-ux-pro-max-skill",
+  "license": "MIT",
+  "skillVersion": "2.15.0",
+  "cliPackage": "ui-ux-pro-max-cli",
+  "cliVersion": "2.5.0",
+  "installCommand": "git fetch https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git d14efff8ed1faa4187f004f79926f428c8074ec7 && copy src/ui-ux-pro-max to .agents/skills/ui-ux-pro-max",
+  "expectedSkillPath": ".agents/skills/ui-ux-pro-max",
+  "searchEntry": "scripts/search.py",
+  "upstreamFiles": {
+    "skill.json": "396d41789af5c2dbd216e655c1f24498c716aa18",
+    "cli/package.json": "68ccde655869102a961bb13832430dcbbf15a321",
+    "LICENSE": "1e71cbf26660f31903807d099fe902c098fc7e4c",
+    "src/ui-ux-pro-max/scripts/search.py": "5038aa875a0d39f24dea803a4c73b38f8f56915f",
+    "src/ui-ux-pro-max/scripts/design_system.py": "d5fe1575f00d839f919603bd09b44fe7e9def4fb"
+  },
+  "upstreamCommit": "d14efff8ed1faa4187f004f79926f428c8074ec7"
+}
