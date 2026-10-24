@@ -1,0 +1,66 @@
+[
+  {
+    "profileId": "davylab-default",
+    "name": "DAVYLAB Core",
+    "description": "温润、克制、清晰的信息层级与可执行的产品体验基线。",
+    "productType": "global",
+    "status": "approved",
+    "version": "0.1.0",
+    "extends": null,
+    "accent": "#617e9c",
+    "tokens": {
+      "color": {"canvas":"#F7F7F4","surface":"#FFFFFF","text":"#202630","muted":"#7A818B","border":"#E7E8E4","accent":"#20364E","success":"#328568","warning":"#A67B30","danger":"#B44D4D"},
+      "typography": {"fontFamily":"DM Sans, Noto Sans SC, sans-serif","bodySize":"14px","smallSize":"12px","lineHeight":1.6},
+      "spacing": {"unit":"4px","section":"24px","panel":"20px","control":"12px"},
+      "radius": {"sm":"6px","md":"10px","lg":"14px"},
+      "shadow": {"panel":"0 8px 30px rgba(26,45,74,.06)"},
+      "layout": {"contentMaxWidth":"1440px","mobileBreakpoint":"760px","tabletBreakpoint":"1100px"}
+    },
+    "rules": ["先建立清晰的信息层级，再添加视觉装饰。","颜色用于表达状态与层级，不以高饱和渐变填满页面。","交互控件需要明确的 hover、focus、disabled、loading 状态。","移动端优先保证阅读、触控和内容顺序。","使用语义化 HTML 与可访问的表单标签。","页面规则必须经过真实页面验证后才能晋级。"],
+    "source": {"kind":"davylab-authored","evidence":"Initial product design baseline; review before promoting future changes."}
+  },
+  {
+    "profileId": "davylab-dashboard",
+    "name": "Dashboard Studio",
+    "description": "高信息密度场景下的清晰分区、克制控件与可扫描数据层级。",
+    "productType": "dashboard",
+    "status": "draft",
+    "version": "0.1.0",
+    "extends": "davylab-default",
+    "accent": "#648b78",
+    "tokens": {"color":{"accent":"#315D50","canvas":"#F6F7F5","warning":"#A67B30"},"spacing":{"panel":"20px","grid":"14px"},"radius":{"card":"10px","control":"7px"}},
+    "rules": ["每个页面只设定一个主要操作，其余操作降级为次要操作。","将指标摘要、趋势分析和明细表格分层呈现。","表格列宽、数字对齐与空状态必须明确。","避免把每个字段和按钮都放进独立卡片。","数据状态应使用文字与图形双重表达，不只依赖颜色。","加载、无数据、错误和成功状态均需设计。"],
+    "source": {"kind":"davylab-authored","evidence":"Candidate profile. Must be validated on a real dashboard before approval."}
+  },
+  {
+    "profileId": "davylab-saas",
+    "name": "SaaS Product",
+    "description": "面向任务流的现代 Web 产品体验与组件一致性规范。",
+    "productType": "saas",
+    "status": "draft",
+    "version": "0.1.0",
+    "extends": "davylab-default",
+    "accent": "#7b76ad",
+    "tokens": {"color":{"accent":"#435D7A"},"radius":{"control":"8px","panel":"12px"},"spacing":{"section":"24px","control":"12px"}},
+    "rules": ["导航结构应反映用户任务而非组织架构。","表单按任务分组并提供清晰的验证反馈。","危险操作需明确说明影响并提供确认机制。","页面刷新后应能恢复已保存的服务端状态。","权限和不可用功能应有可理解的反馈。","键盘导航和焦点可见性必须纳入验收。"],
+    "source": {"kind":"davylab-authored","evidence":"Candidate profile. Validate against real SaaS projects before approval."}
+  },
+  {
+    "profileId": "dashboard-studio-live",
+    "name": "Dashboard Studio · Live Audit",
+    "description": "基于真实私有仓库的只读设计审计配置；保留现有工作台布局和生产发布边界。",
+    "productType": "dashboard-project",
+    "status": "review",
+    "version": "0.1.0",
+    "extends": "davylab-dashboard",
+    "accent": "#356dff",
+    "tokens": {
+      "color":{"canvas":"#F5F7FB","surface":"#FFFFFF","text":"#172B4D","muted":"#718096","border":"#E4EAF2","accent":"#356DFF","success":"#14967D","warning":"#B77A20"},
+      "shadow":{"panel":"0 8px 30px rgba(26,45,74,0.04)"},
+      "typography":{"fontFamily":"Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif","bodySize":"14px","lineHeight":1.55}
+    },
+    "rules": ["工作台自身布局冻结：保留左侧导航、右侧主工作区、吸顶顶栏与现有阶段顺序。","只允许在现有 DOM 结构内改善可读性、可访问性、视觉状态与局部间距。","不得重置 layout、style、palette、density、applicationDepth 用户选择。","预览、Design Spec、JSON、草稿与开发指令必须使用同一份配置。","仅将当前仓库的实际颜色与排版作为审计基线，不自动将设计 Token 覆盖到生产页面。","生产发布必须与 PR 预览分离，未明确授权不得覆盖线上版本。"],
+    "layoutPreservation": {"enabled":true,"sourceFile":"LAYOUT_PRESERVATION_RULES.md","mode":"strict","allowedChanges":["color","typography","accessibility","focus-states","local-spacing-without-reflow"],"forbiddenChanges":["dom-skeleton","navigation-order","stage-order","grid-relationships","responsive-breakpoints","mobile-navigation","user-selected-design-settings"]},
+    "source": {"kind":"repository-audit","evidence":"Read-only review of a private source baseline. Detailed repository references are retained in internal documentation; this candidate has not been applied to production.","verifiedAt":"2026-10-23"}
+  }
+]
