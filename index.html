@@ -340,7 +340,7 @@ async function generateEngineCandidate(){
    {id:"restrained-spacious",name:"克制留白",reason:"官方 Skill 设计拨盘：Variance 2/10（Centered / Minimal）、Motion 2/10（Subtle）、Density 2/10（Spacious）。",dials:{variance:2,motion:2,density:2}}
   ];
   const candidates=await Promise.all(selected.map(async(direction,index)=>{
-   const query=lastEngineQuery+"\nDesign direction: "+direction.name+". Preserve the original product type, target users, core tasks, accessibility and industry-specific color mapping. Generate this direction as an independent design-system result using the requested official variance, motion and density dials; do not replace the product with a generic dashboard unless the brief requires one.";
+   const query=lastEngineQuery;
    const payload={query,project:project+" — "+direction.name,...direction.dials,...(found?{stack:found[1]}:{})};
    const response=await fetch(ENGINE_API_BASE+"/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
    const data=await response.json();if(!response.ok)throw new Error(data.message||data.error||("HTTP "+response.status));
