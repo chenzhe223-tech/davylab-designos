@@ -159,3 +159,12 @@ test("product brief performs live upstream Skill search and clearly labels unava
   assert.match(html, /引擎暂不可用/);
   assert.match(html, /不会以示例或硬编码结果冒充引擎输出/);
 });
+
+test("real design-system generation is an explicit action and labels its output as a pending candidate", () => {
+  assert.match(html, /id="generateEngineCandidate"/);
+  assert.match(html, /async function generateEngineCandidate\(\)/);
+  assert.match(html, /fetch\(ENGINE_API_BASE\+"\/api\/generate"/);
+  assert.match(html, /已生成真实引擎候选/);
+  assert.match(html, /待评审/);
+  assert.match(html, /下载候选 JSON/);
+});
