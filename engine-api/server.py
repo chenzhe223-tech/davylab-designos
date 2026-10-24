@@ -69,15 +69,6 @@ def allowed_request(handler):
 class Handler(BaseHTTPRequestHandler):
     server_version = "DesignOS-Engine-Bridge/1.0"
 
-    def log_message(self, fmt, *args):
-        # Do not log request bodies, user prompts, or candidate content.
-        # Some browsers disconnect while a long engine call is running; do not
-        # let a broken access-log pipe crash the request handler.
-        try:
-            super().log_message(fmt, *args)
-        except (BrokenPipeError, ConnectionResetError):
-            pass
-
     def _headers(self, status=200):
         origin = self.headers.get("Origin", "")
         self.send_response(status)
@@ -265,7 +256,11 @@ class Handler(BaseHTTPRequestHandler):
         # Keep user-entered product briefs out of application logs.
         if args:
             safe = tuple(str(arg)[:120] if isinstance(arg, str) else arg for arg in args)
-            super().log_message(fmt, *safe)
+            try:
+                super().log_message(fmt, *safe)
+            except (BrokenPipeError, ConnectionResetError):
+                # A disconnected log sink must not crash an otherwise valid request.
+                pass
 
 
 if __name__ == "__main__":
