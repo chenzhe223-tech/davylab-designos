@@ -215,3 +215,13 @@ test("JSON candidate export wraps upstream output in the versioned provenance sc
   assert.match(html, /rawEngineOutput:candidate/);
   assert.match(html, /JSON\.stringify\(normalizeCandidate\(candidate,entry,index\),null,2\)/);
 });
+
+test("Markdown export contains implementation, responsive, accessibility, provenance and risk sections", () => {
+  assert.match(html, /function buildCandidateMarkdown\(candidate,entry,index\)/);
+  assert.match(html, /## Interaction and component states/);
+  assert.match(html, /## Responsive rules/);
+  assert.match(html, /## Accessibility acceptance/);
+  assert.match(html, /## Assumptions and risks/);
+  assert.match(html, /## Provenance and review/);
+  assert.match(html, /Remaining acceptance checklist/);
+});
