@@ -35,12 +35,12 @@ def run_cli(args, timeout=60):
     return result.stdout.strip()
 
 
-def read_json_output(args):
+def read_json_output(args, timeout=60):
     generated = ROOT / "generated"
     generated.mkdir(exist_ok=True)
     target = generated / f"api-{uuid.uuid4().hex}.json"
     try:
-        run_cli([*args, "--output", str(target.relative_to(ROOT))])
+        run_cli([*args, "--output", str(target.relative_to(ROOT))], timeout=timeout)
         return json.loads(target.read_text(encoding="utf-8"))
     finally:
         target.unlink(missing_ok=True)
