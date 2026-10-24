@@ -1,0 +1,14 @@
+# Render deployment descriptor for the DesignOS official Skill bridge.
+# This service is separate from the static Cloudflare Pages frontend.
+services:
+  - type: web
+    name: davylab-designos-engine
+    runtime: docker
+    repo: https://github.com/chenzhe223-tech/davylab-designos
+    branch: main
+    region: singapore
+    plan: free
+    dockerContext: .
+    dockerfilePath: ./engine-api/Dockerfile
+    healthCheckPath: /health
+    autoDeploy: true
