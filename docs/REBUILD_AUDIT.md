@@ -89,15 +89,23 @@ This is a first UI direction change, not a completed engine integration or full 
 - Add tests across product categories, styles, color palettes, typography, stacks, accessibility and error handling.
 - Validate production and preview after deployment; do not report real-device acceptance unless performed on physical devices.
 
+## Engine API bridge tranche
+
+- Added `engine-api/server.py`: a small server-side bridge to the pinned official CLI with health/status/capability endpoints, search and generate endpoints, input-size bounds, request throttling, explicit origin allowlist, and no client-side credentials.
+- Added `engine-api/Dockerfile`, `.dockerignore`, and `render.yaml`.
+- Created Render service `davylab-designos-engine` (service ID `srv-dbe8obss728c73bdno40`) in Singapore on the free plan. Initial deploy `dep-dbe8occs728c73bdnqeg` failed because the inventory script incorrectly joined the configured `scripts/search.py` path twice. The build log confirmed the pinned upstream Skill setup itself passed and reported `ready: true` for version 2.15.0 at the locked commit. The inventory path bug was corrected in commit `a8da3c6b245493a0f5619f7f72c46aa4d15149ab`; the next automatic deploy must be checked.
+- The bridge has not yet been verified healthy in production, and the static frontend has not yet been connected to it. Do not describe the live product as using the API until deployment and browser integration are confirmed.
+- Added `tests/engine-api-contract.test.mjs` to check route, bounded input and runtime wiring. It still needs to pass in CI.
+
 ## Acceptance status
 
 | Area | Status | Evidence / caveat |
 |---|---|---|
 | Upstream identity and pin | Verified in repository | `engine.lock.json`, `THIRD_PARTY_NOTICES.md` |
 | Local/CI CLI adapter exists | Verified in code | `scripts/designos.mjs`; CI runs pinned engine smoke test |
-| Engine source present in current main | Not present | `.agents/skills/ui-ux-pro-max` path lookup returned 404 |
+| Engine source present in current main | Not checked into main; installed during container build | Pinned setup succeeds in Render build logs; engine runtime readiness reported true before inventory path failure |
 | Complete Skill data inventory | Not yet implemented | Must count pinned upstream records programmatically |
-| Browser uses full upstream engine | Not verified / current architecture says no direct invocation | Static client app uses local profiles; CLI is separate |
+| Browser uses full upstream engine | Not yet connected | Server-side API bridge has been added but deploy and frontend integration remain unverified |
 | Product-first entry UI | First tranche implemented | Commit `bae04a069d1e3fb98eff574033cca81a589959ae`; requires workflow and browser verification |
 | End-to-end design decision workflow | Incomplete | Needs real engine adapter, candidate model and dynamic previews |
 | Physical iPhone/iPad acceptance | Not performed in recorded work | Playwright viewport tests are not physical-device acceptance |
