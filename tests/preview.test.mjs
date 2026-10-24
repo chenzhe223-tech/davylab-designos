@@ -225,3 +225,15 @@ test("Markdown export contains implementation, responsive, accessibility, proven
   assert.match(html, /## Provenance and review/);
   assert.match(html, /Remaining acceptance checklist/);
 });
+
+test("capability explorer searches real upstream records with source/status detail and pagination", () => {
+  assert.match(html, /id="skillCatalog"/);
+  assert.match(html, /id="skillCatalogDomain"/);
+  assert.match(html, /id="skillCatalogSearch"/);
+  assert.match(html, /async function openSkillCatalog\(\)/);
+  assert.match(html, /async function loadSkillCatalog\(append=false\)/);
+  assert.match(html, /SKILL_CATALOG_API/);
+  assert.match(html, /sourceRow/);
+  assert.match(html, /statusCounts/);
+  assert.match(html, /加载更多/);
+});
