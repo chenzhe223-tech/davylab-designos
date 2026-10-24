@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
 
-const appUrl = pathToFileURL(resolve('dist/index.html')).href;
+const appUrl = process.env.BASE_URL || pathToFileURL(resolve('dist/index.html')).href;
 
 test('desktop: search, select, preview, compare and generate an agent prompt', async ({ page }) => {
   const errors = [];
