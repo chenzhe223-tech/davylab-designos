@@ -11,6 +11,9 @@ test('engine API exposes only the explicit health, status, capabilities and offi
   assert.match(api, /path == "\/api\/status"/);
   assert.match(api, /path == "\/api\/capabilities"/);
   assert.match(api, /path == "\/api\/search"/);
+  assert.match(api, /payload\.get\("limit", 3\)/);
+  assert.match(api, /"--max-results", str\(max_results\)/);
+  assert.match(api, /invalid_max_results/);
   assert.match(api, /self\._json\(200, result\)/);
   assert.match(api, /path == "\/api\/generate"/);
   assert.match(api, /def read_json_output\(args, timeout=60\)/);

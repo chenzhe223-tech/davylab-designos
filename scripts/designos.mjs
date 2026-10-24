@@ -23,7 +23,7 @@ Commands:
   node scripts/designos.mjs engine-status
   node scripts/designos.mjs setup-engine
   node scripts/designos.mjs generate --query "SaaS dashboard" --project "My App" [--stack react] [--output generated/candidate.json]
-  node scripts/designos.mjs search --query "dashboard accessibility" --domain ux [--output generated/search.json]
+  node scripts/designos.mjs search --query "dashboard accessibility" --domain ux [--max-results 1-20] [--output generated/search.json]
 
 Engine: ${lock.provider} / CLI ${lock.cliVersion}; source is pinned to ${lock.upstreamCommit}.`)
 }
@@ -92,7 +92,14 @@ else if (command === 'generate' || command === 'search') {
   catch (error) { console.error(error.message); process.exit(2) }
   const engineArgs = [searchScript, query]
   if (command === 'generate') engineArgs.push('--design-system', '--json', '--project-name', project)
-  else engineArgs.push('--json', '--domain', opt('--domain', 'ux'))
+  else {
+    const maxResults = Number(opt('--max-results', '3'))
+    if (!Number.isInteger(maxResults) || maxResults < 1 || maxResults > 20) {
+      console.error('Invalid --max-results; expected an integer from 1 to 20.')
+      process.exit(2)
+    }
+    engineArgs.push('--json', '--domain', opt('--domain', 'ux'), '--max-results', String(maxResults))
+  }
   const stack = opt('--stack')
   if (stack && command === 'search') engineArgs.push('--stack', stack)
   const result = spawnSync(python, engineArgs, { cwd: root, encoding: 'utf8', maxBuffer: 20 * 1024 * 1024 })

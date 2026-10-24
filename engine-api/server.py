@@ -252,7 +252,11 @@ class Handler(BaseHTTPRequestHandler):
                 if domain not in {"style", "color", "chart", "landing", "product", "ux", "typography", "google-fonts", "icons", "gsap", "react", "web"}:
                     self._json(400, {"error": "unsupported_domain"})
                     return
-                args = ["search", "--query", query, "--domain", domain]
+                max_results = payload.get("limit", 3)
+                if isinstance(max_results, bool) or not isinstance(max_results, int) or not 1 <= max_results <= 20:
+                    self._json(400, {"error": "invalid_max_results", "min": 1, "max": 20})
+                    return
+                args = ["search", "--query", query, "--domain", domain, "--max-results", str(max_results)]
                 stack = payload.get("stack")
                 if stack:
                     if not isinstance(stack, str) or len(stack) > 60:
