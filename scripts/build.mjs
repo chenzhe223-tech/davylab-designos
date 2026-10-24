@@ -26,7 +26,7 @@ const runtimeProfiles = canonicalProfiles.filter(p => p.presentation && p.status
   const tokens = mergedTokens(p)
   const colors = tokens.color || {}
   return {
-    id: v.id, profileId: p.profileId, name: p.name, category: v.category || p.productType,
+    id: v.id, profileId: p.profileId, name: v.displayName || p.name, category: v.category || p.productType,
     type: v.type || p.productType, style: v.style || p.name, desc: p.description,
     palette: [colors.canvas || '#F7F7F4', colors.text || '#202630', colors.accent || p.accent],
     principles: v.principles || p.rules.slice(0, 3), use: v.use || p.productType,
