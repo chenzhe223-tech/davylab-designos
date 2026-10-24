@@ -152,7 +152,7 @@ test("product brief performs live upstream Skill search and clearly labels unava
   assert.match(html, /id="engineEvidence"/);
   assert.match(html, /id="engineStatus"/);
   assert.match(html, /function queryOfficialEngine\(query\)/);
-  assert.match(html, /ENGINE_DOMAINS=\[\{id:"style"/);
+  assert.match(html, /ENGINE_DOMAINS=\[\{id:"product",label:"产品类别映射"\},\{id:"style"/);
   assert.match(html, /\{id:"color",label:"行业配色"\}/);
   assert.match(html, /\{id:"typography",label:"字体配对"\}/);
   assert.match(html, /\{id:"ux",label:"UX 指南"\}/);
