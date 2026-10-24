@@ -55,33 +55,33 @@ def summarize(name: str, path: Path, domain: str):
         elif domain in {"color", "product"}:
             record_id = row.get("Product Type") or f"{domain}-row-{index}"
             name_value = record_id
-            status = "available"
+            status = "not-specified"
             searchable = bool(row.get("Notes") or row.get("Keywords") or name_value)
         elif domain == "typography":
             record_id = row.get("Font Pairing Name") or f"font-row-{index}"
             name_value = record_id
-            status = "available"
+            status = "not-specified"
             searchable = bool(row.get("Mood/Style Keywords") or row.get("Best For"))
         elif domain == "chart":
             record_id = row.get("Data Type") or f"chart-row-{index}"
             name_value = row.get("Best Chart Type") or record_id
-            status = "available"
+            status = "not-specified"
             searchable = bool(row.get("Keywords") or row.get("When to Use"))
         elif domain == "ux":
             record_id = f"ux-{index:04d}"
             name_value = row.get("Issue") or row.get("Category") or record_id
-            status = "available"
+            status = "not-specified"
             searchable = bool(row.get("Description") or row.get("Do"))
         else:
             record_id = row.get("Pattern ID") or row.get("Icon Name") or row.get("Category") or f"{domain}-row-{index}"
             name_value = row.get("Pattern Name") or row.get("Icon Name") or row.get("Category") or record_id
-            status = "available"
+            status = "not-specified"
             searchable = bool(row)
         summary.append({
             "id": record_id,
             "name": name_value,
             "status": status,
-            "active": status.lower() in {"active", "approved", "available"},
+            "active": status.lower() in {"active", "approved"} if status.lower() != "not-specified" else None,
             "searchable": searchable,
             "sourceRow": index
         })
