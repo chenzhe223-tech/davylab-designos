@@ -11,7 +11,8 @@
     "engine:status": "node scripts/designos.mjs engine-status",
     "engine:setup": "node scripts/designos.mjs setup-engine",
     "verify:engine-output": "node scripts/verify-engine-output.mjs",
-    "check": "npm run validate:rules && npm test && npm run build"
+    "check": "npm run validate:rules && npm test && npm run build",
+    "inventory:skill": "python3 scripts/capability-inventory.py"
   },
   "engines": {
     "node": ">=20"
