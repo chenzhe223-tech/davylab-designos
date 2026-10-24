@@ -93,6 +93,13 @@ Do not represent authored profiles as the complete Skill. Keep the upstream Skil
 - Code commits include `7e434dac0b6ef046c61038c951432e4400b2ed0c`, `768a2d434e288087a1524fd2ee33e79bdd1a1a92`, `88ff41570946eed19c1369bbe4c9f23710554f91`, and `3d75479a6572981c2c2e1ccdd3fc998b9a3e51c5`. The selection/refinement and its tests are on current main and CI is running. CI [40100560976](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40100560976) passed unit tests, Playwright desktop/mobile flows, real inventory generation and real engine output validation. Live API smoke [40100586827](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/40100586827) also passed.
 - Remaining work: make candidate comparisons actionable (select/reject/refine), strengthen semantic validation of product category and color mapping, improve stack-specific candidate evidence, build responsive previews from candidate data, and export the complete stack-aware specification. The candidate UI is not yet equivalent to a full app preview or a finished design decision workflow.
 
+## Searchable capability explorer (latest tranche)
+
+- The inventory generator now preserves the full raw field dictionary for every upstream record rather than only ID/name/status.
+- `/api/capabilities` returns catalog metadata by default and supports filtering by a real source domain, free-text search over IDs/names/status/raw fields, and bounded pagination (up to 100 records per request).
+- The homepage has a collapsed “真实 Skill 能力库” explorer that loads domain names/counts from the actual inventory, allows searching, displays active/status/source-row details, and expands raw source fields for inspection. It includes pagination for large domains such as Google Fonts.
+- This tranche requires a new Render rebuild because the currently verified service revision predates the raw-field inventory format and filtered endpoint. CI and a live API smoke run must pass after the rebuild before claiming production catalog access is accepted.
+
 ## Current product/UI change
 
 Commit `bae04a069d1e3fb98eff574033cca81a589959ae` updated the homepage copy and first-run workflow to lead with product goals rather than dashboard design. The first-run prompt now demonstrates an AI travel app and includes category entry points for travel/lifestyle apps, AI-native tools, brand websites and creator communities. The project-type choices cover a broader set of product categories and no longer put Dashboard first.
