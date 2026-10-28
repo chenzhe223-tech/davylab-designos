@@ -30,6 +30,8 @@ jobs:
         run: python3 -m unittest discover -s tests -p 'test_document_layout_qa.py'
       - name: Test Word document layout QA adapter
         run: python3 -m unittest discover -s tests -p 'test_document_layout_word_qa.py'
+      - name: Test PowerPoint document layout QA adapter
+        run: python3 -m unittest discover -s tests -p 'test_document_layout_pptx_qa.py'
       - name: Test Render client-IP rate-limit key
         run: python3 -m unittest discover -s tests -p 'test_engine_api_rate_limit.py'
       - run: npm test
