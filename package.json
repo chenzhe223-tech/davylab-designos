@@ -13,7 +13,8 @@
     "verify:engine-output": "node scripts/verify-engine-output.mjs",
     "check": "npm run validate:rules && npm test && npm run build",
     "inventory:skill": "python3 scripts/capability-inventory.py",
-    "qa:layout": "node scripts/document-layout-qa.mjs"
+    "qa:layout": "node scripts/document-layout-qa.mjs",
+    "qa:layout:browser": "node scripts/document-layout-browser-qa.mjs"
   },
   "engines": {
     "node": ">=20"
