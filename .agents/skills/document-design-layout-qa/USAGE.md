@@ -11,6 +11,7 @@ From the repository root (Node.js 20+):
 ```sh
 npm run qa:layout -- ./path/to/report.html
 npm run qa:layout -- ./path/to/report.html --json
+npm run qa:layout:excel -- ./path/to/costs.xlsx --json
 npm run qa:layout:browser -- tests/fixtures/document-layout-sample.html --out ./artifacts/layout-qa
 npm test
 ```
@@ -44,6 +45,12 @@ npm run install:skill:layout
 ```
 
 The installer refuses to overwrite an existing skill unless `--force` is explicitly provided. After installation, restart or refresh Codex if needed. The repository-local copy under `.agents/skills/` remains available when working in this repository.
+
+## Excel adapter
+
+The Excel adapter uses `openpyxl` to inspect workbook styles and can flag explicitly left-aligned numeric cells, conflicting explicit alignment within a column, mixed number formats among numeric/formula cells, multiline cells without wrapping, and large merged ranges. Install its dependency with `python3 -m pip install -r requirements-layout-qa.txt`.
+
+This adapter does not evaluate formulas, certify business calculations, render print pages, or guarantee there is no visual clipping. Keep numeric values numeric and visually inspect the final workbook or PDF.
 
 ## Browser runner
 
