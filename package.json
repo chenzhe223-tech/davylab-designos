@@ -17,7 +17,8 @@
     "qa:layout:browser": "node scripts/document-layout-browser-qa.mjs",
     "install:skill:layout": "node scripts/install-document-design-skill.mjs",
     "qa:layout:excel": "python3 scripts/document_layout_excel_qa.py",
-    "qa:layout:word": "python3 scripts/document_layout_word_qa.py"
+    "qa:layout:word": "python3 scripts/document_layout_word_qa.py",
+    "qa:layout:pptx": "python3 scripts/document_layout_pptx_qa.py"
   },
   "engines": {
     "node": ">=20"
