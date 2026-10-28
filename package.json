@@ -18,7 +18,8 @@
     "install:skill:layout": "node scripts/install-document-design-skill.mjs",
     "qa:layout:excel": "python3 scripts/document_layout_excel_qa.py",
     "qa:layout:word": "python3 scripts/document_layout_word_qa.py",
-    "qa:layout:pptx": "python3 scripts/document_layout_pptx_qa.py"
+    "qa:layout:pptx": "python3 scripts/document_layout_pptx_qa.py",
+    "qa:layout:pdf": "python3 scripts/document_layout_pdf_qa.py"
   },
   "engines": {
     "node": ">=20"
