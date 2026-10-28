@@ -46,7 +46,11 @@ try {
         if (new Set(cellCounts).size > 1) issues.push({ severity: "warning", code: "INCONSISTENT_ROW_CELL_COUNTS", message: "Table " + (ti + 1) + " has rows with different direct cell counts; inspect intentional spans." });
         const cellsByCol = [];
         rows.forEach(row => [...row.querySelectorAll(":scope > th, :scope > td")].forEach((cell, ci) => {
-          (cellsByCol[ci] ||= []).push({ cell, style: getComputedStyle(cell), text: (cell.innerText || "").trim() });
+          const style = getComputedStyle(cell);
+          let computedAlign = style.textAlign;
+          if (computedAlign === "start") computedAlign = style.direction === "rtl" ? "right" : "left";
+          if (computedAlign === "end") computedAlign = style.direction === "rtl" ? "left" : "right";
+          (cellsByCol[ci] ||= []).push({ cell, style, align: computedAlign, text: (cell.innerText || "").trim() });
           if (cell.scrollWidth > cell.clientWidth + 2 && getComputedStyle(cell).overflowX !== "visible") {
             issues.push({ severity: "warning", code: "CELL_HORIZONTAL_CLIP_RISK", message: "Table " + (ti + 1) + " row " + (rows.indexOf(row) + 1) + " column " + (ci + 1) + " has scrollWidth greater than clientWidth." });
           }
