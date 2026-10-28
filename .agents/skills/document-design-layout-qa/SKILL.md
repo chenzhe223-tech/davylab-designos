@@ -88,7 +88,7 @@ Before delivery, use [references/qa-checklist.md](references/qa-checklist.md). A
 
 ## Available static checker
 
-The repository includes `scripts/document-layout-qa.mjs` for dependency-free HTML table linting, `scripts/document-layout-browser-qa.mjs` for Playwright-based desktop/mobile checks and screenshots, and `scripts/document_layout_excel_qa.py` for static Excel workbook style checks. See [USAGE.md](USAGE.md). Both tools are heuristic; browser checks cannot certify aesthetics or replace human screenshot review, and Excel/Word/PDF visual inspection still requires format-specific rendering. The Excel adapter requires `requirements-layout-qa.txt`. Do not claim it supports automated Excel, Word, PDF, or PowerPoint inspection until dedicated adapters exist and are tested.
+The repository includes `scripts/document-layout-qa.mjs` for dependency-free HTML table linting, `scripts/document-layout-browser-qa.mjs` for Playwright-based desktop/mobile checks and screenshots,  `scripts/document_layout_excel_qa.py` for static Excel workbook style checks, and `scripts/document_layout_word_qa.py` for static Word DOCX table-style checks. See [USAGE.md](USAGE.md). Both tools are heuristic; browser checks cannot certify aesthetics or replace human screenshot review, and Excel/Word/PDF visual inspection still requires format-specific rendering. The Excel and Word adapters require `requirements-layout-qa.txt`. Do not claim it supports automated Excel, Word, PDF, or PowerPoint inspection until dedicated adapters exist and are tested.
 
 ## Working style
 - Prefer small, targeted corrections over wholesale redesign.
