@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Intentional Layout QA Failure Fixture</title>
+<style>
+  body { font: 14px/1.45 Arial, sans-serif; margin: 24px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 10px 12px; border: 1px solid #d8dfe3; }
+  th { background: #385365; color: white; text-align: left; }
+  th:nth-child(2), td:nth-child(2) { text-align: right; }
+  tbody tr:nth-child(3) td:nth-child(2) { text-align: left; }
+</style>
+</head>
+<body>
+<h1>Intentional QA failure fixture</h1>
+<table>
+<thead><tr><th>Item</th><th>Amount (EUR)</th><th>Explanation</th></tr></thead>
+<tbody>
+<tr><td>Rollout</td><td>€1,200.00</td><td>Production cost</td></tr>
+<tr><td>Props</td><td>€300.00</td><td>One-time tooling</td></tr>
+<tr><td>Prototype</td><td>€25.00</td><td>Deliberately left-aligned numeric value</td></tr>
+</tbody>
+</table>
+</body>
+</html>
