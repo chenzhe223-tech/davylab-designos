@@ -19,7 +19,7 @@ Activate this skill when creating, revising, polishing, formatting, comparing, o
 2. **Separate content from presentation.** Lock source figures, formulas, labels, units, dates, and business meaning before styling. Never silently recalculate or "correct" a figure; flag inconsistencies separately.
 3. **Apply the design rules** in [references/design-system.md](references/design-system.md). Use format-specific conventions and keep like elements consistent.
 4. **Generate or edit the artifact.** Prefer native structure and styles over manual spaces, repeated tabs, blank rows, or one-off formatting. Use reusable styles, tokens, table components, or named cell formats.
-5. **Run structural QA.** Check alignment, number formats, column widths, spacing, text wrapping, overflow, merged cells, headings, and consistency across comparable tables.
+5. **Run structural QA.** Check alignment, number formats, column widths, spacing, text wrapping, overflow, merged cells, headings, and consistency across comparable tables. For HTML tables, run `npm run qa:layout -- path/to/file.html` when the repository checker is available; treat its output as heuristic, not visual proof.
 6. **Render the actual output.** When a rendering route exists, render the final artifact to page images or browser screenshots. Inspect at realistic viewing sizes, including a narrow/mobile viewport when relevant. Do not claim visual QA if no render was inspected.
 7. **Fix and re-check.** Repair issues, render again, and repeat until checks pass or clearly report the remaining limitation.
 8. **Report completion honestly.** Summarize the artifact changed, checks performed, failures/limitations, and where the output can be found. Never claim a file was committed, deployed, tested, or visually verified unless evidence confirms it.
@@ -85,6 +85,10 @@ Before delivery, use [references/qa-checklist.md](references/qa-checklist.md). A
 - [ ] Content and calculations remain unchanged, or explicitly documented changes are approved.
 - [ ] Rendered output was inspected when a render path is available.
 - [ ] Any remaining unverified checks are disclosed.
+
+## Available static checker
+
+The repository includes `scripts/document-layout-qa.mjs` for dependency-free HTML table linting. See [USAGE.md](USAGE.md). It can flag some likely alignment and structure issues but cannot inspect rendered pixels, reliably detect clipping, or replace browser/Office/PDF visual review. Do not claim it supports automated Excel, Word, PDF, or PowerPoint inspection until dedicated adapters exist and are tested.
 
 ## Working style
 - Prefer small, targeted corrections over wholesale redesign.
