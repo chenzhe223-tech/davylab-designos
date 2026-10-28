@@ -12,6 +12,7 @@ From the repository root (Node.js 20+):
 npm run qa:layout -- ./path/to/report.html
 npm run qa:layout -- ./path/to/report.html --json
 npm run qa:layout:excel -- ./path/to/costs.xlsx --json
+npm run qa:layout:word -- ./path/to/report.docx --json
 npm run qa:layout:browser -- tests/fixtures/document-layout-sample.html --out ./artifacts/layout-qa
 npm test
 ```
@@ -51,6 +52,12 @@ The installer refuses to overwrite an existing skill unless `--force` is explici
 The Excel adapter uses `openpyxl` to inspect workbook styles and can flag explicitly left-aligned numeric cells, conflicting explicit alignment within a column, mixed number formats among numeric/formula cells, multiline cells without wrapping, and large merged ranges. Install its dependency with `python3 -m pip install -r requirements-layout-qa.txt`.
 
 This adapter does not evaluate formulas, certify business calculations, render print pages, or guarantee there is no visual clipping. Keep numeric values numeric and visually inspect the final workbook or PDF.
+
+## Word DOCX adapter
+
+The Word adapter uses `python-docx` to inspect table-cell paragraph alignment, numeric-looking cells, vertical alignment, width metadata, and named table styles. It can flag conflicting alignment within a column and numeric-looking cells aligned left.
+
+It does not render page layout, verify pagination, or guarantee there is no clipping. For final acceptance, render the DOCX to PDF or page images and inspect page breaks, margins, cell padding, and overflow.
 
 ## Browser runner
 
