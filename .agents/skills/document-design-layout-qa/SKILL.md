@@ -88,7 +88,7 @@ Before delivery, use [references/qa-checklist.md](references/qa-checklist.md). A
 
 ## Available static checker
 
-The repository includes `scripts/document-layout-qa.mjs` for dependency-free HTML table linting. See [USAGE.md](USAGE.md). It can flag some likely alignment and structure issues but cannot inspect rendered pixels, reliably detect clipping, or replace browser/Office/PDF visual review. Do not claim it supports automated Excel, Word, PDF, or PowerPoint inspection until dedicated adapters exist and are tested.
+The repository includes `scripts/document-layout-qa.mjs` for dependency-free HTML table linting and `scripts/document-layout-browser-qa.mjs` for Playwright-based desktop/mobile checks and screenshots. See [USAGE.md](USAGE.md). Both tools are heuristic; browser checks cannot certify aesthetics or replace human screenshot review, and Office/PDF visual inspection still requires format-specific rendering. Do not claim it supports automated Excel, Word, PDF, or PowerPoint inspection until dedicated adapters exist and are tested.
 
 ## Working style
 - Prefer small, targeted corrections over wholesale redesign.
