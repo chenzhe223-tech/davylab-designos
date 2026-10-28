@@ -33,6 +33,7 @@ npm run validate:rules
 npm test
 npm run build
 npm run engine:status
+npm run qa:layout -- ./path/to/report.html
 ```
 
 Install the actual upstream engine only when GitHub access is available:
@@ -44,6 +45,10 @@ npm run verify:engine-output -- generated/candidate.json
 ```
 
 The engine is not ready until `npm run engine:status` reports `ready: true` and a real upstream output passes validation. Mock output is not accepted. Generated profiles remain drafts until reviewed.
+
+## Document Layout QA skill
+
+A reusable `document-design-layout-qa` skill lives in `.agents/skills/document-design-layout-qa/`. It defines document/table layout rules, financial-data safeguards, and a delivery checklist. A dependency-free HTML table lint command is available via `npm run qa:layout -- ./path/to/report.html`; it is a static heuristic and does not replace rendered visual inspection. See the skill's `USAGE.md` for scope and limitations.
 
 ## Deployment
 
