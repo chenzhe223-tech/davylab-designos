@@ -68,7 +68,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: document-layout-qa
-          path: artifacts/layout-qa\n            artifacts/pdf-layout\n            artifacts/pdf-layout-stdout.json\n          if-no-files-found: warn
+          path: |
+            artifacts/layout-qa
+            artifacts/pdf-layout
+            artifacts/pdf-layout-stdout.json
+          if-no-files-found: warn
           retention-days: 14
       - name: Run desktop and mobile end-to-end tests
         run: npx playwright test
