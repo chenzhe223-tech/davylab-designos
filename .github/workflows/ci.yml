@@ -29,6 +29,15 @@ jobs:
       - run: npm test
       - name: Run responsive document layout QA on fixture
         run: npm run qa:layout:browser -- tests/fixtures/document-layout-sample.html --out ./artifacts/layout-qa
+      - name: Confirm browser QA catches deliberate misalignment
+        shell: bash
+        run: |
+          set +e
+          npm run qa:layout:browser -- tests/fixtures/document-layout-bad-sample.html --out ./artifacts/layout-qa
+          status=$?
+          set -e
+          if [ "$status" -ne 1 ]; then echo "Expected browser QA to exit 1 for the deliberate alignment mismatch; got $status"; exit 1; fi
+          echo "Expected alignment regression detected."
       - name: Upload document layout QA screenshots and report
         if: always()
         uses: actions/upload-artifact@v4
