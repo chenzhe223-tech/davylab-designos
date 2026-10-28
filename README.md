@@ -34,6 +34,7 @@ npm test
 npm run build
 npm run engine:status
 npm run qa:layout -- ./path/to/report.html
+npm run qa:layout:excel -- ./path/to/costs.xlsx --json
 npm run qa:layout:browser -- tests/fixtures/document-layout-sample.html --out ./artifacts/layout-qa
 npm run install:skill:layout -- --dry-run
 ```
@@ -50,7 +51,7 @@ The engine is not ready until `npm run engine:status` reports `ready: true` and 
 
 ## Document Layout QA skill
 
-A reusable `document-design-layout-qa` skill lives in `.agents/skills/document-design-layout-qa/`. It defines document/table layout rules, financial-data safeguards, and a delivery checklist. A dependency-free HTML table lint command is available via `npm run qa:layout -- ./path/to/report.html`; the static command is a heuristic; the Playwright browser command checks desktop/mobile overflow and alignment and saves screenshots for review. Neither replaces human visual inspection. Install the skill into Codex's global skill directory with `npm run install:skill:layout` (preview first with `--dry-run`; existing installations require explicit `--force`). See the skill's `USAGE.md` for scope and limitations.
+A reusable `document-design-layout-qa` skill lives in `.agents/skills/document-design-layout-qa/`. It defines document/table layout rules, financial-data safeguards, and a delivery checklist. A dependency-free HTML table lint command is available via `npm run qa:layout -- ./path/to/report.html`; the static HTML command is a heuristic; the Excel command checks workbook alignment and number-format consistency; the Playwright browser command checks desktop/mobile overflow and alignment and saves screenshots for review. Neither replaces human visual inspection. Install the skill into Codex's global skill directory with `npm run install:skill:layout` (preview first with `--dry-run`; existing installations require explicit `--force`). Install the Excel adapter dependency with `python3 -m pip install -r requirements-layout-qa.txt`. See the skill's `USAGE.md` for scope and limitations.
 
 ## Deployment
 
