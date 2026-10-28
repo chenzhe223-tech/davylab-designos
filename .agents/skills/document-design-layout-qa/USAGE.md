@@ -29,6 +29,22 @@ Exit codes:
 6. Re-run the checker and visually inspect again.
 7. Report static checks and visual checks separately.
 
+## Install the skill for Codex
+
+From the repository root, first preview the target path:
+
+```sh
+npm run install:skill:layout -- --dry-run
+```
+
+Install into `$CODEX_HOME/skills/document-design-layout-qa` (or `~/.codex/skills/document-design-layout-qa` when `CODEX_HOME` is unset):
+
+```sh
+npm run install:skill:layout
+```
+
+The installer refuses to overwrite an existing skill unless `--force` is explicitly provided. After installation, restart or refresh Codex if needed. The repository-local copy under `.agents/skills/` remains available when working in this repository.
+
 ## Browser runner
 
 The browser runner requires Playwright and an installed Chromium browser. It writes desktop/mobile screenshots and a JSON report to the selected output directory. In CI, screenshots are uploaded as the `document-layout-qa` artifact for inspection.
