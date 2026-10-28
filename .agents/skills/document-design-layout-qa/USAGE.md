@@ -14,6 +14,7 @@ npm run qa:layout -- ./path/to/report.html --json
 npm run qa:layout:excel -- ./path/to/costs.xlsx --json
 npm run qa:layout:word -- ./path/to/report.docx --json
 npm run qa:layout:pptx -- ./path/to/deck.pptx --json
+npm run qa:layout:pdf -- ./path/to/report.pdf --out ./artifacts/pdf-layout --dpi 120 --json
 npm run qa:layout:browser -- tests/fixtures/document-layout-sample.html --out ./artifacts/layout-qa
 npm test
 ```
@@ -70,5 +71,11 @@ It does not render slides or reliably detect all text overflow, overlap, or aest
 
 The browser runner requires Playwright and an installed Chromium browser. It writes desktop/mobile screenshots and a JSON report to the selected output directory. In CI, screenshots are uploaded as the `document-layout-qa` artifact for inspection.
 
+## PDF page-rendering adapter
+
+The PDF adapter uses PyMuPDF to render every page to PNG and write a JSON report. It records page dimensions, rotation, extracted text spans, and rendered pixel dimensions; it flags text spans outside page bounds, text within 4 pt of an edge, very small text, pages without extractable text, and inconsistent page sizes.
+
+Run `python3 -m pip install -r requirements-layout-qa.txt` before using it. The renderer can inspect image-only pages visually through the PNGs, but automatic detection cannot assess image-only content without OCR. These heuristics do not verify business figures or aesthetics; inspect the rendered PNGs manually.
+
 ## Future format adapters
-HTML static lint and browser inspection; Excel workbook styles/number formats/widths/print settings; Word/PDF styles and rendered pages; PowerPoint slide geometry and rendered slides. These adapters must be implemented and tested before being described as automated support.
+Remaining enhancements include OCR-assisted inspection for image-only PDFs, deeper Excel print-layout checks, and full rendered-page review workflows for Office documents.
