@@ -42,6 +42,8 @@ jobs:
           page = doc.new_page(width=595, height=842)
           page.insert_text((72, 72), "Procurement cost summary", fontsize=12)
           page.insert_text((72, 110), "Total investment: EUR 494,569.00", fontsize=10)
+          import os
+          os.makedirs("artifacts/pdf-layout", exist_ok=True)
           doc.save("artifacts-layout-qa-smoke.pdf")
           doc.close()
           PY
