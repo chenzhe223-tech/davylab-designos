@@ -32,6 +32,21 @@ jobs:
         run: python3 -m unittest discover -s tests -p 'test_document_layout_word_qa.py'
       - name: Test PowerPoint document layout QA adapter
         run: python3 -m unittest discover -s tests -p 'test_document_layout_pptx_qa.py'
+      - name: Test PDF rendering and layout QA adapter
+        run: python3 -m unittest discover -s tests -p 'test_document_layout_pdf_qa.py'
+      - name: Create PDF QA smoke fixture
+        run: |
+          python3 - <<'PY'
+          import fitz
+          doc = fitz.open()
+          page = doc.new_page(width=595, height=842)
+          page.insert_text((72, 72), "Procurement cost summary", fontsize=12)
+          page.insert_text((72, 110), "Total investment: EUR 494,569.00", fontsize=10)
+          doc.save("artifacts-layout-qa-smoke.pdf")
+          doc.close()
+          PY
+      - name: Render and inspect PDF smoke fixture
+        run: python3 scripts/document_layout_pdf_qa.py artifacts-layout-qa-smoke.pdf --out artifacts/pdf-layout --dpi 96 --json > artifacts/pdf-layout-stdout.json
       - name: Test Render client-IP rate-limit key
         run: python3 -m unittest discover -s tests -p 'test_engine_api_rate_limit.py'
       - run: npm test
@@ -51,8 +66,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: document-layout-qa
-          path: artifacts/layout-qa
-          if-no-files-found: warn
+          path: artifacts/layout-qa\n            artifacts/pdf-layout\n            artifacts/pdf-layout-stdout.json\n          if-no-files-found: warn
           retention-days: 14
       - name: Run desktop and mobile end-to-end tests
         run: npx playwright test
