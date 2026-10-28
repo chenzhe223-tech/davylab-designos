@@ -52,7 +52,7 @@ try {
           }
         }));
         cellsByCol.forEach((cells, ci) => {
-          const aligns = [...new Set(cells.filter(x => x.text).map(x => x.style.textAlign))];
+          const aligns = [...new Set(cells.filter(x => x.text).map(x => x.align))];
           if (aligns.length > 1) issues.push({ severity: "major", code: "COMPUTED_COLUMN_ALIGNMENT_MISMATCH", message: "Table " + (ti + 1) + " column " + (ci + 1) + " has computed alignments: " + aligns.join(", ") + "." });
         });
       });
