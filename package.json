@@ -15,7 +15,8 @@
     "inventory:skill": "python3 scripts/capability-inventory.py",
     "qa:layout": "node scripts/document-layout-qa.mjs",
     "qa:layout:browser": "node scripts/document-layout-browser-qa.mjs",
-    "install:skill:layout": "node scripts/install-document-design-skill.mjs"
+    "install:skill:layout": "node scripts/install-document-design-skill.mjs",
+    "qa:layout:excel": "python3 scripts/document_layout_excel_qa.py"
   },
   "engines": {
     "node": ">=20"
