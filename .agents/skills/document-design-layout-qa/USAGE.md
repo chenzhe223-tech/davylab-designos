@@ -13,6 +13,7 @@ npm run qa:layout -- ./path/to/report.html
 npm run qa:layout -- ./path/to/report.html --json
 npm run qa:layout:excel -- ./path/to/costs.xlsx --json
 npm run qa:layout:word -- ./path/to/report.docx --json
+npm run qa:layout:pptx -- ./path/to/deck.pptx --json
 npm run qa:layout:browser -- tests/fixtures/document-layout-sample.html --out ./artifacts/layout-qa
 npm test
 ```
@@ -58,6 +59,12 @@ This adapter does not evaluate formulas, certify business calculations, render p
 The Word adapter uses `python-docx` to inspect table-cell paragraph alignment, numeric-looking cells, vertical alignment, width metadata, and named table styles. It can flag conflicting alignment within a column and numeric-looking cells aligned left.
 
 It does not render page layout, verify pagination, or guarantee there is no clipping. For final acceptance, render the DOCX to PDF or page images and inspect page breaks, margins, cell padding, and overflow.
+
+## PowerPoint PPTX adapter
+
+The PowerPoint adapter uses `python-pptx` to check slide-canvas boundaries and table-cell paragraph alignment. It flags shapes that extend beyond the slide and table columns with conflicting explicit alignments.
+
+It does not render slides or reliably detect all text overflow, overlap, or aesthetic issues. Render slides to images and inspect them at presentation size before delivery.
 
 ## Browser runner
 
