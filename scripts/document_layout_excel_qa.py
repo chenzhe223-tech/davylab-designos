@@ -65,6 +65,7 @@ def inspect_workbook(filename):
             add("info", "GRIDLINES_HIDDEN_NO_CELL_STYLES",
                 "Gridlines are hidden but no styled cells were detected; verify table boundaries remain visible.", ws.title)
 
+    sheet_count = len(workbook.worksheets)
     workbook.close()
     summary = {key: 0 for key in ("blocker", "major", "warning", "info")}
     for issue in issues:
@@ -74,7 +75,7 @@ def inspect_workbook(filename):
         "version": "0.1.0",
         "mode": "static-workbook-style-analysis",
         "file": str(path),
-        "sheets": len(load_workbook(path, read_only=True, data_only=True).sheetnames),
+        "sheets": sheet_count,
         "summary": summary,
         "issues": issues,
         "limitations": [
