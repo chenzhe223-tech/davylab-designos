@@ -267,3 +267,13 @@ test("normalized candidate carries UX rules and provenance from live Skill searc
   assert.match(html, /domain:item\.id/);
   assert.match(html, /upstream CLI search output \(source path not exposed\)/);
 });
+
+test("Visual DNA Motion Lab is integrated into candidate generation, previews and exports", () => {
+  assert.match(html, /assets\/davylab-motion\.js/);
+  assert.match(html, /assets\/designos-motion-lab\.js/);
+  assert.match(html, /assets\/designos-motion-lab\.css/);
+  assert.match(html, /DesignOSMotionLab\.mount\(host\)/);
+  assert.match(html, /motion:window\.DesignOSMotionLab\?\.getConfig\(\)/);
+  assert.match(html, /window\.DesignOSMotionLab\.getMarkdown\(\)/);
+  assert.match(html, /## Design system/);
+});
