@@ -277,3 +277,8 @@ test("Visual DNA Motion Lab is integrated into candidate generation, previews an
   assert.match(html, /window\.DesignOSMotionLab\.getMarkdown\(\)/);
   assert.match(html, /## Design system/);
 });
+
+test("Markdown export can append the selected Motion Lab specification", () => {
+  assert.match(html, /let lines=\["# "\+d\.name/);
+  assert.match(html, /lines\+="\\n\\n"\+window\.DesignOSMotionLab\.getMarkdown\(\)/);
+});
