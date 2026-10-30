@@ -298,3 +298,27 @@ User restarted the UI design-platform task and explicitly requested adapting the
 - CI [41020508056](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/41020508056) was in progress at checkpoint; verify its final status before acceptance.
 - Cloudflare deploy [41020508061](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/41020508061) and GitHub Pages preview deploy [41020508094](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/41020508094) were pending at checkpoint.
 - Do not claim production integration until build, unit tests, Playwright, deployment and deployed URL have passed. Physical iPhone/iPad acceptance remains a separate human-device check.
+
+
+## Final verification checkpoint — Visual DNA Motion Lab — 2026-10-30
+
+This checkpoint supersedes the earlier “pending CI/deploy” status in section 13.
+
+- Current main commit: `d3d13fafcd9cdfc19b7afcdfa697216402dfbd7e`.
+- DesignOS CI [41021128565](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/41021128565): **success** — unit/contract tests, desktop/mobile Playwright, static build, actual pinned UI UX Pro Max inventory generation and real engine output validation.
+- GitHub Pages preview [41021128532](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/41021128532): **success** — deploy, URL check and deployed browser acceptance, including Motion Lab interaction and candidate export.
+- Cloudflare production [41021128643](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/41021128643): **success** — pre-deploy browser gate, deploy, production URL verification and deployed browser regression.
+- Live Engine API smoke [41021413785](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/41021413785): **success** — CORS, pinned Skill readiness, capability inventory, searchable raw source records, official search, travel product mapping, multiple category mapping, and React stack guidance.
+- Production app: https://davylab-designos.pages.dev/
+- GitHub Pages preview: https://chenzhe223-tech.github.io/davylab-designos/
+
+### Regression found and corrected during deployed acceptance
+
+The first deployed browser run exposed a Markdown export bug: the builder declared its Markdown string with `const` and then appended the Motion Lab section, causing a runtime error before the download event. The builder now uses `let`, a regression assertion was added, and the final GitHub Pages + Cloudflare deployed browser suites passed on the corrected commit. Do not remove this regression test.
+
+### Acceptance boundary
+
+- Motion Lab functions are integrated and production-deployed: six effect presets, three motion personalities, six scene mappings, 1–5 second live preview, tuning controls, candidate preview application, reduced-motion handling, local preset save/load/delete, validated JSON import/export, URL-fragment sharing, and WAAPI/GSAP/Motion code starters.
+- Candidate JSON/Markdown/Agent handoffs carry the chosen motion specification.
+- Automated deployed browser checks passed. Physical iPhone/iPad validation and user-led visual acceptance remain outstanding; automated viewport coverage must not be described as hands-on device testing.
+- GSAP and Motion snippets are implementation starters only. The app does not load these packages by default; Three.js remains optional for true spatial/3D experiences.
