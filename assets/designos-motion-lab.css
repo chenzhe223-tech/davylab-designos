@@ -1,0 +1,55 @@
+/* DAVYLAB DesignOS — scoped Motion Lab presentation */
+.designos-motion-lab{margin:18px 0;padding:clamp(14px,2vw,22px);border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,#17221d,#111923);color:#edf3f6;min-width:0}
+.designos-motion-lab *{box-sizing:border-box}
+.dsl-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:16px}
+.dsl-kicker{font:10px ui-monospace,monospace;letter-spacing:.12em;color:#c7f36b}
+.dsl-head h3{margin:7px 0 5px;font-size:19px;letter-spacing:-.035em;color:#edf3f6}
+.dsl-head p,.designos-motion-lab p{color:#9caeb8;font-size:11px;line-height:1.65;margin:0}
+.dsl-mark{font:10px ui-monospace,monospace;color:#c7f36b;border:1px solid #c7f36b55;border-radius:999px;padding:6px 9px;white-space:nowrap}
+.dsl-personalities,.dsl-scenes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}
+.dsl-personalities button,.dsl-scenes button,.dsl-effects button{min-width:0;text-align:left;border:1px solid #34414a;border-radius:10px;background:#10161d;color:#edf3f6;padding:11px;cursor:pointer}
+.dsl-personalities button[aria-pressed=true],.dsl-scenes button[aria-pressed=true],.dsl-effects button[aria-pressed=true]{border-color:#c7f36b;background:#c7f36b12;box-shadow:inset 0 0 0 1px #c7f36b22}
+.dsl-personalities b,.dsl-scenes b,.dsl-effects b{display:block;font-size:12px;margin-bottom:4px}
+.dsl-personalities small,.dsl-scenes small,.dsl-effects small{display:block;color:#9caeb8;font-size:10px;line-height:1.55}
+.dsl-picker{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,.95fr);gap:12px;margin-top:12px}
+.dsl-effects{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-content:start}
+.dsl-effects button span{display:block;color:#c7f36b;font:9px ui-monospace,monospace;margin-bottom:5px}
+.dsl-preview{border:1px solid #34414a;border-radius:13px;background:#10161d;overflow:hidden;min-width:0}
+.dsl-preview-top{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid #ffffff14}
+.dsl-preview-top span{display:block;color:#c7f36b;font:9px ui-monospace,monospace;letter-spacing:.1em;margin-bottom:3px}
+.dsl-preview-top b{font-size:12px}.dsl-preview-top strong{font:10px ui-monospace,monospace;color:#9caeb8}
+.dsl-stage{min-height:205px;position:relative;display:grid;place-items:center;overflow:hidden;background:radial-gradient(circle at 50% 45%,#c7f36b12,transparent 45%),linear-gradient(#ffffff07 1px,transparent 1px),linear-gradient(90deg,#ffffff07 1px,transparent 1px);background-size:auto,24px 24px,24px 24px}
+.dsl-object{width:82px;height:82px;display:grid;place-items:center;border:1px solid #c7f36b80;border-radius:22px;background:linear-gradient(145deg,#273a2e,#121a1c);color:#c7f36b;font-size:27px;box-shadow:0 15px 40px #0005;z-index:1}
+.dsl-orbit{position:absolute;width:145px;height:55px;border:1px solid #b6a4ff70;border-radius:50%;transform:rotate(-28deg)}
+.dsl-items{position:absolute;bottom:16px;display:flex;gap:7px}
+.dsl-item{width:7px;height:7px;border-radius:50%;background:#c7f36b}
+#dsl-desc{padding:12px 14px;min-height:54px}
+.dsl-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.dsl-actions button,.dsl-preview button{border:1px solid #40504b;background:#151e26;color:#e6efeb;padding:7px 10px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer}
+.dsl-actions .dsl-primary,.dsl-preview .dsl-primary{background:#c7f36b;color:#14200e;border-color:#c7f36b}
+.dsl-preview .dsl-actions{padding:0 14px 13px}
+.dsl-tuning{margin-top:13px;padding:14px;border:1px solid #34414a;border-radius:12px;background:#10161d}
+.dsl-tuning> b{font-size:13px}
+.dsl-controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:12px}
+.dsl-controls label{min-width:0;display:flex;flex-direction:column;gap:6px;color:#d7e1df;font-size:10px}
+.dsl-controls output{color:#c7f36b}
+.dsl-controls input[type=range]{width:100%;accent-color:#c7f36b}
+.dsl-controls select,.dsl-workbench input,.dsl-workbench select,.dsl-workbench textarea{width:100%;min-width:0;border:1px solid #34414a;border-radius:8px;background:#090e13;color:#e6efeb;padding:8px;font:11px/1.5 inherit}
+.dsl-reduced{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;font-size:10px;color:#9caeb8}
+.dsl-reduced label{display:flex;gap:7px;align-items:center;color:#e6efeb}
+.dsl-reduced input{accent-color:#c7f36b}
+.dsl-workbench{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:13px}
+.dsl-workbench section{min-width:0;padding:12px;border:1px solid #34414a;border-radius:10px;background:#121b23}
+.dsl-workbench section>b{font-size:11px}
+.dsl-workbench section p{margin:5px 0 9px;min-height:34px}
+.dsl-workbench textarea{display:block;min-height:95px;resize:vertical;overflow-wrap:anywhere}
+.dsl-workbench input[type=file]{font-size:10px;margin-top:7px}
+.dsl-workbench [role=status],#dsl-status{font-size:10px;color:#9caeb8;margin-top:7px;min-height:15px;overflow-wrap:anywhere}
+.dsl-workbench section>input[type=text],.dsl-workbench section>select{margin-top:7px}
+.dsl-workbench section>.dsl-actions button{flex:1}
+#dsl-json{display:block;width:100%;min-height:110px;margin-top:12px;padding:10px;border:1px solid #34414a;border-radius:9px;background:#090e13;color:#d4e3dd;font:10px/1.5 ui-monospace,monospace;resize:vertical}
+.dsl-boundary{margin-top:9px!important;font-size:10px!important}
+.designos-motion-lab button:focus-visible,.designos-motion-lab input:focus-visible,.designos-motion-lab select:focus-visible,.designos-motion-lab textarea:focus-visible{outline:2px solid #c7f36b;outline-offset:3px}
+@media(max-width:900px){.dsl-picker{grid-template-columns:1fr}.dsl-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.dsl-workbench{grid-template-columns:1fr 1fr}.dsl-workbench section:last-child{grid-column:1/-1}}
+@media(max-width:560px){.dsl-personalities,.dsl-scenes{grid-template-columns:1fr 1fr}.dsl-effects{grid-template-columns:1fr 1fr}.dsl-controls,.dsl-workbench{grid-template-columns:1fr}.dsl-workbench section:last-child{grid-column:auto}.dsl-reduced{align-items:flex-start;flex-direction:column}.dsl-mark{display:none}.designos-motion-lab{padding:12px}}
+@media(prefers-reduced-motion:reduce){.designos-motion-lab *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
