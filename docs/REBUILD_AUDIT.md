@@ -169,3 +169,14 @@ The user restarted the DesignOS UI upgrade and requested integrating the existin
 - Selected motion config is included in candidate JSON, Markdown design brief and coding-Agent instructions. Build copies assets into static output. No unnecessary React/GSAP/Three.js package was installed; the adapter uses Web Animations API, GSAP/Motion are generated target-specific examples, and Three.js remains optional for genuine spatial scenes.
 - Files: `assets/davylab-motion.js`, `assets/motion-tokens.css`, `assets/designos-motion-lab.js`, `assets/designos-motion-lab.css`, `index.html`, `scripts/build.mjs`, candidate schema and new/updated tests.
 - CI and deployment workflows are pending verification. Do not call this shipped until CI, live engine, Cloudflare and GitHub Pages checks are green. Physical mobile-device acceptance is not implied by Playwright.
+
+
+## Visual DNA Motion Lab — final acceptance 2026-10-30
+
+- Final implementation commit: `d3d13fafcd9cdfc19b7afcdfa697216402dfbd7e`.
+- CI [41021128565](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/41021128565) passed tests, desktop/mobile E2E, build and real upstream Skill inventory/generation validation.
+- GitHub Pages deploy/browser acceptance [41021128532](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/41021128532) passed.
+- Cloudflare production deploy/browser regression [41021128643](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/41021128643) passed.
+- Live Engine API smoke [41021413785](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/41021413785) passed strict CORS, readiness, inventory/raw-field search, live search/generation, category mapping and React stack guidance.
+- A deployed Markdown export failure caused by appending to a `const` string was corrected by using `let`; a regression assertion was added. Both final deployed browser suites pass on the corrected commit.
+- Physical iPhone/iPad and user-led visual acceptance remain outstanding. GSAP/Motion snippets are starter code; these dependencies are not loaded automatically. Three.js is optional and only appropriate for spatial/3D cases.
