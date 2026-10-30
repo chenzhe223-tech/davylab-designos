@@ -39,3 +39,13 @@ test('stack compatibility stays unknown until evidence proves compatibility', as
   assert.match(html, /compatible:null,guidanceStatus:stackGuidanceStatus/);
   assert.doesNotMatch(html, /compatible:!!stack/);
 });
+
+test('candidate contract accepts a portable Visual DNA Motion Lab configuration', () => {
+  const motion = schema.properties.motion;
+  assert.deepEqual(motion.type, ['object', 'null']);
+  assert.equal(motion.properties.schema.const, 'davylab.visual-dna-motion/v1');
+  assert.deepEqual(motion.properties.effect.enum, ['fade-up', 'spring', 'slide', 'blur', 'stagger', 'orbit']);
+  assert.equal(motion.properties.durationMs.minimum, 1000);
+  assert.equal(motion.properties.durationMs.maximum, 5000);
+  assert.equal(motion.properties.reducedMotionBehavior.type, 'string');
+});
