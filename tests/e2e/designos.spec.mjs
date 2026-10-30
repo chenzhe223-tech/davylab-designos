@@ -76,6 +76,20 @@ test('production UI: live Skill search, candidate generation, selection and capa
   const candidateCards = page.locator('#engineCandidate .engine-candidate-card');
   await expect(candidateCards).toHaveCount(3);
   await expect(candidateCards.locator('h4')).toHaveText(['均衡现代', '大胆表达', '克制留白']);
+  const motionLab = page.locator('#designosMotionLab');
+  await expect(motionLab).toBeVisible();
+  await expect(motionLab.locator('[data-effect]')).toHaveCount(6);
+  await motionLab.locator('[data-effect="spring"]').click();
+  await expect(motionLab.locator('[data-effect="spring"]')).toHaveAttribute('aria-pressed', 'true');
+  await motionLab.locator('#dsl-duration').fill('2500');
+  await expect(motionLab.locator('#dsl-duration-out')).toHaveText('2.5s');
+  await motionLab.locator('#dsl-preset-name').fill('E2E product motion');
+  await motionLab.locator('#dsl-save').click();
+  await expect(motionLab.locator('#dsl-saved-status')).toContainText('已保存在本机');
+  await motionLab.locator('#dsl-import').fill('{"schema":"wrong"}');
+  await motionLab.locator('#dsl-import-apply').click();
+  await expect(motionLab.locator('#dsl-import-status')).toContainText('导入失败');
+
   const firstCandidate = candidateCards.first();
   await expect(firstCandidate.locator('.candidate-live-preview')).toBeVisible();
   await expect(firstCandidate.locator('.candidate-preview-notice').first()).toContainText('对比度');
@@ -99,6 +113,9 @@ test('production UI: live Skill search, candidate generation, selection and capa
   expect(candidateJson.rawEngineOutput.result.design_system.dials).toMatchObject({ variance: 5, motion: 5, density: 5 });
   expect(candidateJson.delivery.agentExecutionPerformed).toBe(false);
   expect(candidateJson.delivery.designSpecAvailable).toBe(false);
+  expect(candidateJson.motion.effect).toBe('spring');
+  expect(candidateJson.motion.durationMs).toBe(2500);
+  expect(candidateJson.motion.schema).toBe('davylab.visual-dna-motion/v1');
 
   const [designMarkdownDownload] = await Promise.all([
     page.waitForEvent('download'),
