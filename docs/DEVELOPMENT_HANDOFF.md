@@ -259,3 +259,42 @@ This checkpoint supersedes older pending-deployment or transient-failure notes a
 - Candidate previews are still previews of generated design systems, not complete generated user applications. Exporting an Agent brief does not prove that an external coding agent executed it.
 - Continue with cross-category quality evaluation (SaaS, mobile, e-commerce, content, AI product and dashboard), candidate comparison/decision-rationale quality, export consistency, accessibility and viewport edge cases before final product-wide acceptance.
 
+
+
+## 13. Visual DNA Motion Lab integration — 2026-10-30
+
+User restarted the UI design-platform task and explicitly requested adapting the DAVYLAB Visual DNA Motion Lab into DesignOS using the `visual-dna-design` Skill. Apply both `visual-dna-design` and `visual-dna-motion` guidance; keep the integration product-category agnostic and preserve all existing product brief, official engine search/generation, candidate selection/refinement, capability explorer, JSON/Markdown/Agent exports and API behavior.
+
+### Source of truth
+
+- Design skill: [skills/visual-dna-design/SKILL.md](https://github.com/chenzhe223-tech/davylab/blob/main/skills/visual-dna-design/SKILL.md)
+- Motion skill: [skills/visual-dna-motion/SKILL.md](https://github.com/chenzhe223-tech/davylab/blob/main/skills/visual-dna-motion/SKILL.md), version 0.2.0
+- Original Motion Lab: [motion-lab](https://chenzhe223-tech.github.io/motion-lab/) and [source](https://github.com/chenzhe223-tech/chenzhe223-tech.github.io/tree/main/motion-lab)
+- Official reusable adapter: `skills/visual-dna-motion/assets/davylab-motion.js`; semantic tokens: `skills/visual-dna-motion/assets/motion-tokens.css`.
+
+### Implemented in DesignOS (pending current CI/deploy acceptance)
+
+- Vendored the official framework-neutral `DAVYLABMotion` adapter v0.2.0 and semantic motion tokens into `assets/`; no new React, GSAP or Three.js dependency was installed.
+- Added a scoped, responsive Motion Lab workbench after real design candidates are generated. It includes six actual presets (fade-up, spring, slide, blur, stagger, orbit), three motion personalities, six UI scenarios, a real 1–5 second preview, duration/intensity/distance/direction/easing/playback/stagger controls, and a candidate-preview apply action.
+- Added reduced-motion support, 30 local-only named presets, validated JSON import (text/file), JSON download/copy, URL-fragment share, and code starter generation for Web Animations API, GSAP and Motion vanilla.
+- Selected motion configuration is included in the normalized candidate JSON under `motion`, appended to Markdown design brief and coding-Agent handoff. Schema updated to describe the portable configuration.
+- Static build now copies `assets/` into `dist/assets`; build-output, adapter and E2E tests were added/extended.
+- Motion adapter and token sources are preserved from upstream Skill; the Motion Lab UI is an application adaptation, not a copy of the entire standalone lab. Three.js remains optional and is not loaded for ordinary UI.
+
+### Files / commits
+
+- `assets/davylab-motion.js` — official runtime adapter
+- `assets/motion-tokens.css` — semantic tokens
+- `assets/designos-motion-lab.js` / `.css` — scoped DesignOS integration
+- `index.html` — mounts the workbench and includes motion configuration in exports
+- `scripts/build.mjs` — copies runtime assets
+- `schemas/design-candidate.schema.json` — motion configuration contract
+- `tests/motion-adapter.test.mjs`, `tests/preview.test.mjs`, `tests/build-output.test.mjs`, `tests/e2e/designos.spec.mjs`, `tests/design-candidate-schema.test.mjs`
+- Key commits: `60f3f4410b7b6e0134c1c5b202ddfd2ff8c2b797`, `d2c05c1a224a4d2c645ff12056bd83d7f6e83474`, `950e6600cc82651dcc1f8548f36d208cad7c5f6c`, `4dcb15883732b59de1e5096da3ec654eac4eb53f`, `d9490694c763216b1985c48f113e8a19f8010f6f`, `29ed43d471510661e02dcb10f3802d02f34139b7`, `daf92ff304be1dab202550e2d966364762c9564c`, `d02be55a2b1b3a7654a8e9030026a3955e20195d`, `b22b46e37d35799825961111206e5d6d781afc0f`, `3149fce8d7624979851587125949afea8702d997`, `e5b2352038f5ff3b496778c46bd161d3427e9c92`.
+
+### Acceptance status
+
+- Latest source commit at handoff edit: `e5b2352038f5ff3b496778c46bd161d3427e9c92`.
+- CI [41020508056](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/41020508056) was in progress at checkpoint; verify its final status before acceptance.
+- Cloudflare deploy [41020508061](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/41020508061) and GitHub Pages preview deploy [41020508094](https://github.com/chenzhe223-tech/davylab-designos/actions/runs/41020508094) were pending at checkpoint.
+- Do not claim production integration until build, unit tests, Playwright, deployment and deployed URL have passed. Physical iPhone/iPad acceptance remains a separate human-device check.
