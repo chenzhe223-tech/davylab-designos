@@ -158,3 +158,14 @@ This is a first UI direction change, not a completed engine integration or full 
 ## Rules for updating this ledger
 
 Every follow-up must record the exact commit SHA, files changed, real source/version used, test commands and results, workflow URLs, deployment verification, and remaining gaps. Do not convert an unknown or unverified status into a success claim.
+
+
+## Visual DNA Motion Lab integration — 2026-10-30
+
+The user restarted the DesignOS UI upgrade and requested integrating the existing DAVYLAB Visual DNA Motion Lab with the `visual-dna-design` Skill applied to the target app. The implementation is a scoped workbench, not a replacement of DesignOS.
+
+- Upstream source: `chenzhe223-tech/davylab` → `skills/visual-dna-design/SKILL.md` and `skills/visual-dna-motion/SKILL.md` (v0.2.0); original lab: `https://chenzhe223-tech.github.io/motion-lab/`.
+- DesignOS vendors the upstream `DAVYLABMotion` runtime adapter and motion tokens, and adds six effects, three motion personalities, six scene mappings, live 1–5s preview, parameter tuning, reduced-motion support, local preset CRUD (max 30), validated JSON import/export, URL-fragment sharing, and WAAPI/GSAP/Motion code starters.
+- Selected motion config is included in candidate JSON, Markdown design brief and coding-Agent instructions. Build copies assets into static output. No unnecessary React/GSAP/Three.js package was installed; the adapter uses Web Animations API, GSAP/Motion are generated target-specific examples, and Three.js remains optional for genuine spatial scenes.
+- Files: `assets/davylab-motion.js`, `assets/motion-tokens.css`, `assets/designos-motion-lab.js`, `assets/designos-motion-lab.css`, `index.html`, `scripts/build.mjs`, candidate schema and new/updated tests.
+- CI and deployment workflows are pending verification. Do not call this shipped until CI, live engine, Cloudflare and GitHub Pages checks are green. Physical mobile-device acceptance is not implied by Playwright.
