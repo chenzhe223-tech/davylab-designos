@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Design system workspace and UI UX Pro Max adapter",
   "scripts": {
-    "test": "npm run build && node --test tests/*.test.mjs",
+    "test": "npm run validate:providers && npm run build && node --test tests/*.test.mjs",
     "validate:rules": "node scripts/validate-rules.mjs",
     "build": "node scripts/build.mjs",
     "engine:status": "node scripts/designos.mjs engine-status",
