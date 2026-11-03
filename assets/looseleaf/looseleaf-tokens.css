@@ -1,5 +1,5 @@
 /* Looseleaf Paper design tokens. Loaded only by the dedicated style pack. */
-.looseleaf-thumb,#livePreview[data-profile="looseleaf-paper"]{
+.looseleaf-thumb,#livePreview[data-profile="looseleaf-paper"],.ll-paper-surface,.ll-paper-card,.ll-ink-button,.ll-ink-input,.ll-sticker,.ll-ink-divider{
   --ll-paper:#F7F1E5;
   --ll-surface:#FFFCF4;
   --ll-ink:#282923;
