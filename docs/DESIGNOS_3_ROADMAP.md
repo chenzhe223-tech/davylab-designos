@@ -60,8 +60,10 @@ Every external provider must declare:
 - [x] Phase 0 provider registry, source adapters, upstream skill and license notices.
 - [x] First dependency-free browser workbench vertical slice: project brief, visual direction preview, provider catalog, component catalog, layout controls/export, Stage-style scene demo, heuristic QA and Markdown handoff.
 - [x] Main build copies `workbench/` and `integrations/` into the production output; main UI links to the workbench.
-- [ ] CI confirmation and browser-level acceptance for this change.
-- [ ] React-host compatibility spike and actual Looseleaf component source installation.
+- [x] CI confirmation for the static workbench, existing regression suite, desktop/mobile E2E, document-layout QA, and real UI UX Pro Max engine smoke output (run 323, commit `c0b24df`).
+- [x] Isolated React 19 + Vite 8 + Tailwind v4 provider-host scaffold added under `workbench-react/`; the existing static shell remains independent.
+- [ ] CI build verification for the new isolated React host.
+- [ ] Install and compile a real Looseleaf registry component, then audit generated source and dependencies.
 - [ ] Actual Stageshow kit integration and film/rehearsal QA.
 
 The current workbench is a functional local prototype for the first product workflow, not yet the complete production design platform. The component catalog is descriptive metadata, the Stage Studio uses an authored local scene rather than the upstream Stageshow kit, and QA is heuristic. These boundaries are visible in the UI.
