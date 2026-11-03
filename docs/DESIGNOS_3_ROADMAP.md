@@ -55,6 +55,17 @@ Every external provider must declare:
 - token namespace and isolation strategy;
 - verification commands and known limitations.
 
+## Current implementation status (2026-11-03)
+
+- [x] Phase 0 provider registry, source adapters, upstream skill and license notices.
+- [x] First dependency-free browser workbench vertical slice: project brief, visual direction preview, provider catalog, component catalog, layout controls/export, Stage-style scene demo, heuristic QA and Markdown handoff.
+- [x] Main build copies `workbench/` and `integrations/` into the production output; main UI links to the workbench.
+- [ ] CI confirmation and browser-level acceptance for this change.
+- [ ] React-host compatibility spike and actual Looseleaf component source installation.
+- [ ] Actual Stageshow kit integration and film/rehearsal QA.
+
+The current workbench is a functional local prototype for the first product workflow, not yet the complete production design platform. The component catalog is descriptive metadata, the Stage Studio uses an authored local scene rather than the upstream Stageshow kit, and QA is heuristic. These boundaries are visible in the UI.
+
 ## Integration phases
 
 ### Phase 0 — foundation (this change)
