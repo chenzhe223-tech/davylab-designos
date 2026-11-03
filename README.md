@@ -7,7 +7,7 @@ DAVYLAB DesignOS is a visual design selection workspace. Users can preview rule-
 ## DesignOS 2.0 experience
 
 - Profile-driven HTML/CSS visual previews with desktop/mobile viewport switching.
-- Selectable profiles are generated at build time from `profiles/index.json`, the canonical source of truth. Legacy UI IDs remain stable through each profile's `presentation.id` mapping. The registry currently includes Balanced SaaS, SaaS Product, Analytics Dashboard, Warm Editorial, and read-only Dashboard Studio audit.
+- Selectable profiles are generated at build time from `profiles/index.json`, the canonical source of truth. Legacy UI IDs remain stable through each profile's `presentation.id` mapping. The registry currently includes Balanced SaaS, SaaS Product, Analytics Dashboard, Warm Editorial, Looseleaf Paper, and read-only Dashboard Studio audit.
 - Search, category/device filters, selection, favorites (browser-local), and side-by-side comparison for up to four profiles.
 - Project brief form with optional project type, goal, target user, device, tech stack, repository URL, and style preference.
 - Agent instruction generation for Codex, Claude Code, Cursor, GitHub Copilot, Gemini CLI, WorkBuddy, and a generic coding agent.
@@ -20,7 +20,7 @@ DAVYLAB DesignOS is a visual design selection workspace. Users can preview rule-
 
 ### Preview integrity
 
-The UI examples are locally rendered HTML/CSS templates based on documented profile descriptions and tokens. They are illustrative previews, not screenshots of a target application. KPI values and activity rows are example data. Where a profile is only an audit candidate, the interface labels its read-only boundary and does not apply it to a production project.
+The UI examples are locally rendered HTML/CSS templates based on documented profile descriptions and tokens. They are illustrative previews, not screenshots of a target application. KPI values and activity rows are example data. Looseleaf Paper is an independent paper-and-ink style adaptation; it does not bundle upstream React components, fonts or image assets. The upstream Looseleaf source/art is MIT licensed; IBM Plex Mono is separately SIL OFL 1.1. Where a profile is only an audit candidate, the interface labels its read-only boundary and does not apply it to a production project.
 
 The generated agent prompt includes the selected profile rules, source notes, project brief, implementation steps, safety constraints, and acceptance criteria. It is generated locally in the browser. Copying or downloading it does not send it to an agent or claim the agent has executed it.
 
