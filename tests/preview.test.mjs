@@ -298,7 +298,7 @@ test("Looseleaf Paper has an isolated paper-and-ink thumbnail and live preview",
   assert.match(html, /looseleaf-thumb/);
   assert.match(html, /#livePreview\[data-profile="looseleaf-paper"\]/);
   assert.match(html, /data-profile="looseleaf-paper"/);
-  assert.match(html, /纸张纹理|paper texture/i);
+  assert.match(html, /assets\/looseleaf\/looseleaf-tokens\.css/);\n  assert.match(html, /assets\/looseleaf\/looseleaf\.css/);
 });
 
 test("Looseleaf Paper rules flow through the generic details and Agent prompt", () => {
@@ -307,4 +307,16 @@ test("Looseleaf Paper rules flow through the generic details and Agent prompt", 
   assert.match(html, /Looseleaf Paper/);
   assert.match(html, /手绘墨线/);
   assert.match(html, /移动端/);
+});
+
+test("Looseleaf style pack ships scoped tokens and reusable accessible primitives", async () => {
+  const css = await readFile(new URL("../dist/assets/looseleaf/looseleaf.css", import.meta.url), "utf8");
+  const tokens = await readFile(new URL("../dist/assets/looseleaf/looseleaf-tokens.css", import.meta.url), "utf8");
+  assert.match(css, /#livePreview\[data-profile="looseleaf-paper"\]/);
+  assert.match(css, /\.ll-paper-surface/);
+  assert.match(css, /\.ll-ink-button/);
+  assert.match(css, /\.ll-ink-input/);
+  assert.match(css, /prefers-reduced-motion/);
+  assert.match(tokens, /--ll-paper/);
+  assert.match(tokens, /--ll-accent/);
 });
