@@ -76,3 +76,8 @@ Dashboard Studio is a read-only audit candidate. This repository does not apply 
 - Legacy runtime ID mapping: `balanced-saas → davylab-default`, `saas-product → davylab-saas`, `analytics-dashboard → davylab-dashboard`, `warm-editorial → davylab-warm-editorial`, `dashboard-studio → dashboard-studio-live`.
 - Existing local favorite IDs remain stable through `presentation.id`; selected profiles remain session-local as before. No destructive local-storage migration is performed.
 - Evidence statuses: `draft`, `reviewed`, `validated`, and `deprecated` are distinct from workflow lifecycle `status`. Only rules with real evidence may claim validated status; illustrative previews remain clearly labeled.
+
+
+## DesignOS 3.0 provider integrations
+
+The integration foundation for optional design capability providers is documented in [docs/DESIGNOS_3_ROADMAP.md](docs/DESIGNOS_3_ROADMAP.md). Looseleaf is registered as an optional React/Tailwind hand-drawn component provider; Stageshow is registered as a React product-illustration and motion skill. These are provider integrations, not runtime-installed dependencies. The current static HTML application remains intact while an isolated React workbench is evaluated.
