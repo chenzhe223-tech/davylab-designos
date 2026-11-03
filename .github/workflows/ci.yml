@@ -77,6 +77,11 @@ jobs:
       - name: Run desktop and mobile end-to-end tests
         run: npx playwright test
       - run: npm run build
+      - name: Build isolated React provider preview host
+        working-directory: workbench-react
+        run: |
+          npm install --no-package-lock --no-audit --no-fund
+          npm run build
       - name: Install pinned real UI UX Pro Max engine
         run: npm run engine:setup
       - name: Inventory real upstream capability datasets
