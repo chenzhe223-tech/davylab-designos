@@ -5,13 +5,13 @@
   "type": "module",
   "description": "Design system workspace and UI UX Pro Max adapter",
   "scripts": {
-    "test": "npm run build && node --test tests/*.test.mjs",
+    "test": "npm run validate:providers && npm run build && node --test tests/*.test.mjs",
     "validate:rules": "node scripts/validate-rules.mjs",
     "build": "node scripts/build.mjs",
     "engine:status": "node scripts/designos.mjs engine-status",
     "engine:setup": "node scripts/designos.mjs setup-engine",
     "verify:engine-output": "node scripts/verify-engine-output.mjs",
-    "check": "npm run validate:rules && npm test && npm run build",
+    "check": "npm run validate:rules && npm run validate:providers && npm test && npm run build",
     "inventory:skill": "python3 scripts/capability-inventory.py",
     "qa:layout": "node scripts/document-layout-qa.mjs",
     "qa:layout:browser": "node scripts/document-layout-browser-qa.mjs",
@@ -19,7 +19,8 @@
     "qa:layout:excel": "python3 scripts/document_layout_excel_qa.py",
     "qa:layout:word": "python3 scripts/document_layout_word_qa.py",
     "qa:layout:pptx": "python3 scripts/document_layout_pptx_qa.py",
-    "qa:layout:pdf": "python3 scripts/document_layout_pdf_qa.py"
+    "qa:layout:pdf": "python3 scripts/document_layout_pdf_qa.py",
+    "validate:providers": "node scripts/validate-providers.mjs"
   },
   "engines": {
     "node": ">=20"
