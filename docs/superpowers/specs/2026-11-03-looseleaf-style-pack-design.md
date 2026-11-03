@@ -55,7 +55,7 @@
 
 - 修改 `profiles/index.json`：新增完整 profile record，继承 `davylab-default`。
 - 修改 `index.html`：在缩略预览和实时预览中加入以 `looseleaf-paper` 为条件的独立视觉分支；详情、比较、JSON 与 prompt 继续消费 canonical profile 数据。
-- 修改 `tests/preview.test.mjs`：验证新 profile 被构建注入、样式作用域存在、规则出现在导出 prompt。
+- 修改 `tests/preview.test.mjs`：验证新 profile 被构建注入、独立 CSS 资产复制到 dist、样式作用域存在、规则出现在导出 prompt。
 - 修改 `tests/e2e/designos.spec.mjs`：profile 数量由 5 更新为 6；验证 Looseleaf 选择、桌面/手机预览、比较和 Agent prompt。
 - 修改 `README.md`：更新 profile 清单、预览完整性和上游来源说明。
 - 新增 `docs/superpowers/specs/2026-11-03-looseleaf-style-pack-design.md` 与对应实施计划。
