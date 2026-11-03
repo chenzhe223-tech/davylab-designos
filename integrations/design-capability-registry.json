@@ -34,10 +34,19 @@
         "primitives": "Radix UI",
         "distribution": "shadcn registry; source copied into consuming project"
       },
-      "capabilities": ["hand-drawn-paper-style", "accessible-components", "blocks", "icons", "doodles", "stickers", "theme-tokens"],
+      "capabilities": [
+        "hand-drawn-paper-style",
+        "accessible-components",
+        "blocks",
+        "icons",
+        "doodles",
+        "stickers",
+        "theme-tokens"
+      ],
       "integrationBoundary": "Optional isolated visual theme and component pack. Never replace DAVYLAB Core tokens globally or alter existing profile output.",
       "upstreamUrl": "https://kevintngo.github.io/looseleaf/r/{name}.json",
-      "skillAdapter": ".agents/skills/looseleaf/SKILL.md"
+      "skillAdapter": ".agents/skills/looseleaf/SKILL.md",
+      "upstreamCommit": "4bdb647940e2fefb3cebb394f3bad25c766a27d2"
     },
     {
       "id": "stageshow",
@@ -53,9 +62,18 @@
         "runtime": "No third-party animation runtime required",
         "verification": "Playwright filming scripts with locally installed Chrome"
       },
-      "capabilities": ["product-ui-stills", "feature-cards", "bento-grids", "cursor-stories", "phone-and-window-frames", "motion-scenes", "visual-rehearsal"],
+      "capabilities": [
+        "product-ui-stills",
+        "feature-cards",
+        "bento-grids",
+        "cursor-stories",
+        "phone-and-window-frames",
+        "motion-scenes",
+        "visual-rehearsal"
+      ],
       "integrationBoundary": "Use for authored product illustrations and demos only; simulated clicks do not automate real application controls.",
-      "skillAdapter": ".agents/skills/stageshow/SKILL.md"
+      "skillAdapter": ".agents/skills/stageshow/SKILL.md",
+      "upstreamCommit": "802057409787133703c56001080169e347305572"
     }
   ],
   "plannedNativeModules": [
