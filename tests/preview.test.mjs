@@ -282,3 +282,29 @@ test("Markdown export can append the selected Motion Lab specification", () => {
   assert.match(html, /let lines=\["# "\+d\.name/);
   assert.match(html, /lines\+="\\n\\n"\+window\.DesignOSMotionLab\.getMarkdown\(\)/);
 });
+
+
+test("Looseleaf Paper is a distinct canonical profile with provenance and responsive design rules", () => {
+  assert.ok(html.includes('"profileId":"davylab-looseleaf"'));
+  assert.ok(html.includes('"id":"looseleaf-paper"'));
+  assert.ok(html.includes('"extends":"davylab-default"'));
+  assert.match(html, /hand-drawn|手绘/);
+  assert.match(html, /prefers-reduced-motion|减少动态效果/);
+  assert.match(html, /kevintngo\/looseleaf/);
+  assert.match(html, /IBM Plex Mono.*OFL|OFL.*IBM Plex Mono/);
+});
+
+test("Looseleaf Paper has an isolated paper-and-ink thumbnail and live preview", () => {
+  assert.match(html, /looseleaf-thumb/);
+  assert.match(html, /#livePreview\[data-profile="looseleaf-paper"\]/);
+  assert.match(html, /data-profile="looseleaf-paper"/);
+  assert.match(html, /纸张纹理|paper texture/i);
+});
+
+test("Looseleaf Paper rules flow through the generic details and Agent prompt", () => {
+  assert.match(html, /function showDetail\(id\)/);
+  assert.match(html, /function buildPrompt\(\)/);
+  assert.match(html, /Looseleaf Paper/);
+  assert.match(html, /手绘墨线/);
+  assert.match(html, /移动端/);
+});
