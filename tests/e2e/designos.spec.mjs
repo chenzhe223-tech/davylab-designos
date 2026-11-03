@@ -10,7 +10,7 @@ test('desktop: search, select, preview, compare and generate an agent prompt', a
   page.on('pageerror', error => errors.push(error.message));
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(appUrl);
-  await expect(page.locator('#cards .profile')).toHaveCount(5);
+  await expect(page.locator('#cards .profile')).toHaveCount(6);
   await page.locator('#intentInput').fill('高级、有科技感、适合手机的 AI 数据看板');
   await page.locator('#matchIntent').click();
   await expect(page.locator('#matchSummary')).toContainText('Analytics Dashboard');
@@ -25,7 +25,7 @@ test('mobile: layout fits viewport and keyboard focus hides fixed action dock', 
   page.on('pageerror', error => errors.push(error.message));
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(appUrl);
-  await expect(page.locator('#cards .profile')).toHaveCount(5);
+  await expect(page.locator('#cards .profile')).toHaveCount(6);
   const widths = await page.evaluate(() => ({ body: document.body.scrollWidth, viewport: document.documentElement.clientWidth }));
   expect(widths.body).toBeLessThanOrEqual(widths.viewport + 1);
   await page.locator('#intentInput').focus();
@@ -39,13 +39,13 @@ test('JSON export preview contains canonical profile identifiers and version', a
   await page.locator('#exportAll').click();
   const json = await page.locator('#jsonPreview').textContent();
   const parsed = JSON.parse(json);
-  expect(parsed.profiles.length).toBe(5);
+  expect(parsed.profiles.length).toBe(6);
   expect(parsed.profiles.some(profile => profile.profileId === 'davylab-warm-editorial')).toBeTruthy();
   expect(parsed.profiles.every(profile => Boolean(profile.version))).toBeTruthy();
   const [download] = await Promise.all([page.waitForEvent('download'), page.locator('#confirmDownload').click()]);
   const filePath = await download.path();
   const downloaded = JSON.parse(await readFile(filePath, 'utf8'));
-  expect(downloaded.profiles.length).toBe(5);
+  expect(downloaded.profiles.length).toBe(6);
   expect(downloaded.profiles.some(profile => profile.profileId === 'davylab-warm-editorial')).toBeTruthy();
 });
 
@@ -58,6 +58,26 @@ test('first-run experience is product-category agnostic, not dashboard-first', a
   expect(firstProjectType).toContain('移动应用');
   expect(firstProjectType).not.toMatch(/dashboard|看板/i);
   await expect(page.locator('[data-intent="AI 旅行 App，探索小众目的地并记录旅行记忆"]')).toBeVisible();
+});
+
+
+test('Looseleaf Paper: profile selection renders the paper-and-ink preview on desktop and mobile', async ({ page }) => {
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto(appUrl);
+  const looseleafCard = page.locator('.profile[data-id="looseleaf-paper"]');
+  await expect(looseleafCard).toBeVisible();
+  await looseleafCard.locator('[data-preview="looseleaf-paper"]').click();
+  const preview = page.locator('#livePreview');
+  await expect(preview).toHaveAttribute('data-profile', 'looseleaf-paper');
+  await expect(preview).toHaveClass(/looseleaf-preview/);
+  await expect(page.locator('#detail')).toContainText('手绘墨线');
+  await page.locator('[data-device="mobile"]').click();
+  await page.setViewportSize({ width: 390, height: 844 });
+  const widths = await page.evaluate(() => ({ body: document.body.scrollWidth, viewport: document.documentElement.clientWidth }));
+  expect(widths.body).toBeLessThanOrEqual(widths.viewport + 1);
+  expect(errors).toEqual([]);
 });
 
 test('production UI: live Skill search, candidate generation, selection and capability catalog', async ({ page }) => {
