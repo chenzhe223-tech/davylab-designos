@@ -516,7 +516,8 @@
       "桌面端可使用笔记桌式分区与轻量侧栏；平板缩小间距并保持主内容可读；手机隐藏装饰性侧栏并将内容纵向堆叠。",
       "尊重 prefers-reduced-motion；装饰动画不得成为理解内容或完成操作的必要条件。",
       "使用语义化 HTML、可访问表单标签和可见键盘焦点；装饰性图形应从辅助技术阅读顺序中排除。",
-      "预览数据仅为演示内容；未在真实目标项目验证前不得将档案标记为 validated。"
+      "预览数据仅为演示内容；未在真实目标项目验证前不得将档案标记为 validated。",
+      "若目标项目需要复用本风格包，可从 assets/looseleaf/ 复制 looseleaf-tokens.css 与 looseleaf.css；它们提供 CSS primitives，不是 React 组件，接入后仍需在目标项目验证对比度、触控尺寸和布局。"
     ],
     "source": {
       "kind": "adapted-visual-reference",
