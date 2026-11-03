@@ -455,5 +455,120 @@
       "protected": false,
       "displayName": "Warm Editorial"
     }
+  },
+  {
+    "profileId": "davylab-looseleaf",
+    "name": "Looseleaf Paper",
+    "description": "以暖纸张、手绘墨线和克制贴纸营造轻松、有温度且保持清晰层级的产品界面。",
+    "productType": "global",
+    "status": "draft",
+    "version": "0.1.0",
+    "extends": "davylab-default",
+    "accent": "#426B50",
+    "tokens": {
+      "color": {
+        "canvas": "#F7F1E5",
+        "surface": "#FFFCF4",
+        "text": "#282923",
+        "muted": "#716E63",
+        "border": "#D8CFBD",
+        "accent": "#426B50",
+        "secondary": "#B96E45",
+        "success": "#527B5B",
+        "warning": "#B47A35",
+        "danger": "#A94F45"
+      },
+      "typography": {
+        "fontFamily": "DM Sans, Noto Sans SC, sans-serif",
+        "displayFamily": "Kalam, Segoe Print, Comic Sans MS, cursive",
+        "bodySize": "14px",
+        "smallSize": "12px",
+        "lineHeight": 1.65
+      },
+      "spacing": {
+        "unit": "4px",
+        "section": "28px",
+        "panel": "20px",
+        "control": "12px"
+      },
+      "radius": {
+        "sm": "3px",
+        "md": "6px",
+        "lg": "9px"
+      },
+      "shadow": {
+        "panel": "3px 4px 0 rgba(40,41,35,.07)"
+      },
+      "layout": {
+        "contentMaxWidth": "none",
+        "mobileBreakpoint": "760px",
+        "tabletBreakpoint": "1100px",
+        "mobileBehavior": "stack; hide decorative side rail"
+      }
+    },
+    "rules": [
+      "以暖纸白作为画布，使用墨色正文、森林绿主强调与陶土色次强调；颜色服务于信息层级。",
+      "手绘墨线用于卡片、分隔线和重点边界，线条轻微不规则但不能损害对齐与阅读。",
+      "贴纸、印章、涂鸦仅作为少量辅助标记，不遮挡标题、表单、数据或主要操作。",
+      "正文优先使用清晰的系统无衬线字体；手写风格只用于短标题或装饰，不依赖未验证的外部字体。",
+      "按钮、输入框、标签和卡片保持一致的纸面组件语言，并提供 hover、focus-visible、disabled 与错误状态。",
+      "正文和控件文字满足 WCAG AA 对比度目标；状态必须同时使用文字或图形表达，不只依靠颜色。",
+      "桌面端可使用笔记桌式分区与轻量侧栏；平板缩小间距并保持主内容可读；手机隐藏装饰性侧栏并将内容纵向堆叠。",
+      "尊重 prefers-reduced-motion；装饰动画不得成为理解内容或完成操作的必要条件。",
+      "使用语义化 HTML、可访问表单标签和可见键盘焦点；装饰性图形应从辅助技术阅读顺序中排除。",
+      "预览数据仅为演示内容；未在真实目标项目验证前不得将档案标记为 validated。"
+    ],
+    "source": {
+      "kind": "adapted-visual-reference",
+      "evidence": "Visual direction adapted from kevintngo/looseleaf. Upstream repository source/art is MIT licensed; IBM Plex Mono is separately SIL OFL 1.1. No upstream code, font binaries or image assets are bundled in this profile."
+    },
+    "presentation": {
+      "id": "looseleaf-paper",
+      "category": "product",
+      "type": "手作纸感产品界面",
+      "style": "纸感 · 手绘 · 亲和 · 清晰",
+      "use": "创意工具、笔记应用、内容产品、轻量工作台、品牌型 SaaS",
+      "device": "desktop",
+      "layout": "笔记桌式工作区：轻量导航、纸面主内容、分组信息与少量手绘标记",
+      "interaction": "纸面按钮与表单、清晰焦点、轻量反馈、减少动态效果",
+      "limitations": "不适合要求极高数据密度或强工业控制感的界面；装饰必须服从可读性和操作效率。",
+      "principles": [
+        "暖纸底色与墨线边界",
+        "手绘装饰克制使用",
+        "正文可读与层级清晰",
+        "触控与键盘操作可达"
+      ],
+      "tags": [
+        "纸感设计",
+        "手绘风格",
+        "创意工具",
+        "笔记应用",
+        "亲和",
+        "有温度",
+        "内容产品",
+        "轻量 SaaS"
+      ],
+      "aliases": [
+        "looseleaf",
+        "paper UI",
+        "手绘",
+        "手帐",
+        "笔记本",
+        "纸张",
+        "纸感",
+        "涂鸦",
+        "贴纸",
+        "印章",
+        "自然",
+        "亲和",
+        "创意",
+        "温暖",
+        "手作风格"
+      ],
+      "mobileFit": "手机端隐藏装饰性侧栏，纵向堆叠纸面内容，保持控件触控尺寸。",
+      "protected": false,
+      "displayName": "Looseleaf Paper"
+    },
+    "evidenceStatus": "reviewed"
   }
 ]
