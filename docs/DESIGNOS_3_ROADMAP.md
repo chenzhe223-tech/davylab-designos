@@ -62,7 +62,7 @@ Every external provider must declare:
 - [x] Main build copies `workbench/` and `integrations/` into the production output; main UI links to the workbench.
 - [x] CI confirmation for the static workbench, existing regression suite, desktop/mobile E2E, document-layout QA, and real UI UX Pro Max engine smoke output (run 323, commit `c0b24df`).
 - [x] Isolated React 19 + Vite 8 + Tailwind v4 provider-host scaffold added under `workbench-react/`; the existing static shell remains independent.
-- [ ] CI build verification for the new isolated React host.
+- [x] Isolated React host production build verified in CI run 329 on commit `fdedbb4`.
 - [ ] Install and compile a real Looseleaf registry component, then audit generated source and dependencies.
 - [ ] Actual Stageshow kit integration and film/rehearsal QA.
 
