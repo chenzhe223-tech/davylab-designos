@@ -12,8 +12,8 @@ test("preview contains the DesignOS entry point and accessible landmarks", () =>
   assert.match(html, /aria-label="搜索设计档案"/);
 });
 
-test("all four documented visual profiles are present", () => {
-  for (const id of ["balanced-saas", "analytics-dashboard", "warm-editorial", "dashboard-studio"]) {
+test("all selectable visual profiles are present", () => {
+  for (const id of ["balanced-saas", "saas-product", "analytics-dashboard", "warm-editorial", "dashboard-studio", "looseleaf-paper"]) {
     assert.ok(html.includes('"id":"' + id + '"'), "missing profile " + id);
   }
   assert.match(html, /"protected":true/);
