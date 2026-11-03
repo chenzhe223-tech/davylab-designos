@@ -52,16 +52,18 @@
 
 **Files:**
 - Modify: `index.html`
+- Create: `assets/looseleaf/looseleaf.css`
+- Create: `assets/looseleaf/looseleaf-tokens.css`
 - Modify: `tests/preview.test.mjs`
 
 **Interfaces:**
 - Keep `previewThumb(profile)` and `renderPreview(id)` signatures.
 - Scope all new CSS to `[data-profile="looseleaf-paper"]` or a class explicitly added only for this profile.
 
-- [ ] Add failing tests asserting Looseleaf thumbnail markup includes paper/ink identity and that live preview includes a profile-specific preview state.
+- [ ] Add failing tests asserting Looseleaf thumbnail markup includes paper/ink identity, both CSS assets are linked, and built assets expose scoped preview selectors plus reusable `.ll-*` primitives.
 - [ ] Run focused tests and confirm RED.
 - [ ] Add a dedicated Looseleaf thumbnail composition with notebook/paper surface and a small stamp/hand-drawn accent; retain semantic labels and escaped profile content.
-- [ ] Add scoped CSS for warm paper texture, ink outlines, low-radius paper panels, restrained stamp/sticker accents, and visible focus; no global CSS overrides.
+- [ ] Add reusable tokens and CSS primitives in `assets/looseleaf/`; scope preview overrides to the Looseleaf profile only, with warm paper texture, ink outlines, restrained stamp accents and visible focus.
 - [ ] Extend live preview rendering with a Looseleaf-specific heading/description and class/data attribute. Preserve the existing DOM IDs used by other features.
 - [ ] Run focused tests; expect GREEN.
 
@@ -85,7 +87,8 @@
 
 **Files:**
 - Modify: `tests/e2e/designos.spec.mjs`
-- Modify: `README.md`\n- Create: `docs/looseleaf-integration.md`
+- Modify: `README.md`
+- Create: `docs/looseleaf-integration.md`\n- Create: `docs/looseleaf-integration.md`
 
 - [ ] Update selectable profile count assertions from 5 to 6.
 - [ ] Add E2E assertions for Looseleaf card, selection, preview data-profile, mobile viewport width, compare inclusion and prompt content.
