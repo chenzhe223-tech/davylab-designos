@@ -85,7 +85,7 @@
 
 **Files:**
 - Modify: `tests/e2e/designos.spec.mjs`
-- Modify: `README.md`
+- Modify: `README.md`\n- Create: `docs/looseleaf-integration.md`
 
 - [ ] Update selectable profile count assertions from 5 to 6.
 - [ ] Add E2E assertions for Looseleaf card, selection, preview data-profile, mobile viewport width, compare inclusion and prompt content.
