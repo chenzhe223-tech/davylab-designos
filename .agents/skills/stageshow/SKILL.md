@@ -5,6 +5,8 @@ description: Build faux product UI that looks like a real product, as a still il
 
 # Stageshow
 
+> Vendored from `benjitaylor/skills` at commit `802057409787133703c56001080169e347305572`. Review upstream license and NOTICE before redistributing assets.
+
 Miniature product UI: a believable interface, framed in its space, as one still or a short animation in which one thing happens. The viewer recognizes the screen and sees the thing happen.
 
 ## The one idea
