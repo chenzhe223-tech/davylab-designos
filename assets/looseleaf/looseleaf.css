@@ -27,3 +27,16 @@
 #livePreview[data-profile="looseleaf-paper"] .live-sidebar button:focus-visible,#livePreview[data-profile="looseleaf-paper"] button:focus-visible{outline:3px solid #426b50;outline-offset:2px}
 @media(max-width:560px){#livePreview[data-profile="looseleaf-paper"] .live-content{padding:13px}#livePreview[data-profile="looseleaf-paper"] .live-kpis{grid-template-columns:1fr 1fr}#livePreview[data-profile="looseleaf-paper"] .live-kpi:first-child{grid-column:1/-1}}
 @media(prefers-reduced-motion:reduce){.looseleaf-thumb *,#livePreview[data-profile="looseleaf-paper"] *{animation:none!important;transition:none!important}}
+
+/* Reusable primitives for projects that adopt the Looseleaf Paper style pack. */
+.ll-paper-surface{background:var(--ll-paper,#f7f1e5);color:var(--ll-ink,#282923);background-image:repeating-linear-gradient(0deg,transparent 0 27px,#8b80601a 27px 28px),radial-gradient(#7c6f4a12 .7px,transparent .7px);background-size:auto,7px 7px}
+.ll-paper-card{background:var(--ll-surface,#fffcf4);color:var(--ll-ink,#282923);border:1.5px solid #77715f;border-radius:var(--ll-radius,4px 8px 5px 7px);box-shadow:2px 2px 0 var(--ll-shadow,rgba(40,41,35,.08));padding:1rem}
+.ll-ink-button{border:1.5px solid var(--ll-ink,#282923);border-radius:4px 7px 5px 6px;background:var(--ll-accent,#426b50);color:#fff;padding:.65rem 1rem;font:inherit;font-weight:700;cursor:pointer;box-shadow:2px 2px 0 var(--ll-shadow,rgba(40,41,35,.08))}
+.ll-ink-button:hover{filter:brightness(.94);transform:translateY(-1px)}
+.ll-ink-button:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.ll-ink-input{width:100%;min-width:0;border:1.5px solid #77715f;border-radius:3px 6px 4px 5px;background:var(--ll-surface,#fffcf4);color:var(--ll-ink,#282923);padding:.65rem .75rem;font:inherit}
+.ll-ink-input::placeholder{color:var(--ll-muted,#716e63)}
+.ll-sticker{display:inline-flex;align-items:center;justify-content:center;padding:.3rem .55rem;border:1px dashed var(--ll-accent,#426b50);border-radius:2px 6px 3px 5px;background:#dce6d7;color:#315b3d;font-size:.75rem;font-weight:700;transform:rotate(-1.5deg)}
+.ll-ink-divider{border:0;border-top:1.5px dashed var(--ll-line,#d8cfbd);margin:1rem 0}
+.ll-paper-surface :focus-visible,.ll-paper-card :focus-visible,.ll-ink-button:focus-visible,.ll-ink-input:focus-visible{outline:3px solid var(--ll-accent,#426b50);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){.ll-ink-button{transition:none!important;transform:none!important}}
