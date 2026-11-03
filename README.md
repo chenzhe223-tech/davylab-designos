@@ -78,6 +78,10 @@ Dashboard Studio is a read-only audit candidate. This repository does not apply 
 - Evidence statuses: `draft`, `reviewed`, `validated`, and `deprecated` are distinct from workflow lifecycle `status`. Only rules with real evidence may claim validated status; illustrative previews remain clearly labeled.
 
 
+## DesignOS 3.0 integrated workbench
+
+A new browser-local workbench is available at `/workbench/` after build. It includes a project brief and style preview, provider catalog with explicit local enablement, component catalog, responsive layout controls and JSON export, a product-scene demo, heuristic QA, and Markdown implementation handoff. The main build copies the workbench and provider registry into `dist/`. This first vertical slice is intentionally dependency-free and does not claim that upstream React components or Stageshow's filming runtime have been installed.
+
 ## DesignOS 3.0 provider integrations
 
 The integration foundation for optional design capability providers is documented in [docs/DESIGNOS_3_ROADMAP.md](docs/DESIGNOS_3_ROADMAP.md). Looseleaf is registered as an optional React/Tailwind hand-drawn component provider; Stageshow is registered as a React product-illustration and motion skill. These are provider integrations, not runtime-installed dependencies. The current static HTML application remains intact while an isolated React workbench is evaluated.
