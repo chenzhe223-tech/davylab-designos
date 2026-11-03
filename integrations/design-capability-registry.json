@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "platform": "DAVYLAB DesignOS",
+  "platformVersion": "3.0-integration-foundation",
+  "policy": {
+    "integrationMode": "plugin-first",
+    "preserveExistingProfiles": true,
+    "preserveLegacyIds": true,
+    "preserveDashboardStudioReadOnly": true,
+    "noAutomaticGlobalThemeOverwrite": true,
+    "thirdPartySourceMustBePinnedBeforeRuntimeUse": true
+  },
+  "capabilities": [
+    {
+      "id": "davylab-core",
+      "name": "DAVYLAB Core Design System",
+      "kind": "native",
+      "status": "active",
+      "role": "Canonical design tokens, profiles, recommendations and agent instructions",
+      "sourceOfTruth": "profiles/index.json"
+    },
+    {
+      "id": "looseleaf",
+      "name": "Looseleaf",
+      "kind": "component-library-adapter",
+      "status": "evaluated",
+      "upstream": "https://github.com/kevintngo/looseleaf",
+      "license": "MIT",
+      "upstreamVersion": "0.1.0",
+      "compatibility": {
+        "framework": "React",
+        "react": "19.x upstream package",
+        "styling": "Tailwind CSS v4",
+        "primitives": "Radix UI",
+        "distribution": "shadcn registry; source copied into consuming project"
+      },
+      "capabilities": ["hand-drawn-paper-style", "accessible-components", "blocks", "icons", "doodles", "stickers", "theme-tokens"],
+      "integrationBoundary": "Optional isolated visual theme and component pack. Never replace DAVYLAB Core tokens globally or alter existing profile output.",
+      "upstreamUrl": "https://kevintngo.github.io/looseleaf/r/{name}.json",
+      "skillAdapter": ".agents/skills/looseleaf/SKILL.md"
+    },
+    {
+      "id": "stageshow",
+      "name": "Stageshow",
+      "kind": "product-illustration-and-motion-skill",
+      "status": "evaluated",
+      "upstream": "https://github.com/benjitaylor/skills/tree/main/stageshow",
+      "license": "MIT",
+      "upstreamPath": "stageshow",
+      "compatibility": {
+        "framework": "React 18+",
+        "styling": "Plain CSS",
+        "runtime": "No third-party animation runtime required",
+        "verification": "Playwright filming scripts with locally installed Chrome"
+      },
+      "capabilities": ["product-ui-stills", "feature-cards", "bento-grids", "cursor-stories", "phone-and-window-frames", "motion-scenes", "visual-rehearsal"],
+      "integrationBoundary": "Use for authored product illustrations and demos only; simulated clicks do not automate real application controls.",
+      "skillAdapter": ".agents/skills/stageshow/SKILL.md"
+    }
+  ],
+  "plannedNativeModules": [
+    "design-workbench",
+    "component-library",
+    "layout-studio",
+    "theme-and-token-manager",
+    "product-stage-studio",
+    "asset-library",
+    "ai-design-orchestrator",
+    "responsive-preview",
+    "design-qa",
+    "export-and-handoff"
+  ]
+}
