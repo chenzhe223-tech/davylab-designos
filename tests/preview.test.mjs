@@ -298,7 +298,8 @@ test("Looseleaf Paper has an isolated paper-and-ink thumbnail and live preview",
   assert.match(html, /looseleaf-thumb/);
   assert.match(html, /#livePreview\[data-profile="looseleaf-paper"\]/);
   assert.match(html, /data-profile="looseleaf-paper"/);
-  assert.match(html, /assets\/looseleaf\/looseleaf-tokens\.css/);\n  assert.match(html, /assets\/looseleaf\/looseleaf\.css/);
+  assert.match(html, /assets\/looseleaf\/looseleaf-tokens\.css/);
+  assert.match(html, /assets\/looseleaf\/looseleaf\.css/);
 });
 
 test("Looseleaf Paper rules flow through the generic details and Agent prompt", () => {
