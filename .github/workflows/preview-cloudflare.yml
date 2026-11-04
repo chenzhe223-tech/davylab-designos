@@ -1,0 +1,62 @@
+name: Deploy DesignOS branch preview
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: designos-looseleaf-preview
+  cancel-in-progress: true
+
+jobs:
+  deploy-preview:
+    # Never expose deployment credentials to fork-originated pull requests.
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout preview source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate, test and build
+        run: |
+          npm run validate:rules
+          npm test
+          npm install --no-save @playwright/test
+          npx playwright install --with-deps chromium
+          npx playwright test
+          npm run build
+      - name: Verify preview deployment credentials
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "::error::Missing CLOUDFLARE_API_TOKEN repository secret."; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "::error::Missing CLOUDFLARE_ACCOUNT_ID repository variable."; exit 1; }
+      - name: Deploy isolated preview branch
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npx --yes wrangler@4 pages deploy dist \
+            --project-name=davylab-designos \
+            --branch=looseleaf-preview \
+            --commit-hash="$GITHUB_SHA" \
+            --commit-message="DesignOS visual review preview"
+      - name: Verify showcase URL
+        run: |
+          set -euo pipefail
+          URL="https://looseleaf-preview.davylab-designos.pages.dev"
+          curl --fail --silent --show-error --location --retry 10 --retry-all-errors --retry-delay 3 "$URL/examples/looseleaf-showcase.html" -o /tmp/looseleaf-showcase.html
+          grep -q "Looseleaf Paper" /tmp/looseleaf-showcase.html
+          grep -q "quickInput" /tmp/looseleaf-showcase.html
+          echo "PASS: interactive Looseleaf preview verified: $URL/examples/looseleaf-showcase.html"
