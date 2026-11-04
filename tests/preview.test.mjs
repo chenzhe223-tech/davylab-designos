@@ -297,7 +297,7 @@ test("Looseleaf Paper is a distinct canonical profile with provenance and respon
 test("Looseleaf Paper has an isolated paper-and-ink thumbnail and live preview", () => {
   assert.match(html, /looseleaf-thumb/);
   assert.match(html, /\.classList\.toggle\("looseleaf-preview",p\.id==="looseleaf-paper"\)/);
-  assert.match(html, /data-profile="looseleaf-paper"/);
+  assert.match(html, /\.dataset\.profile=p\.id/);
   assert.match(html, /assets\/looseleaf\/looseleaf-tokens\.css/);
   assert.match(html, /assets\/looseleaf\/looseleaf\.css/);
 });
