@@ -57,6 +57,20 @@ button,input,select,textarea{font:inherit}button,a{color:inherit}button{cursor:p
 @media(max-width:980px){.workspace{grid-template-columns:1fr}.side{position:static;display:flex;align-items:center;gap:14px;flex-wrap:wrap}.side .side-title{margin:0}.side-nav{display:flex;flex-wrap:wrap}.side hr,.side-note{display:none}.toolbar{grid-template-columns:minmax(0,1fr) auto}.toolbar .field:last-child{grid-column:1/-1}}
 @media(max-width:660px){.shell{width:min(100% - 22px,1540px);padding-top:13px}.hero{padding:20px}.hero:after{right:-55px}.hero h1{font-size:37px}.hero-bottom{margin-top:18px}.hero-note{text-align:left}.stats{width:100%}.stat{flex:1;min-width:0}.stat strong{font-size:22px}.side{padding:10px}.side-nav{width:100%;gap:3px}.side-nav button{padding:7px 8px;font-size:10px}.toolbar{grid-template-columns:1fr 1fr}.toolbar .search-wrap{grid-column:1/-1}.toolbar .field:last-child{grid-column:auto}.intent-row{grid-template-columns:1fr}.cards{grid-template-columns:1fr}.resource-card{padding:14px}.detail-grid,.agent-grid{grid-template-columns:1fr}.detail-head{padding:15px}.detail-body{padding:13px}.sort-label{display:none}.footer{font-size:9px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+.market-panel,.integration-panel{margin:34px 0 0;border:1px solid var(--line,#d8d4ca);background:rgba(255,255,255,.55);padding:24px;border-radius:18px}
+.market-search{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;margin-top:16px}
+.market-meta,.integration-status{font-size:12px;color:var(--muted,#777);margin:12px 0}
+.market-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.market-card,.integration-card{border:1px solid var(--line,#d8d4ca);border-radius:14px;background:#fff;padding:16px;min-width:0}
+.market-card h3,.integration-card h3{font-size:17px;margin:0 0 8px}
+.market-card p,.integration-card p{font-size:13px;line-height:1.65;color:var(--muted,#777)}
+.market-card .market-source,.integration-kicker{font-size:10px;letter-spacing:.12em;color:var(--accent,#47745d);font-weight:700;margin-bottom:9px}
+.market-card .market-actions,.integration-card .market-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.market-card a{color:var(--accent,#47745d);font-size:12px}
+.integration-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.integration-card .btn{display:inline-flex;margin:6px 8px 0 0;text-decoration:none}
+@media(max-width:760px){.market-results,.integration-grid{grid-template-columns:1fr}.market-search{grid-template-columns:1fr}.market-panel,.integration-panel{padding:16px}}
 </style>
 </head>
 <body>
@@ -112,6 +126,19 @@ button,input,select,textarea{font:inherit}button,a{color:inherit}button{cursor:p
  <div class="list-head"><div><h2 id="listTitle">资源清单</h2><p>点击任一资源，查看适用范围、能力、依赖和使用边界。</p></div><span class="eyebrow">INDEX / 001</span></div>
  <section class="cards" id="resourceCards" aria-live="polite"></section>
  <section class="detail" id="resourceDetail" hidden aria-live="polite"></section>
+ <section class="market-panel" id="publicMarket">
+  <div class="list-head"><div><h2>公开 Skill 市场</h2><p>跨来源发现开源技能。先预览、核验来源，再决定是否收录到个人目录。</p></div><span class="eyebrow">MARKET / LIVE</span></div>
+  <div class="market-search"><input class="field" id="marketQuery" type="search" placeholder="搜索 public skills，例如 browser automation、research、design…" aria-label="搜索公开 Skill 市场"><button class="btn primary" id="marketSearch">搜索市场 →</button></div>
+  <div class="market-meta" id="marketMeta">来源：ClawHub 公共目录 · 结果链接回到原始市场</div>
+  <div class="market-results" id="marketResults" aria-live="polite"><div class="empty">输入关键词，搜索公开市场中的 Skill。</div></div>
+ </section>
+ <section class="integration-panel" id="integrations">
+  <div class="list-head"><div><h2>个人工具联动</h2><p>把发现、管理与创意孵化连成一条工作流。</p></div><span class="eyebrow">DAVYLAB / CONNECT</span></div>
+  <div class="integration-grid">
+   <article class="integration-card"><div class="integration-kicker">API KEY VAULT</div><h3>KeyPocket</h3><p>为 Skill 标注所需模型、API 服务和配置依赖；跳转至密钥管理器完成绑定。资源中心不会读取或传输任何 Key 明文。</p><a class="btn" href="https://chenzhe223-tech.github.io/keypocket/" target="_blank" rel="noopener noreferrer">打开 KeyPocket ↗</a><button class="btn small" id="copyKeyPocketPacket">复制 Skill 配置清单</button></article>
+   <article class="integration-card"><div class="integration-kicker">IDEA INBOX</div><h3>念头盒 · NianBox</h3><p>将公开市场或个人目录中的 Skill 一键收录为待研究念头，保留原始来源、摘要、标签和市场链接。</p><a class="btn" href="https://chenzhe223-tech.github.io/niantou-box-app/" target="_blank" rel="noopener noreferrer">打开念头盒 ↗</a><span class="integration-status" id="nianboxStatus">支持跨站主动收录</span></article>
+  </div>
+ </section>
  <section class="agent-panel" id="agentPanel">
   <h2>让 Agent 自己找到合适的 Skill</h2>
   <p>将调度中心接入你的 Agent：先按任务匹配，再读取源文件、校验条件，最后应用。匹配结果是推荐，不是自动授权。</p>
@@ -325,6 +352,48 @@ POST /api/skills/match</div><button class="btn small" id="copyApi">复制 API �
  document.querySelectorAll("[data-filter]").forEach(b=>b.addEventListener("click",()=>{state.nav=b.dataset.filter;state.type="all";updateFilterButtons();renderCards();}));
  document.querySelectorAll("[data-type]").forEach(b=>b.addEventListener("click",()=>{state.type=b.dataset.type;state.nav="all";updateFilterButtons();renderCards();}));
  $("intentInput").addEventListener("keydown",e=>{if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)){e.preventDefault();matchIntent();}});
+
+ async function searchPublicMarket(){
+  const q=$("marketQuery").value.trim();if(q.length<2){notify("至少输入两个字符再搜索。");return;}
+  const button=$("marketSearch"),host=$("marketResults");button.disabled=true;button.textContent="正在搜索…";host.replaceChildren();
+  const loading=document.createElement("div");loading.className="empty";loading.textContent="正在查询 ClawHub 公共市场…";host.append(loading);
+  try{
+   const response=await fetch("/api/market/skills?q="+encodeURIComponent(q),{headers:{accept:"application/json"},cache:"no-store"});
+   if(!response.ok)throw new Error("市场接口 HTTP "+response.status);
+   const data=await response.json();const items=Array.isArray(data.skills)?data.skills:[];
+   host.replaceChildren();$("marketMeta").textContent="ClawHub 公共目录 · "+items.length+" 条结果 · 搜索时间 "+new Date().toLocaleTimeString();
+   if(!items.length){const empty=document.createElement("div");empty.className="empty";empty.textContent="没有找到匹配的公开 Skill。试试更短或更通用的关键词。";host.append(empty);return;}
+   items.forEach(item=>{
+    const card=document.createElement("article");card.className="market-card";
+    const source=document.createElement("div");source.className="market-source";source.textContent="CLAWHUB · "+(item.owner||"Community");
+    const h=document.createElement("h3");h.textContent=item.name||item.slug||"Untitled Skill";
+    const desc=document.createElement("p");desc.textContent=item.description||item.summary||"市场未提供描述，请打开来源页核验。";
+    const meta=document.createElement("p");meta.textContent=[item.downloads!=null?"下载 "+Number(item.downloads).toLocaleString():null,item.stars!=null?"收藏 "+Number(item.stars).toLocaleString():null,item.version?"版本 "+item.version:null].filter(Boolean).join(" · ")||"公开列表数据";
+    const actions=document.createElement("div");actions.className="market-actions";
+    const link=document.createElement("a");link.href=item.url;link.target="_blank";link.rel="noopener noreferrer";link.textContent="打开市场原页 ↗";
+    const collect=document.createElement("button");collect.className="btn small";collect.textContent="收录到念头盒";collect.addEventListener("click",()=>handoffNianBox({name:item.name||item.slug,description:item.description||item.summary||"",url:item.url,topics:Array.isArray(item.tags)?item.tags.join(" · "):"公开市场 Skill",source:"clawhub"}));
+    actions.append(link,collect);card.append(source,h,desc,meta,actions);host.append(card);
+   });
+  }catch(error){host.replaceChildren();const e=document.createElement("div");e.className="empty";e.textContent="公开市场暂不可用："+(error instanceof Error?error.message:"未知错误");host.append(e);}
+  finally{button.disabled=false;button.textContent="搜索市场 →";}
+ }
+ function handoffNianBox(item){
+  const packet={version:1,source:"davylab-resource-hub",createdAt:Date.now(),name:item.name,description:item.description||"",url:item.url,topics:item.topics||"Skill",sourcePage:location.href};
+  const target="https://chenzhe223-tech.github.io/niantou-box-app/?davySkill="+encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(packet)))));
+  window.open(target,"_blank","noopener");
+  notify("已打开念头盒收录入口；请在念头盒确认保存。");
+ }
+ function selectedResourcePacket(){
+  const r=resources.find(x=>x.id===state.chosen);
+  if(!r){notify("请先选择一个资源。");return;}
+  const requirements=(r.requirements||[]).join("；");
+  const packet={name:r.name,summary:r.summary,source:r.source?.url||r.source?.repository||"",requirements,capabilities:r.capabilities||[],agentSupport:r.agentSupport||[],guardrails:r.guardrails||[],apiKeys:"仅在 KeyPocket 手动绑定；不得导出密钥明文。"};
+  copy(JSON.stringify(packet,null,2));
+ }
+ $("marketSearch").addEventListener("click",searchPublicMarket);
+ $("marketQuery").addEventListener("keydown",event=>{if(event.key==="Enter")searchPublicMarket();});
+ $("copyKeyPocketPacket").addEventListener("click",selectedResourcePacket);
+
  updateStats();updateFilterButtons();renderCards();
  if(state.chosen)renderDetail();else $("resourceDetail").hidden=true;
  $("connectionState").textContent="公开资源目录已载入";
