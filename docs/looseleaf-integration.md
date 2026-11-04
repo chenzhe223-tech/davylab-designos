@@ -28,6 +28,11 @@ Available primitives:
 - `.ll-ink-input` — paper input control.
 - `.ll-sticker` — restrained sticker/tag accent.
 - `.ll-ink-divider` — dashed ink divider.
+- `.ll-field` and `.ll-checkline` — labeled form rows and touch-friendly checkboxes.
+- `.ll-feedback`, `.ll-feedback--warning`, `.ll-feedback--error` — semantic feedback states.
+- `.ll-list` and `.ll-list-item` — structured rows with optional `.ll-list-item__meta`.
+- `.ll-empty-state` and `.ll-empty-state__symbol` — explanatory empty state with a clear next action.
+- `.ll-dialog-backdrop`, `.ll-dialog`, and `.ll-dialog-actions` — modal presentation primitives; the adopting app must implement focus management, Escape handling, focus restoration and dismissal behavior.
 
 These are CSS primitives, not React components. They do not require React, Tailwind, Radix, a build plugin or a JavaScript runtime. Use semantic HTML controls and keep visible focus. Check text contrast and touch target sizing in the target application before shipping.
 
