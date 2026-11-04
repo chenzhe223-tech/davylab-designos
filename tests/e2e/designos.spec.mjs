@@ -73,10 +73,16 @@ test('Looseleaf Paper: profile selection renders the paper-and-ink preview on de
   await expect(preview).toHaveAttribute('data-profile', 'looseleaf-paper');
   await expect(preview).toHaveClass(/looseleaf-preview/);
   await expect(page.locator('#detail')).toContainText('手绘墨线');
+  await page.setViewportSize({ width: 1024, height: 900 });
+  let widths = await page.evaluate(() => ({ body: document.body.scrollWidth, viewport: document.documentElement.clientWidth }));
+  expect(widths.body).toBeLessThanOrEqual(widths.viewport + 1);
   await page.locator('[data-device="mobile"]').click();
   await page.setViewportSize({ width: 390, height: 844 });
-  const widths = await page.evaluate(() => ({ body: document.body.scrollWidth, viewport: document.documentElement.clientWidth }));
+  widths = await page.evaluate(() => ({ body: document.body.scrollWidth, viewport: document.documentElement.clientWidth }));
   expect(widths.body).toBeLessThanOrEqual(widths.viewport + 1);
+  await page.locator('#confirmDesign').click();
+  await expect(page.locator('#promptOutput')).toBeVisible();
+  await expect(page.locator('#promptOutput')).toHaveValue(/贴纸、印章、涂鸦仅作为少量辅助标记/);
   expect(errors).toEqual([]);
 });
 
