@@ -28,8 +28,8 @@ test('resource hub: customize theme, layout, navigation and motion; persist sett
 
   await dialog.locator('[data-motion="spring"]').click();
   await expect(page.locator('body')).toHaveAttribute('data-motion', 'spring');
-  await dialog.locator('#uiMotionIntensity').fill('8');
-  await dialog.locator('#uiMotionDuration').fill('650');
+  await dialog.locator('#uiMotionIntensity').evaluate(el => { el.value = '8'; el.dispatchEvent(new Event('input', { bubbles: true })); });
+  await dialog.locator('#uiMotionDuration').evaluate(el => { el.value = '650'; el.dispatchEvent(new Event('input', { bubbles: true })); });
   await expect(dialog.locator('#uiIntensityValue')).toHaveText('8 / 10');
   await expect(dialog.locator('#uiDurationValue')).toHaveText('650 ms');
   await dialog.locator('#uiReducedMotion').check();
