@@ -14,8 +14,10 @@ function clean(value, max = 1200) {
 function normalizeSkill(raw) {
   if (!raw || typeof raw !== "object") return null;
   const item = raw;
-  const slug = clean(item.slug || item.id, 180);
-  const owner = clean(item.owner || item.author || item.publisher, 100);
+  const rawSlug = clean(item.slug || item.id, 180);
+  const slugParts = rawSlug.split("/").filter(Boolean);
+  const slug = slugParts.at(-1) || rawSlug;
+  const owner = clean(item.owner || item.author || item.publisher || slugParts[0], 100);
   let url = clean(item.url || item.href, 1000);
   if (!url && owner && slug) url = "https://clawhub.ai/" + encodeURIComponent(owner) + "/skills/" + encodeURIComponent(slug);
   try {
@@ -62,6 +64,7 @@ export async function onRequestGet({ request }) {
       : Array.isArray(payload.results) ? payload.results
       : Array.isArray(payload.skills) ? payload.skills
       : Array.isArray(payload.data) ? payload.data
+      : Array.isArray(payload.items) ? payload.items
       : [];
     const skills = candidates.map(normalizeSkill).filter(Boolean).slice(0, 30);
     return json(200, { source: "ClawHub", query, count: skills.length, skills });
