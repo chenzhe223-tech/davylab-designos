@@ -49,7 +49,7 @@ test("preferences persist locally and can be reset without changing resource dat
 });
 
 test("inline JavaScript parses", () => {
-  const scripts = [...html.matchAll(/<script>([\\s\\S]*?)<\\/script>/g)];
+  const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];
   assert.ok(scripts.length > 0, "expected inline application script");
   for (const [, source] of scripts) {
     assert.doesNotThrow(() => new Function(source));
