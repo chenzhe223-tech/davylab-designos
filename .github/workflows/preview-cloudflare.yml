@@ -59,4 +59,4 @@ jobs:
           curl --fail --silent --show-error --location --retry 10 --retry-all-errors --retry-delay 3 "$URL/examples/looseleaf-showcase.html" -o /tmp/looseleaf-showcase.html
           grep -q "Looseleaf Paper" /tmp/looseleaf-showcase.html
           grep -q "quickInput" /tmp/looseleaf-showcase.html
-          echo "PASS: interactive Looseleaf preview verified: $URL/examples/looseleaf-showcase.html"
+          echo "PASS: interactive Looseleaf preview verified: $URL/examples/looseleaf-showcase.html"\n          curl --fail --silent --show-error --location --retry 10 --retry-all-errors --retry-delay 3 "$URL/examples/looseleaf-components.html" -o /tmp/looseleaf-components.html\n          grep -q "Reusable UI primitives" /tmp/looseleaf-components.html\n          grep -q "dialogBackdrop" /tmp/looseleaf-components.html\n          echo "PASS: Looseleaf component reference verified: $URL/examples/looseleaf-components.html"
