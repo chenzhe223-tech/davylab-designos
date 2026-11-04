@@ -1,0 +1,64 @@
+import { test, expect } from '@playwright/test';
+import { pathToFileURL } from 'node:url';
+import { resolve } from 'node:path';
+
+const resourceUrl = process.env.RESOURCE_HUB_URL || pathToFileURL(resolve('dist/resources/index.html')).href;
+
+test('resource hub: customize theme, layout, navigation and motion; persist settings', async ({ page }) => {
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto(resourceUrl);
+  const open = page.locator('#openUiStudio');
+  await expect(open).toBeVisible();
+  await open.click();
+  const dialog = page.locator('#uiStudioBackdrop');
+  await expect(dialog).toBeVisible();
+
+  await dialog.locator('[data-theme="midnight"]').click();
+  await expect(page.locator('body')).toHaveAttribute('data-theme', 'midnight');
+  await dialog.locator('#uiLayout').selectOption('bento');
+  await expect(page.locator('body')).toHaveAttribute('data-layout', 'bento');
+  await dialog.locator('#uiNav').selectOption('hidden');
+  await expect(page.locator('body')).toHaveAttribute('data-nav', 'hidden');
+  const restoreNav = page.locator('#restoreNavButton');
+  await expect(restoreNav).toBeVisible();
+  await restoreNav.click();
+  await expect(page.locator('body')).toHaveAttribute('data-nav', 'left');
+
+  await dialog.locator('[data-motion="spring"]').click();
+  await expect(page.locator('body')).toHaveAttribute('data-motion', 'spring');
+  await dialog.locator('#uiMotionIntensity').fill('8');
+  await dialog.locator('#uiMotionDuration').fill('650');
+  await expect(dialog.locator('#uiIntensityValue')).toHaveText('8 / 10');
+  await expect(dialog.locator('#uiDurationValue')).toHaveText('650 ms');
+  await dialog.locator('#uiReducedMotion').check();
+  await expect(page.locator('body')).toHaveAttribute('data-low-motion', 'true');
+
+  await dialog.locator('#doneUiStudio').click();
+  await expect(dialog).toBeHidden();
+  await page.reload();
+  await expect(page.locator('body')).toHaveAttribute('data-theme', 'midnight');
+  await expect(page.locator('body')).toHaveAttribute('data-layout', 'bento');
+  await expect(page.locator('body')).toHaveAttribute('data-motion', 'spring');
+  await expect(page.locator('body')).toHaveAttribute('data-low-motion', 'true');
+  expect(errors).toEqual([]);
+});
+
+test('resource hub: mobile customization dialog fits the viewport', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(resourceUrl);
+  await page.locator('#openUiStudio').click();
+  const dialog = page.locator('.ui-studio');
+  await expect(dialog).toBeVisible();
+  const dimensions = await dialog.evaluate(el => ({
+    width: el.getBoundingClientRect().width,
+    viewport: document.documentElement.clientWidth,
+    scrollHeight: el.scrollHeight,
+    clientHeight: el.clientHeight
+  }));
+  expect(dimensions.width).toBeLessThanOrEqual(dimensions.viewport);
+  expect(dimensions.scrollHeight).toBeGreaterThanOrEqual(dimensions.clientHeight);
+  await page.locator('#closeUiStudio').click();
+  await expect(page.locator('#uiStudioBackdrop')).toBeHidden();
+});
