@@ -64,3 +64,39 @@ test('resource hub: mobile customization dialog fits the viewport', async ({ pag
   await page.locator('#closeUiStudio').click();
   await expect(page.locator('#uiStudioBackdrop')).toBeHidden();
 });
+
+test('resource hub: custom accent tokens update and dialog traps keyboard focus', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto(resourceUrl);
+  const open = page.locator('#openUiStudio');
+  await open.click();
+  const backdrop = page.locator('#uiStudioBackdrop');
+  await expect(backdrop).toBeVisible();
+
+  await backdrop.locator('#uiAccent').evaluate(el => {
+    el.value = '#ff5500';
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  const tokens = await page.locator('body').evaluate(el => ({
+    accent: getComputedStyle(el).getPropertyValue('--green').trim(),
+    accentStrong: getComputedStyle(el).getPropertyValue('--green-2').trim(),
+    accentSoft: getComputedStyle(el).getPropertyValue('--green-soft').trim()
+  }));
+  expect(tokens.accent).toBe('#ff5500');
+  expect(tokens.accentStrong).toContain('color-mix');
+  expect(tokens.accentSoft).toContain('color-mix');
+
+  const focusable = backdrop.locator('button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [href], [tabindex]:not([tabindex="-1"])').filter({ visible: true });
+  const count = await focusable.count();
+  expect(count).toBeGreaterThan(1);
+  const first = focusable.first();
+  const last = focusable.last();
+  await first.focus();
+  await page.keyboard.press('Shift+Tab');
+  await expect(last).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(first).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(backdrop).toBeHidden();
+  await expect(open).toBeFocused();
+});
