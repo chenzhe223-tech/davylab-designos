@@ -32,7 +32,8 @@
 .ll-paper-surface{background:var(--ll-paper,#f7f1e5);color:var(--ll-ink,#282923);background-image:repeating-linear-gradient(0deg,transparent 0 27px,#8b80601a 27px 28px),radial-gradient(#7c6f4a12 .7px,transparent .7px);background-size:auto,7px 7px}
 .ll-paper-card{background:var(--ll-surface,#fffcf4);color:var(--ll-ink,#282923);border:1.5px solid #77715f;border-radius:var(--ll-radius,4px 8px 5px 7px);box-shadow:2px 2px 0 var(--ll-shadow,rgba(40,41,35,.08));padding:1rem}
 .ll-ink-button{border:1.5px solid var(--ll-ink,#282923);border-radius:4px 7px 5px 6px;background:var(--ll-accent,#426b50);color:#fff;padding:.65rem 1rem;font:inherit;font-weight:700;cursor:pointer;box-shadow:2px 2px 0 var(--ll-shadow,rgba(40,41,35,.08))}
-.ll-ink-button{min-height:44px;min-width:44px}\n.ll-ink-button:hover{filter:brightness(.94);transform:translateY(-1px)}
+.ll-ink-button{min-height:44px;min-width:44px}
+.ll-ink-button:hover{filter:brightness(.94);transform:translateY(-1px)}
 .ll-ink-button:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .ll-ink-input{width:100%;min-width:0;border:1.5px solid #77715f;border-radius:3px 6px 4px 5px;background:var(--ll-surface,#fffcf4);color:var(--ll-ink,#282923);padding:.65rem .75rem;font:inherit}
 .ll-ink-input::placeholder{color:var(--ll-muted,#716e63)}
