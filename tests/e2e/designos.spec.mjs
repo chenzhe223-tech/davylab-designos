@@ -123,6 +123,44 @@ test('Looseleaf showcase: responsive navigation, checklist and quick-add work in
   expect(errors).toEqual([]);
 });
 
+
+test('Looseleaf component reference: button states, form feedback, dialog keyboard flow and mobile targets', async ({ page }) => {
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  const componentsUrl = pathToFileURL(resolve('dist/examples/looseleaf-components.html')).href;
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto(componentsUrl);
+  await expect(page.locator('h1')).toContainText('Small pieces');
+  await page.locator('#primaryAction').click();
+  await expect(page.locator('#buttonStatus')).toContainText('主要操作');
+  await page.locator('#submitForm').click();
+  await expect(page.locator('#formStatus')).toContainText('请先填写项目名称');
+  await page.locator('#projectName').fill('E2E component form');
+  await page.locator('#submitForm').click();
+  await expect(page.locator('#formStatus')).toContainText('E2E component form');
+  const dialog = page.locator('[role="dialog"]');
+  await page.locator('#openDialog').click();
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#dialogBackdrop')).toBeHidden();
+  await expect(page.locator('#openDialog')).toBeFocused();
+  await page.locator('#openDialog').click();
+  await page.locator('#confirmDialog').click();
+  await expect(page.locator('#dialogStatus')).toContainText('没有发送请求');
+  await page.setViewportSize({ width: 390, height: 844 });
+  const mobile = await page.evaluate(() => ({
+    bodyWidth: document.body.scrollWidth,
+    viewportWidth: document.documentElement.clientWidth,
+    buttonHeight: Math.round(document.querySelector('#primaryAction').getBoundingClientRect().height),
+    inputHeight: Math.round(document.querySelector('#projectName').getBoundingClientRect().height),
+  }));
+  expect(mobile.bodyWidth).toBeLessThanOrEqual(mobile.viewportWidth + 1);
+  expect(mobile.buttonHeight).toBeGreaterThanOrEqual(44);
+  expect(mobile.inputHeight).toBeGreaterThanOrEqual(44);
+  expect(errors).toEqual([]);
+});
+
 test('production UI: live Skill search, candidate generation, selection and capability catalog', async ({ page }) => {
   test.skip(!process.env.BASE_URL, 'Real external engine acceptance runs only after deployment against the configured live URL.');
   test.setTimeout(180000);
