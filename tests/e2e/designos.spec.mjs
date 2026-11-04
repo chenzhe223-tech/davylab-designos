@@ -89,6 +89,7 @@ test('Looseleaf Paper: profile selection renders the paper-and-ink preview on de
   await page.locator('#confirmDesign').click();
   await expect(page.locator('#promptOutput')).toBeVisible();
   await expect(page.locator('#promptOutput')).toHaveValue(/贴纸、印章、涂鸦仅作为少量辅助标记/);
+  await expect(page.locator('#promptOutput')).toHaveValue(/"displayFamily"/);
   expect(errors).toEqual([]);
 });
 
