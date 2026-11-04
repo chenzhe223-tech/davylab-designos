@@ -120,9 +120,9 @@
   document.querySelectorAll('[data-filter]').forEach(button=>button.addEventListener('click',()=>{activeFilter=button.dataset.filter;document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));$('listTitle').textContent=activeFilter==='all'?'我的记录':activeFilter+'记录';renderList();}));
   $('searchNotes').addEventListener('input',renderList);
   $('newNote').addEventListener('click',startNew); $('newFromEditor').addEventListener('click',startNew); $('saveNote').addEventListener('click',save);
-  if(!storageAvailable) announce('本机存储暂不可用，仍可在当前页面体验编辑。');
   if(notes.length){activeId=notes[0].id;selectNote(activeId);}else startNew();
   renderList();
+  if(!storageAvailable) announce('本机存储不可用或数据格式损坏；当前仍可临时体验，刷新后更改不会保留。');
 })();
 </script>
 </body>
