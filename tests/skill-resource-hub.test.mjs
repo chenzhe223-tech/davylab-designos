@@ -53,6 +53,14 @@ test('resource hub loads private metadata only from its protected endpoint', () 
   assert.ok(page.includes('fetch("./private-registry.json"'));
   assert.ok(page.includes('credentials:"same-origin"'));
   assert.ok(page.includes('loadPrivateResources()'));
+  assert.ok(page.includes('id="publicMarket"'));
+  assert.ok(page.includes('id="integrations"'));
+  assert.ok(page.includes('handoffKeyPocket'));
+  assert.ok(page.includes('handoffNianBox'));
+  assert.ok(page.includes('kp_capture='));
+  assert.ok(page.includes('davySkill='));
+  assert.ok(page.includes('/api/market/skills?q='));
+
   assert.ok(page.includes('const localIds=resources.map'));
   assert.ok(privateFunction.includes('Cf-Access-Jwt-Assertion'));
   assert.ok(privateFunction.includes('crypto.subtle.verify'));
