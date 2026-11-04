@@ -131,6 +131,13 @@ test('Looseleaf component reference: button states, form feedback, dialog keyboa
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(componentsUrl);
   await expect(page.locator('h1')).toContainText('Small pieces');
+  await expect(page.locator('.ll-feedback').first()).toBeVisible()
+  const sharedStyles = await page.locator('.ll-feedback').first().evaluate(element => ({
+    borderLeftWidth: getComputedStyle(element).borderLeftWidth,
+    borderStyle: getComputedStyle(element).borderLeftStyle,
+  }))
+  expect(sharedStyles.borderLeftWidth).toBe('4px')
+  expect(sharedStyles.borderStyle).toBe('solid')
   await page.locator('#primaryAction').click();
   await expect(page.locator('#buttonStatus')).toContainText('主要操作');
   await page.locator('#submitForm').click();
@@ -141,6 +148,7 @@ test('Looseleaf component reference: button states, form feedback, dialog keyboa
   const dialog = page.locator('[role="dialog"]');
   await page.locator('#openDialog').click();
   await expect(dialog).toBeVisible();
+  await expect(page.locator('#dialogBackdrop')).toHaveCSS('display', 'grid')
   await expect(dialog).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(page.locator('#dialogBackdrop')).toBeHidden();
