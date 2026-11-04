@@ -213,6 +213,9 @@ test('Looseleaf workspace starter: create, edit, search, filter, persist and fit
   expect(mobile.bodyWidth).toBeLessThanOrEqual(mobile.viewportWidth + 1);
   expect(mobile.saveHeight).toBeGreaterThanOrEqual(44);
   expect(mobile.searchHeight).toBeGreaterThanOrEqual(44);
+  await page.evaluate(() => localStorage.setItem('davylab.looseleaf.workspace.v1', '{broken-json'));
+  await page.reload();
+  await expect(page.locator('#saveStatus')).toContainText('数据格式损坏');
   expect(errors).toEqual([]);
 });
 
