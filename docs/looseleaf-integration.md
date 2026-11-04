@@ -2,6 +2,10 @@
 
 This folder contains the reusable CSS layer for the optional Looseleaf Paper profile in DAVYLAB DesignOS.
 
+## Interactive showcase
+
+Open `examples/looseleaf-showcase.html` from the repository or the built site's `/examples/looseleaf-showcase.html`. It demonstrates the responsive visual language with sample KPI tiles, navigation, task controls, a quick-add interaction and mobile layout. All data is illustrative and all interactions are local to the page; nothing is persisted or sent to a server.
+
 ## Files
 
 - `looseleaf-tokens.css`: paper, surface, ink, muted, line, accent, terracotta, shadow and radius tokens.
