@@ -15,7 +15,7 @@
 </head>
 <body class="ll-paper-surface">
 <div class="page">
-<header class="top"><strong>DAVYLAB / DESIGNOS · LOOSELEAF PAPER</strong><a href="./looseleaf-showcase.html">← 返回风格总览</a></header>
+<header class="top"><strong>DAVYLAB / DESIGNOS · LOOSELEAF PAPER</strong><nav aria-label="Looseleaf 页面"><a href="./looseleaf-showcase.html">风格总览</a> · <a href="./looseleaf-workspace.html">体验工作台 ↗</a></nav></header>
 <section class="intro"><div><div class="eyebrow">Reusable UI primitives · 01</div><h1>Small pieces,<br>thoughtfully made.</h1><p>一套可复用的纸感组件样例。每个组件都提供明确状态、键盘焦点和移动端操作尺寸；交互仅在本页本地演示，不连接后端。</p></div><aside>组件原则<br>清晰优先 · 状态完整 · 轻量克制<br>适用于知识工具、个人工作台与轻量创作产品。</aside></section>
 <main class="catalog">
 <section class="ll-paper-card component"><div><h2>01 · Buttons 按钮</h2><p class="sub">主操作、次操作、危险操作与禁用状态。</p></div><div class="demo"><button class="ll-ink-button" id="primaryAction">主要操作</button><button class="ll-ink-button secondary" id="secondaryAction">次要操作</button><button class="ll-ink-button danger" id="dangerAction">危险操作</button><button class="ll-ink-button" disabled>不可用</button></div><p class="status" id="buttonStatus" aria-live="polite"></p><div class="code-label">Interaction · hover / focus / disabled</div></section>
@@ -38,11 +38,21 @@ document.getElementById('submitForm').addEventListener('click',()=>{const name=d
 document.getElementById('emptyAction').addEventListener('click',()=>status('emptyStatus','已创建一条本地示例记录（刷新页面后不会保留）。'));
 const backdrop=document.getElementById('dialogBackdrop'),dialog=backdrop.querySelector('[role=dialog]'),openButton=document.getElementById('openDialog');
 function closeDialog(message){backdrop.classList.remove('open');backdrop.setAttribute('aria-hidden','true');openButton.focus();if(message)status('dialogStatus',message);}
-openButton.addEventListener('click',()=>{backdrop.classList.add('open');backdrop.setAttribute('aria-hidden','false');dialog.focus();});
+openButton.addEventListener('click',()=>{backdrop.classList.add('open');backdrop.setAttribute('aria-hidden','false');document.getElementById('cancelDialog').focus();});
 document.getElementById('cancelDialog').addEventListener('click',()=>closeDialog('已取消。'));
 document.getElementById('confirmDialog').addEventListener('click',()=>closeDialog('已确认本地演示操作，没有发送请求。'));
 backdrop.addEventListener('click',event=>{if(event.target===backdrop)closeDialog('已关闭弹窗。');});
-document.addEventListener('keydown',event=>{if(event.key==='Escape'&&backdrop.classList.contains('open'))closeDialog('已通过 Escape 关闭弹窗。');});
+document.addEventListener('keydown',event=>{
+  if(!backdrop.classList.contains('open'))return;
+  if(event.key==='Escape'){closeDialog('已通过 Escape 关闭弹窗。');return;}
+  if(event.key==='Tab'){
+    const items=[...dialog.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')];
+    if(!items.length){event.preventDefault();dialog.focus();return;}
+    const first=items[0],last=items[items.length-1];
+    if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+    else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+  }
+});
 </script>
 </body>
 </html>
