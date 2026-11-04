@@ -64,3 +64,24 @@ test('official CLI forwards native design dials only within 1-10 bounds', async 
   assert.match(cli, /value < 1 \|\| value > 10/);
   assert.match(cli, /engineArgs\.push\('--' \+ dial, String\(value\)\)/);
 });
+
+
+test('Skill Resource Hub exposes read-only registry routes and deterministic Agent matching', () => {
+  assert.match(api, /REGISTRY_PATH = ROOT \/ "resources" \/ "registry\.json"/);
+  assert.match(api, /path == "\/api\/skills"/);
+  assert.match(api, /path\.startswith\("\/api\/skills\/"\)/);
+  assert.match(api, /path == "\/api\/skills\/match"/);
+  assert.match(api, /def load_resource_registry\(\)/);
+  assert.match(api, /def resource_tokens\(value\)/);
+  assert.match(api, /def find_resource_matches\(/);
+  assert.match(api, /"matchMode": "weighted-keyword"/);
+  assert.match(api, /"semantic": False/);
+  assert.match(api, /"matchScore": score/);
+  assert.match(api, /"matchReasons": reasons/);
+  assert.match(api, /"maxCharacters": 2000/);
+  assert.match(api, /"invalid_limit"/);
+  assert.match(api, /def resource_has_visibility\(resource, visibility\)/);
+  assert.match(api, /params\.get\("visibility"/);
+  assert.match(api, /payload\.get\("visibility"\)/);
+  assert.match(api, /private_registry_requires_cloudflare_access/);
+});

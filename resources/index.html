@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f4f0e6">
+<meta name="description" content="DAVYLAB Skill Resource Hub — find, understand and route reusable Skills, design assets and integrated engines.">
+<title>DAVYLAB · Skill Resource Hub</title>
+<style>
+:root{color-scheme:light;--paper:#f4f0e6;--sheet:#fffdf6;--sheet-2:#faf7ee;--ink:#252b22;--muted:#6e7568;--line:#d7d4c8;--green:#355a43;--green-2:#52765b;--green-soft:#e8eee3;--gold:#c28c42;--red:#a45d49;--shadow:0 14px 34px #2633240d;--serif:Georgia,"Noto Serif SC","Songti SC",serif;--mono:"SFMono-Regular",Consolas,monospace}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.55 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC",sans-serif;background-image:radial-gradient(#5b67521b .65px,transparent .65px);background-size:9px 9px}
+button,input,select,textarea{font:inherit}button,a{color:inherit}button{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #52765b55;outline-offset:2px}
+.shell{width:min(100% - 36px,1540px);margin:auto;padding:22px 0 50px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:22px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none}.brand-mark{display:grid;place-items:center;width:42px;height:42px;background:var(--green);color:#fffdf6;border:1.5px solid var(--ink);border-radius:12px 8px 12px 7px;font:700 16px var(--serif);box-shadow:3px 3px 0 #252b221e}.brand-name{font-weight:850;letter-spacing:.09em;font-size:13px}.brand-name small{display:block;font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.17em;margin-top:3px}
+.top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.back-link{font-size:12px;color:var(--muted);text-decoration:none;border-bottom:1px solid #a3aa9a;padding:3px 0}.online{font-size:11px;color:var(--green);display:flex;align-items:center;gap:7px}.online i{width:7px;height:7px;background:#6c966f;border-radius:50%;box-shadow:0 0 0 3px #6c966f1d}
+.hero{position:relative;border:1.5px solid var(--ink);border-radius:4px 18px 5px 16px;background:var(--sheet);padding:clamp(22px,4vw,44px);box-shadow:5px 6px 0 #252b2210;overflow:hidden}
+.hero:after{content:"";position:absolute;right:7%;top:-55px;width:170px;height:170px;border:1px solid #8d9a7c55;border-radius:50%;box-shadow:0 0 0 16px #8d9a7c12,0 0 0 34px #8d9a7c0b;pointer-events:none}
+.eyebrow{font:700 10px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--green)}
+.hero h1{font:700 clamp(34px,5.5vw,64px)/1.06 var(--serif);letter-spacing:-.055em;margin:12px 0 13px;max-width:870px}.hero h1 em{font-style:normal;color:var(--green);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:7px;text-decoration-color:#9eae93}
+.hero p{color:var(--muted);font-size:14px;max-width:760px;margin:0}
+.hero-bottom{display:flex;justify-content:space-between;align-items:end;gap:22px;margin-top:26px;flex-wrap:wrap}
+.stats{display:flex;gap:9px;flex-wrap:wrap}.stat{min-width:112px;padding:10px 13px;border-left:2px solid var(--green);background:var(--sheet-2)}.stat strong{display:block;font:700 25px/1 var(--serif)}.stat span{display:block;color:var(--muted);font-size:10px;margin-top:5px}
+.hero-note{font-size:11px;color:var(--muted);max-width:340px;text-align:right}.hero-note b{color:var(--green)}
+.workspace{display:grid;grid-template-columns:220px minmax(0,1fr);gap:18px;align-items:start;margin-top:18px}
+.side{position:sticky;top:16px;border:1.5px solid var(--ink);background:#f9f6ed;border-radius:3px 14px 3px 14px;padding:17px;box-shadow:3px 4px 0 #252b220c}
+.side-title{font:700 10px var(--mono);letter-spacing:.13em;color:var(--muted);margin:0 0 10px;text-transform:uppercase}
+.side-nav{display:grid;gap:4px}.side-nav button{border:0;text-align:left;background:transparent;border-radius:7px;padding:9px 10px;font-size:12px;color:#586052;display:flex;justify-content:space-between;align-items:center}.side-nav button:hover,.side-nav button.active{background:var(--green-soft);color:var(--green);font-weight:800}.side-nav span{font:10px var(--mono);opacity:.75}
+.side hr{border:0;border-top:1px dashed #c6c7b9;margin:17px 0}
+.side-note{font-size:11px;color:var(--muted);line-height:1.6}.side-note strong{display:block;color:var(--green);font-size:12px;margin-bottom:4px}
+.main{min-width:0}
+.toolbar{display:grid;grid-template-columns:minmax(220px,1fr) auto auto auto;gap:9px;align-items:center}
+.search-wrap{position:relative}.search-wrap:before{content:"⌕";position:absolute;left:13px;top:6px;color:var(--green);font-size:22px}
+.field{width:100%;min-width:0;border:1.5px solid #bfc5b5;background:var(--sheet);border-radius:8px;padding:11px 12px;color:var(--ink)}.search{padding-left:38px}.field::placeholder{color:#969b8f}
+.btn{border:1.5px solid var(--ink);background:var(--sheet);border-radius:8px;padding:10px 13px;font-weight:750;font-size:11px;box-shadow:2px 2px 0 #252b2210}.btn:hover{transform:translateY(-1px);box-shadow:3px 3px 0 #252b2217}.btn.primary{background:var(--green);color:white;border-color:var(--green)}.btn.ghost{background:transparent;border-color:#bfc5b5;box-shadow:none}.btn.small{padding:7px 10px}
+.intent-box{margin-top:12px;padding:13px;border:1.5px dashed #abb49f;border-radius:10px;background:#f8f6ed}.intent-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}.intent-head strong{font:700 13px var(--serif)}.intent-head span{font-size:10px;color:var(--muted)}.intent-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}.intent-row textarea{min-height:48px;max-height:120px;resize:vertical}
+.filters{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:15px 0 12px}.filter{border:1px solid #c3c8ba;background:#f9f6ed;color:#697064;border-radius:999px;padding:7px 11px;font-size:10px;font-weight:750}.filter.active{border-color:var(--green);color:var(--green);background:var(--green-soft)}.sort-label{margin-left:auto;color:var(--muted);font-size:10px}
+.list-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0}.list-head h2{font:700 20px var(--serif);margin:0}.list-head p{font-size:10px;color:var(--muted);margin:2px 0 0}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.resource-card{position:relative;min-width:0;border:1.5px solid var(--ink);border-radius:3px 13px 4px 13px;background:var(--sheet);padding:15px 15px 13px;box-shadow:3px 4px 0 #252b220c;transition:transform .15s,box-shadow .15s;cursor:pointer}
+.resource-card:hover{transform:translateY(-2px);box-shadow:5px 7px 0 #252b2212}.resource-card.selected{border-color:var(--green);box-shadow:0 0 0 2px #52765b26,4px 5px 0 #355a4317}
+.card-top{display:flex;justify-content:space-between;align-items:start;gap:10px}.resource-symbol{width:34px;height:34px;display:grid;place-items:center;border:1px solid #c8cebf;background:#eff1e7;border-radius:10px;font-size:17px;flex:0 0 auto}
+.card-title{min-width:0;flex:1}.card-title h3{font:700 17px/1.2 var(--serif);margin:0 0 4px;overflow-wrap:anywhere}.card-title small{font:10px var(--mono);color:var(--muted)}
+.status-pill{white-space:nowrap;font-size:9px;padding:4px 7px;border-radius:999px;background:#e9eee4;color:var(--green);font-weight:800}.status-pill.reference{background:#f4ecd9;color:#90652c}.status-pill.engine{background:#e7edf4;color:#456078}
+.card-summary{font-size:11px;color:#62695d;line-height:1.55;min-height:52px;margin:12px 0 10px}
+.best-use{padding:8px 9px;background:#f4f3eb;border-left:2px solid var(--gold);font-size:10px;color:#535b4f;line-height:1.5}.best-use b{color:var(--ink)}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:11px}.tag{font-size:9px;color:#60695c;border:1px solid #d2d5c9;border-radius:999px;padding:3px 6px}
+.card-bottom{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:13px;padding-top:10px;border-top:1px dashed #d2d3c8}.card-bottom span{font-size:9px;color:var(--muted)}.card-bottom b{color:var(--green);font-size:10px}
+.empty{grid-column:1/-1;text-align:center;padding:34px 18px;border:1px dashed #b9c0b1;border-radius:12px;color:var(--muted);background:#fffdf65a}
+.detail{margin-top:18px;border:1.5px solid var(--ink);background:var(--sheet);border-radius:4px 16px 4px 16px;box-shadow:4px 5px 0 #252b2210;overflow:hidden}
+.detail-head{display:flex;justify-content:space-between;align-items:start;gap:14px;padding:18px 19px;background:#edf0e6;border-bottom:1px solid #c7ccbd}.detail-kicker{font:700 9px var(--mono);letter-spacing:.14em;color:var(--green)}.detail-head h2{font:700 25px var(--serif);margin:5px 0 4px}.detail-head p{font-size:11px;color:var(--muted);margin:0}.detail-body{padding:18px 19px}
+.detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.detail-section{border:1px solid #deded2;border-radius:8px;padding:12px;background:#fffef9;min-width:0}.detail-section.full{grid-column:1/-1}.detail-section h3{font:700 12px var(--serif);margin:0 0 8px;color:var(--green)}.detail-section p{font-size:11px;color:#5f665a;margin:0;white-space:pre-wrap;overflow-wrap:anywhere}.detail-section ul{margin:0;padding-left:17px;color:#5f665a;font-size:11px}.detail-section li{margin:4px 0}.source-row{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:9px 0;border-top:1px dashed #d8d9ce;font-size:10px}.source-row:first-child{border-top:0}.source-row span{color:var(--muted)}.source-row a{color:var(--green);font-weight:800;overflow-wrap:anywhere}
+.detail-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.agent-panel{margin-top:18px;border:1.5px solid var(--green);border-radius:5px 15px 5px 15px;background:#eaf0e5;padding:17px}.agent-panel h2{font:700 20px var(--serif);margin:0 0 5px}.agent-panel>p{font-size:11px;color:#657060;margin:0 0 13px}.agent-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.agent-box{background:#fffdf6;border:1px solid #c4cdbd;border-radius:8px;padding:12px;min-width:0}.agent-box h3{font:700 12px var(--serif);margin:0 0 7px}.agent-box p{font-size:10px;color:var(--muted);margin:0 0 9px}.code{font:10px/1.55 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;background:#f6f3e9;border:1px solid #deded2;border-radius:7px;padding:10px;color:#384337;max-height:180px;overflow:auto}
+.footer{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:19px 3px 0;color:var(--muted);font-size:10px}.footer a{color:var(--green);font-weight:750}
+.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--ink);color:white;border-radius:999px;padding:10px 15px;font-size:11px;transition:.2s;z-index:10}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:980px){.workspace{grid-template-columns:1fr}.side{position:static;display:flex;align-items:center;gap:14px;flex-wrap:wrap}.side .side-title{margin:0}.side-nav{display:flex;flex-wrap:wrap}.side hr,.side-note{display:none}.toolbar{grid-template-columns:minmax(0,1fr) auto}.toolbar .field:last-child{grid-column:1/-1}}
+@media(max-width:660px){.shell{width:min(100% - 22px,1540px);padding-top:13px}.hero{padding:20px}.hero:after{right:-55px}.hero h1{font-size:37px}.hero-bottom{margin-top:18px}.hero-note{text-align:left}.stats{width:100%}.stat{flex:1;min-width:0}.stat strong{font-size:22px}.side{padding:10px}.side-nav{width:100%;gap:3px}.side-nav button{padding:7px 8px;font-size:10px}.toolbar{grid-template-columns:1fr 1fr}.toolbar .search-wrap{grid-column:1/-1}.toolbar .field:last-child{grid-column:auto}.intent-row{grid-template-columns:1fr}.cards{grid-template-columns:1fr}.resource-card{padding:14px}.detail-grid,.agent-grid{grid-template-columns:1fr}.detail-head{padding:15px}.detail-body{padding:13px}.sort-label{display:none}.footer{font-size:9px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header class="top">
+ <a class="brand" href="../" aria-label="Back to DesignOS"><div class="brand-mark">D/</div><div class="brand-name">DAVYLAB<small>SKILL RESOURCE HUB</small></div></a>
+ <div class="top-actions"><span class="online"><i></i><span id="connectionState">本地资源目录已载入</span></span><a class="back-link" href="../">← 返回 DesignOS</a></div>
+</header>
+<section class="hero">
+ <div class="eyebrow">A small library for a larger imagination · LOOSELEAF PAPER · 01 / RESOURCE DESK</div>
+ <h1>把好用的能力，<em>随时调出来。</em></h1>
+ <p>你的 Skill、设计系统和集成引擎，都有自己的位置。先看清它能做什么、何时使用、有哪些边界；需要时，让 Agent 按任务找到合适的能力。</p>
+ <div class="hero-bottom">
+  <div class="stats">
+   <div class="stat"><strong id="skillCount">—</strong><span>可复用 Skills</span></div>
+   <div class="stat"><strong id="engineCount">—</strong><span>集成引擎</span></div>
+   <div class="stat"><strong id="assetCount">—</strong><span>视觉 / 设计资产</span></div>
+   <div class="stat"><strong id="privateCount">—</strong><span>私有仓库资源</span></div>
+   <div class="stat"><strong id="publicCount">—</strong><span>公开仓库资源</span></div>
+  </div>
+  <div class="hero-note"><b>一份登记 · 多个 Agent 使用</b><br>资源摘要公开展示；私有 Skill 原文仍由原仓库权限控制。</div>
+ </div>
+</section>
+<div class="workspace">
+<aside class="side">
+ <p class="side-title">资源导航</p>
+ <nav class="side-nav" aria-label="资源筛选">
+  <button class="active" data-filter="all">全部资源 <span id="allCount">10</span></button>
+  <button data-filter="skill">Skills <span id="navSkillCount">7</span></button>
+  <button data-filter="engine">集成引擎 <span>↗</span></button>
+  <button data-filter="visual">视觉资产 <span>✳</span></button>
+  <button data-filter="profile">设计档案 <span>◫</span></button>
+ </nav>
+ <div style="width:100%;border-top:1px dashed #c6c7b9;padding-top:12px">
+  <p class="side-title">调用原则</p>
+  <div class="side-note"><strong>看摘要，不代替读原文</strong>Agent 命中资源后，仍须读取对应 SKILL.md，检查前置条件与授权边界，再执行任务。</div>
+ </div>
+</aside>
+<main class="main">
+ <div class="toolbar">
+  <div class="search-wrap"><input id="searchInput" class="field search" type="search" placeholder="搜索技能、能力、场景或关键词…" aria-label="搜索资源"></div>
+  <select id="categoryFilter" class="field" aria-label="按领域筛选"><option value="all">所有领域</option></select>
+  <select id="agentFilter" class="field" aria-label="按 Agent 筛选"><option value="all">所有 Agent</option><option>WorkBuddy</option><option>Codex</option><option>Claude Code</option><option>Cursor</option><option>Gemini CLI</option><option>GitHub Copilot</option><option>Generic</option><option>DesignOS</option></select>
+  <select id="visibilityFilter" class="field" aria-label="按来源仓库可见性筛选"><option value="all">全部来源 · 公开 + 私有</option><option value="private">私有仓库</option><option value="public">公开仓库</option><option value="reference">外部参考</option></select>
+ </div>
+ <section class="intent-box">
+  <div class="intent-head"><strong>按任务找技能</strong><span>描述你正在做的事，系统会匹配适用能力</span></div>
+  <div class="intent-row"><textarea id="intentInput" class="field" placeholder="例如：比较三家供应商的装修报价，检查税态、缺项并生成采购决策看板。"></textarea><button class="btn primary" id="matchButton">匹配资源 →</button></div>
+ </section>
+ <div class="filters" id="typeFilters">
+  <button class="filter active" data-type="all">全部类型</button><button class="filter" data-type="skill">可执行 Skill</button><button class="filter" data-type="engine">引擎</button><button class="filter" data-type="visual-pack">视觉参考</button><button class="filter" data-type="profile-library">设计档案</button><span class="sort-label" id="resultMeta">正在读取资源目录…</span>
+ </div>
+ <div class="list-head"><div><h2 id="listTitle">资源清单</h2><p>点击任一资源，查看适用范围、能力、依赖和使用边界。</p></div><span class="eyebrow">INDEX / 001</span></div>
+ <section class="cards" id="resourceCards" aria-live="polite"></section>
+ <section class="detail" id="resourceDetail" hidden aria-live="polite"></section>
+ <section class="agent-panel" id="agentPanel">
+  <h2>让 Agent 自己找到合适的 Skill</h2>
+  <p>将调度中心接入你的 Agent：先按任务匹配，再读取源文件、校验条件，最后应用。匹配结果是推荐，不是自动授权。</p>
+  <div class="agent-grid">
+   <div class="agent-box"><h3>Agent API · Discovery</h3><p>供已连接的 Agent / 服务端检索；以下接口只返回资源元数据，不返回私有 Skill 正文。</p><div class="code" id="apiSnippet">GET /api/skills
+GET /api/skills?q=供应商报价
+GET /api/skills/{id}
+POST /api/skills/match</div><button class="btn small" id="copyApi">复制 API 地址与接口</button></div>
+   <div class="agent-box"><h3>最简调用方式</h3><p>Agent 根据任务传入 intent 和自身标识。返回结果会带适用说明、来源路径、SHA 指纹与使用约束。</p><div class="code" id="curlSnippet">POST /api/skills/match
+{ "intent": "供应商报价对比", "agent": "WorkBuddy", "limit": 5 }</div><button class="btn small" id="copyCurl">复制请求示例</button></div>
+  </div>
+ </section>
+ <footer class="footer"><span>DAVYLAB · RESOURCE DESK · Registry <b id="registryVersion">—</b></span><span>私有资源需登录 · <a href="https://github.com/chenzhe223-tech/davylab-designos/tree/main/resources/registry.json">查看公开索引</a></span></footer>
+</main>
+</div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+/*__RESOURCE_REGISTRY__*/
+(() => {
+ "use strict";
+ const registry = window.__RESOURCE_REGISTRY__;
+ const API_BASE = "https://davylab-designos-engine.onrender.com";
+ const API = API_BASE + "/api/skills";
+ const $ = id => document.getElementById(id);
+ let resources = Array.isArray(registry?.resources) ? registry.resources : [];
+ const state = {type:"all", nav:"all", category:"all", agent:"all", visibility:"all", query:"", order:resources.map(r=>r.id), matchedOrder:[], chosen:resources[0]?.id || null};
+ const symbols = {skill:"✳",engine:"⌘","visual-pack":"✎","profile-library":"▦"};
+ const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+ const normalize = value => String(value ?? "").toLocaleLowerCase().normalize("NFKC");
+ const notify = message => { const el=$("toast"); el.textContent=message; el.classList.add("show"); window.setTimeout(()=>el.classList.remove("show"),1800); };
+ const searchable = r => [r.name,r.englishName,r.summary,r.categoryLabel,...(r.triggers||[]),...(r.tags||[]),...(r.whenToUse||[]),...(r.capabilities||[])].join(" ");
+ const tokens = q => {const s=normalize(q);const parts=s.match(/[a-z0-9][a-z0-9.+_-]*|[\u3400-\u9fff]/g)||[];const out=new Set(parts.filter(x=>x.length>1));const han=s.replace(/[^\u3400-\u9fff]/g,"");for(let i=0;i<han.length-1;i++)out.add(han.slice(i,i+2));return [...out];};
+ const score = (r,q) => {const qn=normalize(q);if(!qn)return 0;const groups=[ [r.name+" "+r.englishName,7],[(r.triggers||[]).join(" "),6],[(r.tags||[]).join(" "),4],[(r.whenToUse||[]).join(" "),3],[(r.capabilities||[]).join(" "),2], [r.summary,2] ];let value=0;for(const [source,weight] of groups){const hay=normalize(source);if(hay.includes(qn))value+=weight*3;for(const t of tokens(q))if(hay.includes(t))value+=weight;}return value;};
+ const filtered = () => {
+  let list=resources.filter(r=>state.nav==="all" || (state.nav==="visual" ? ["visual-pack","skill"].includes(r.type)&&["visual-system","design","workspace"].includes(r.category) : state.nav==="profile" ? r.type==="profile-library" : r.type===state.nav));
+  if(state.type!=="all")list=list.filter(r=>r.type===state.type);
+  if(state.category!=="all")list=list.filter(r=>r.category===state.category);
+  if(state.agent!=="all")list=list.filter(r=>(r.agentSupport||[]).includes(state.agent));
+  if(state.visibility!=="all")list=list.filter(r=>{const sources=[r.source,...(r.alternateSources||[])].filter(Boolean);return sources.some(s=>state.visibility==="reference"?s.visibility==="reference":s.visibility===state.visibility);});
+  if(state.query){list=list.map(r=>({...r,_score:score(r,state.query)})).filter(r=>r._score>0).sort((a,b)=>state.matchedOrder.length?(state.matchedOrder.indexOf(a.id)<0?999:state.matchedOrder.indexOf(a.id))-(state.matchedOrder.indexOf(b.id)<0?999:state.matchedOrder.indexOf(b.id)):b._score-a._score);}
+  else list.sort((a,b)=>state.order.indexOf(a.id)-state.order.indexOf(b.id));
+  return list;
+ };
+ const li = (items) => {const ul=document.createElement("ul");(items||[]).forEach(item=>{const e=document.createElement("li");e.textContent=String(item);ul.append(e)});return ul;};
+ const section = (host,title,content,full=false) => {const box=document.createElement("section");box.className="detail-section"+(full?" full":"");const h=document.createElement("h3");h.textContent=title;box.append(h);if(Array.isArray(content))box.append(li(content));else{const p=document.createElement("p");p.textContent=content||"未登记";box.append(p);}host.append(box);};
+ const statusLabel = r => r.type==="visual-pack"?"参考包":r.type==="engine"?"已集成":r.type==="profile-library"?"档案库":r.status==="active"?"可用":"已集成";
+ function renderDetail(){
+  const r=resources.find(x=>x.id===state.chosen);const host=$("resourceDetail");host.replaceChildren();if(!r){host.hidden=true;return;}host.hidden=false;
+  const head=document.createElement("div");head.className="detail-head";const titleWrap=document.createElement("div");
+  const kicker=document.createElement("div");kicker.className="detail-kicker";kicker.textContent=(r.type||"resource").toUpperCase()+" / "+(r.categoryLabel||r.category);
+  const h=document.createElement("h2");h.textContent=r.name;const desc=document.createElement("p");desc.textContent=r.summary;titleWrap.append(kicker,h,desc);
+  const close=document.createElement("button");close.className="btn ghost small";close.textContent="收起详情";close.addEventListener("click",()=>{host.hidden=true;state.chosen=null;renderCards();});
+  head.append(titleWrap,close);host.append(head);
+  const body=document.createElement("div");body.className="detail-body";const grid=document.createElement("div");grid.className="detail-grid";
+  section(grid,"适用场景 / WHEN TO USE",r.whenToUse);
+  section(grid,"不适用 / NOT FOR",r.notFor);
+  section(grid,"核心能力 / CAPABILITIES",r.capabilities);
+  section(grid,"输入与输出",["输入："+(r.inputs||[]).join("；"),"输出："+(r.outputs||[]).join("；")],true);
+  section(grid,"运行前置条件",r.requirements);
+  section(grid,"执行边界 / GUARDRAILS",r.guardrails);
+  section(grid,"触发关键词",r.triggers);
+  section(grid,"兼容 Agent",r.agentSupport);
+  const source=document.createElement("section");source.className="detail-section full";const sh=document.createElement("h3");sh.textContent="来源与版本指纹";source.append(sh);
+  const rows=[["类型 / 状态",(r.type||"resource")+" · "+(r.status||"unknown")+" · "+(r.maturity||"")],["主来源仓库",r.source?.repository||r.source?.kind||"外部参考"],["路径",r.source?.path||"—"],["Ref / Blob SHA",r.source?.ref||"—"],["Blob SHA",r.source?.blobSha||"—"],["仓库可见性",r.source?.visibility||"—"]];
+  rows.forEach(([label,value])=>{const row=document.createElement("div");row.className="source-row";const a=document.createElement("span");a.textContent=label;const b=document.createElement("b");b.textContent=value;row.append(a,b);source.append(row)});
+  if(r.source?.url){const row=document.createElement("div");row.className="source-row";const a=document.createElement("span");a.textContent="来源链接";const b=document.createElement("a");b.href=r.source.url;b.target="_blank";b.rel="noopener noreferrer";b.textContent="打开源文件 / 参考 →";row.append(a,b);source.append(row);}
+  (r.alternateSources||[]).forEach((alt,index)=>{
+   const row=document.createElement("div");row.className="source-row";const a=document.createElement("span");a.textContent="其他来源 "+(index+1)+" · "+(alt.visibility||"未标记");
+   const b=document.createElement("a");b.href=alt.url;b.target="_blank";b.rel="noopener noreferrer";b.textContent=(alt.repository||"Source")+" / "+(alt.path||"打开文件")+" →";row.append(a,b);source.append(row);
+  });
+  if(r.source?.access?.includes("authorized")||r.source?.visibility==="private"){const note=document.createElement("p");note.style.marginTop="10px";note.textContent="这是私有资源。链接本身不会授予访问权；Agent 必须使用已授权的 GitHub 连接或本地工作区读取原文。";source.append(note);}
+  grid.append(source);body.append(grid);
+  const actions=document.createElement("div");actions.className="detail-actions";
+  const use=document.createElement("button");use.className="btn primary";use.textContent="生成此 Skill 的 Agent 调用指令";use.addEventListener("click",()=>makePrompt(r));
+  const copySource=document.createElement("button");copySource.className="btn";copySource.textContent="复制来源路径";copySource.addEventListener("click",()=>copy(r.source?.repository ? r.source.repository+"/"+r.source.path : r.source?.url||""));
+  actions.append(use,copySource);body.append(actions);host.append(body);
+ }
+ function renderCards(){
+  const host=$("resourceCards");host.replaceChildren();const list=filtered();
+  $("resultMeta").textContent="显示 "+list.length+" / "+resources.length+" 项";
+  $("listTitle").textContent=state.query?"匹配结果":"资源清单";
+  if(!list.length){const e=document.createElement("div");e.className="empty";e.textContent="没有找到匹配资源。换个关键词，或清除筛选条件。";host.append(e);return;}
+  list.forEach(r=>{
+   const card=document.createElement("article");card.className="resource-card"+(state.chosen===r.id?" selected":"");card.tabIndex=0;card.setAttribute("role","button");card.setAttribute("aria-label","查看 "+r.name+" 的详情");
+   card.addEventListener("click",()=>{state.chosen=r.id;renderCards();renderDetail();$("resourceDetail").scrollIntoView({behavior:"smooth",block:"nearest"});});
+   card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();card.click();}});
+   const top=document.createElement("div");top.className="card-top";const symbol=document.createElement("div");symbol.className="resource-symbol";symbol.textContent=symbols[r.type]||"✳";
+   const title=document.createElement("div");title.className="card-title";const h=document.createElement("h3");h.textContent=r.name;const small=document.createElement("small");small.textContent=(r.englishName||r.id)+" · "+(r.version||"版本未注明");title.append(h,small);
+   const pill=document.createElement("span");pill.className="status-pill"+(r.type==="visual-pack"?" reference":r.type==="engine"?" engine":"");pill.textContent=statusLabel(r);top.append(symbol,title,pill);
+   const sum=document.createElement("p");sum.className="card-summary";sum.textContent=r.summary;
+   const best=document.createElement("div");best.className="best-use";const b=document.createElement("b");b.textContent="适合：";best.append(b,document.createTextNode((r.whenToUse||[]).slice(0,2).join("；")||"查看详情"));
+   const tags=document.createElement("div");tags.className="tags";(r.tags||[]).slice(0,4).forEach(t=>{const x=document.createElement("span");x.className="tag";x.textContent=t;tags.append(x);});
+   const foot=document.createElement("div");foot.className="card-bottom";const type=document.createElement("span");type.textContent=r.categoryLabel||r.category;const agent=document.createElement("b");agent.textContent=(r.agentSupport||[]).length+" 个 Agent 可用";foot.append(type,agent);
+   card.append(top,sum,best,tags,foot);host.append(card);
+  });
+ }
+ function updateStats(){
+  $("skillCount").textContent=resources.filter(r=>r.type==="skill").length;
+  $("engineCount").textContent=resources.filter(r=>r.type==="engine").length;
+  $("assetCount").textContent=resources.filter(r=>["visual-pack","profile-library"].includes(r.type)).length;
+  $("privateCount").textContent=resources.filter(r=>[r.source,...(r.alternateSources||[])].some(s=>s.visibility==="private")).length;
+  $("publicCount").textContent=resources.filter(r=>[r.source,...(r.alternateSources||[])].some(s=>s.visibility==="public")).length;
+  $("allCount").textContent=resources.length;$("navSkillCount").textContent=resources.filter(r=>r.type==="skill").length;
+  $("registryVersion").textContent=registry.registryVersion||registry.schemaVersion||"1.0";
+  const select=$("categoryFilter");const current=state.category;select.replaceChildren();
+  const all=document.createElement("option");all.value="all";all.textContent="全部类别";select.append(all);
+  const categoryMap=[...new Map(resources.map(r=>[r.category,r.categoryLabel||r.category])).entries()];
+  categoryMap.forEach(([id,label])=>{const o=document.createElement("option");o.value=id;o.textContent=label;select.append(o);});
+  state.category=categoryMap.some(([id])=>id===current)?current:"all";select.value=state.category;
+ }
+ async function loadPrivateResources(){
+  try{
+   const response=await fetch("./private-registry.json",{cache:"no-store",credentials:"same-origin"});
+   if(response.status===401||response.status===403){$("connectionState").textContent="已显示公开目录 · 私有目录需登录";return;}
+   if(!response.ok)throw new Error("private_registry_http_"+response.status);
+   const data=await response.json();
+   if(!Array.isArray(data.resources))throw new Error("private_registry_invalid");
+   const byId=new Map(resources.map(r=>[r.id,r]));
+   const sourceKey=s=>[s.repository||"",s.path||"",s.blobSha||""].join("|");
+   for(const item of data.resources){
+    const existing=byId.get(item.id);
+    if(!existing){byId.set(item.id,item);continue;}
+    const publicSources=[existing.source,...(existing.alternateSources||[])].filter(Boolean);
+    const privateSources=[item.source,...(item.alternateSources||[])].filter(Boolean);
+    const seen=new Set();
+    const alternates=[...publicSources,...privateSources.slice(1)].filter(s=>{
+     const key=sourceKey(s);if(seen.has(key))return false;seen.add(key);return true;
+    });
+    byId.set(item.id,{...existing,...item,source:privateSources[0]||item.source,alternateSources:alternates});
+   }
+   resources=[...byId.values()];state.order=resources.map(r=>r.id);
+   if(!state.chosen)state.chosen=resources[0]?.id||null;
+   updateStats();renderCards();if(state.chosen)renderDetail();
+   $("connectionState").textContent="私有目录已加载 · "+data.resources.length+" 项";
+  }catch{
+   $("connectionState").textContent="公开目录可用 · 私有目录暂不可用";
+  }
+ }
+ function updateFilterButtons(){
+  document.querySelectorAll("[data-filter]").forEach(b=>b.classList.toggle("active",b.dataset.filter===state.nav));
+  document.querySelectorAll("[data-type]").forEach(b=>b.classList.toggle("active",b.dataset.type===state.type));
+ }
+ async function matchIntent(){
+  const q=$("intentInput").value.trim();if(!q){notify("先描述你正在做的任务。");return;}
+  state.nav="all";state.type="all";state.category="all";$("categoryFilter").value="all";updateFilterButtons();
+  state.query=q;state.matchedOrder=[];state.chosen=null;
+  const button=$("matchButton");button.disabled=true;button.textContent="正在匹配…";
+  renderCards();renderDetail();$("resourceCards").scrollIntoView({behavior:"smooth",block:"start"});
+  const localIds=resources.map(r=>({id:r.id,score:score(r,q)})).filter(x=>x.score>0).sort((a,b)=>b.score-a.score).map(x=>x.id);
+  state.matchedOrder=localIds;state.order=localIds.concat(state.order.filter(id=>!localIds.includes(id)));
+  const hasPrivate=resources.some(r=>[r.source,...(r.alternateSources||[])].some(s=>s.visibility==="private"));
+  $("connectionState").textContent=hasPrivate?"私有目录本地匹配 · 任务内容不外发":"公开目录本地匹配 · 任务内容不外发";
+  $("resultMeta").textContent="本地任务匹配 · "+localIds.length+" 项";
+  button.disabled=false;button.textContent="匹配资源 →";renderCards();
+ }
+
+ async function copy(text){
+  try{await navigator.clipboard.writeText(text);notify("已复制到剪贴板");}
+  catch{const area=document.createElement("textarea");area.value=text;document.body.append(area);area.select();const ok=document.execCommand("copy");area.remove();notify(ok?"已复制到剪贴板":"复制失败，请手动选择文本");}
+ }
+ function makePrompt(r){
+  const agent=state.agent==="all"?"当前 Agent":state.agent;
+  const source=r.source||{};
+  const prompt=[
+   "# DAVYLAB Skill Resource — Agent Activation Brief",
+   "",
+   "Agent: "+agent,
+   "Task context: "+($("intentInput").value.trim()||"请根据当前用户任务判断是否适用。"),
+   "",
+   "## Selected resource",
+   "- Name: "+r.name+" ("+r.id+")",
+   "- Type: "+r.type+" · version: "+(r.version||"not specified"),
+   "- Summary: "+r.summary,
+   "- Best for: "+(r.whenToUse||[]).join("; "),
+   "- Not for: "+(r.notFor||[]).join("; "),
+   "- Capabilities: "+(r.capabilities||[]).join("; "),
+   "",
+   "## Source (metadata only; read the full source before applying)",
+   "- Repository: "+(source.repository||"not specified"),
+   "- Visibility: "+(source.visibility||"reference"),
+   "- Ref: "+(source.ref||"not specified"),
+   "- Path: "+(source.path||"not applicable"),
+   "- Expected blob SHA: "+(source.blobSha||"not available"),
+   "- URL: "+(source.url||"not available"),
+   "",
+   "## Required activation workflow",
+   ...(r.activation?.steps||["Read the complete resource and validate that it applies to the current task."]).map((x,i)=>(i+1)+". "+x),
+   "1. Before use, retrieve the complete source text from the source repository or the authorized local workspace. If it is private and your current credentials do not grant access, stop and report the permission blocker; do not guess or use an unrelated copy.",
+   "2. Verify the source revision/blob SHA against the registry. If the SHA has changed, re-read and reconcile the latest content rather than treating this metadata as current instructions.",
+   "3. Check prerequisites, supported inputs, output expectations and guardrails. Combine with the core AI Instruction Standard when the task contains multiple deliverables.",
+   "4. Do not perform external side effects (send messages/emails, modify remote data, deploy, publish, pay, or change production) unless the user has authorized that exact action.",
+   "5. Report which resource was used, what was actually completed, tests/evidence, and any remaining blockers.",
+   "",
+   "## Guardrails",
+   ...(r.guardrails||[]).map(x=>"- "+x),
+   "",
+   "Registry: "+(registry.title||"DAVYLAB Resource Registry")+" · "+(registry.registryVersion||""),
+   "Matching is advisory metadata matching, not proof of execution or authorization."
+  ].join("\n");
+  copy(prompt);
+ }
+ const apiText="Base URL: "+API_BASE+"\n\nGET "+API+"\nGET "+API+"?q=供应商报价\nGET "+API+"?visibility=private\nGET "+API+"?visibility=public\nGET "+API+"/{id}\nPOST "+API+"/match";
+ const curlText='POST '+API+'/match\nContent-Type: application/json\n\n{ "intent": "供应商报价对比", "agent": "WorkBuddy", "visibility": "private", "limit": 5 }';
+ $("apiSnippet").textContent=apiText;$("curlSnippet").textContent=curlText;
+ $("copyApi").addEventListener("click",()=>copy(apiText));$("copyCurl").addEventListener("click",()=>copy(curlText));$("matchButton").addEventListener("click",matchIntent);
+ $("searchInput").addEventListener("input",e=>{state.query=e.target.value.trim();state.matchedOrder=[];renderCards();});
+ $("categoryFilter").addEventListener("change",e=>{state.category=e.target.value;renderCards();});
+ $("agentFilter").addEventListener("change",e=>{state.agent=e.target.value;renderCards();});
+ $("visibilityFilter").addEventListener("change",e=>{state.visibility=e.target.value;renderCards();});
+ document.querySelectorAll("[data-filter]").forEach(b=>b.addEventListener("click",()=>{state.nav=b.dataset.filter;state.type="all";updateFilterButtons();renderCards();}));
+ document.querySelectorAll("[data-type]").forEach(b=>b.addEventListener("click",()=>{state.type=b.dataset.type;state.nav="all";updateFilterButtons();renderCards();}));
+ $("intentInput").addEventListener("keydown",e=>{if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)){e.preventDefault();matchIntent();}});
+ updateStats();updateFilterButtons();renderCards();
+ if(state.chosen)renderDetail();else $("resourceDetail").hidden=true;
+ $("connectionState").textContent="公开资源目录已载入";
+ loadPrivateResources();
+})();
+</script>
+</body>
+</html>

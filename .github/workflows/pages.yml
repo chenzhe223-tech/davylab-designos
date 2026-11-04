@@ -6,6 +6,8 @@ on:
     paths:
       - "index.html"
       - "profiles/**"
+      - "resources/**"
+      - "docs/**"
       - "projects/**"
       - "schemas/**"
       - "scripts/**"

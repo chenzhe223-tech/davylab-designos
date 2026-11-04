@@ -51,6 +51,8 @@ jobs:
         run: python3 scripts/document_layout_pdf_qa.py artifacts-layout-qa-smoke.pdf --out artifacts/pdf-layout --dpi 96 --json > artifacts/pdf-layout-stdout.json
       - name: Test Render client-IP rate-limit key
         run: python3 -m unittest discover -s tests -p 'test_engine_api_rate_limit.py'
+      - name: Test Skill Resource Hub matching
+        run: python3 -m unittest discover -s tests -p 'test_skill_resource_match.py'
       - run: npm test
       - name: Run responsive document layout QA on fixture
         run: npm run qa:layout:browser -- tests/fixtures/document-layout-sample.html --out ./artifacts/layout-qa
