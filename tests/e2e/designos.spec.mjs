@@ -93,6 +93,35 @@ test('Looseleaf Paper: profile selection renders the paper-and-ink preview on de
   expect(errors).toEqual([]);
 });
 
+
+test('Looseleaf showcase: responsive navigation, checklist and quick-add work in a real browser', async ({ page }) => {
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  const showcaseUrl = pathToFileURL(resolve('dist/examples/looseleaf-showcase.html')).href;
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto(showcaseUrl);
+  await expect(page.locator('h1')).toContainText('Make room for');
+  await page.getByRole('button', { name: /灵感 Notes/ }).click();
+  await expect(page.locator('#sectionTitle')).toHaveText('灵感收集页');
+  const checklist = page.locator('.task input');
+  await checklist.nth(1).check();
+  await expect(page.locator('#doneCount')).toHaveText('09');
+  await page.locator('#quickInput').fill('验证交互预览');
+  await page.locator('#addTask').click();
+  await expect(page.locator('.task').last()).toContainText('验证交互预览');
+  await page.setViewportSize({ width: 390, height: 844 });
+  const mobile = await page.evaluate(() => ({
+    bodyWidth: document.body.scrollWidth,
+    viewportWidth: document.documentElement.clientWidth,
+    navTargetHeight: Math.round(document.querySelector('.rail button').getBoundingClientRect().height),
+    addTargetHeight: Math.round(document.querySelector('#addTask').getBoundingClientRect().height),
+  }));
+  expect(mobile.bodyWidth).toBeLessThanOrEqual(mobile.viewportWidth + 1);
+  expect(mobile.navTargetHeight).toBeGreaterThanOrEqual(44);
+  expect(mobile.addTargetHeight).toBeGreaterThanOrEqual(44);
+  expect(errors).toEqual([]);
+});
+
 test('production UI: live Skill search, candidate generation, selection and capability catalog', async ({ page }) => {
   test.skip(!process.env.BASE_URL, 'Real external engine acceptance runs only after deployment against the configured live URL.');
   test.setTimeout(180000);
