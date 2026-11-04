@@ -40,3 +40,29 @@
 .ll-ink-divider{border:0;border-top:1.5px dashed var(--ll-line,#d8cfbd);margin:1rem 0}
 .ll-paper-surface :focus-visible,.ll-paper-card :focus-visible,.ll-ink-button:focus-visible,.ll-ink-input:focus-visible{outline:3px solid var(--ll-accent,#426b50);outline-offset:3px}
 @media(prefers-reduced-motion:reduce){.ll-ink-button{transition:none!important;transform:none!important}}
+
+/* Reusable component primitives: feedback, forms, lists, empty states and dialogs. */
+.ll-field{display:grid;gap:6px;min-width:0;flex:1}
+.ll-field>label,.ll-field>span{font-size:.8rem;color:var(--ll-muted,#716e63)}
+.ll-field small{font-size:.7rem;color:var(--ll-muted,#716e63)}
+.ll-checkline{display:flex;align-items:center;gap:9px;min-height:44px;font-size:.8rem;color:var(--ll-ink,#282923)}
+.ll-checkline input{width:18px;height:18px;accent-color:var(--ll-accent,#426b50)}
+.ll-feedback{padding:12px 14px;border:1px solid var(--ll-line-strong,#77715f);border-left:4px solid var(--ll-accent,#426b50);background:var(--ll-surface,#fffcf4);color:var(--ll-ink,#282923);border-radius:3px 7px 4px 6px;font-size:.78rem;line-height:1.6}
+.ll-feedback strong{display:block;margin-bottom:2px}
+.ll-feedback--warning{border-left-color:#a66b24}
+.ll-feedback--error{border-left-color:#9c4636}
+.ll-list{display:grid;gap:0;min-width:0}
+.ll-list-item{display:flex;align-items:center;gap:10px;min-height:48px;padding:9px 2px;border-bottom:1px dashed var(--ll-line,#d8cfbd);font-size:.8rem;color:var(--ll-ink,#282923)}
+.ll-list-item__meta{margin-left:auto;color:var(--ll-muted,#716e63);font-size:.68rem;white-space:nowrap}
+.ll-empty-state{border:1.5px dashed var(--ll-line-strong,#aaa18f);background:var(--ll-paper,#f7f1e5);color:var(--ll-ink,#282923);text-align:center;padding:26px 16px;border-radius:4px 8px 5px 7px}
+.ll-empty-state__symbol{font-size:26px;color:var(--ll-accent,#426b50)}
+.ll-empty-state h3{font-size:.9rem;margin:8px 0 4px}
+.ll-empty-state p{font-size:.72rem;color:var(--ll-muted,#716e63);margin:0 0 14px}
+.ll-dialog-backdrop{position:fixed;inset:0;display:none;place-items:center;padding:18px;background:rgba(40,41,35,.53);z-index:1000}
+.ll-dialog-backdrop.open{display:grid}
+.ll-dialog{width:min(100%,420px);padding:22px;background:var(--ll-surface,#fffcf4);color:var(--ll-ink,#282923);border:1.5px solid #383a31;border-radius:4px 8px 5px 7px;box-shadow:5px 6px 0 rgba(40,41,35,.13)}
+.ll-dialog h2{margin:0 0 8px;font-size:1.125rem}
+.ll-dialog p{font-size:.78rem;color:var(--ll-muted,#716e63);line-height:1.7}
+.ll-dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.ll-dialog :focus-visible{outline:3px solid var(--ll-accent,#426b50);outline-offset:3px}
+@media(max-width:460px){.ll-dialog-actions{flex-direction:column-reverse}.ll-dialog-actions .ll-ink-button{width:100%}}
