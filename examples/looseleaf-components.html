@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f7f1e5">
+<title>Looseleaf Components · DAVYLAB DesignOS</title>
+<link rel="stylesheet" href="../assets/looseleaf/looseleaf-tokens.css">
+<link rel="stylesheet" href="../assets/looseleaf/looseleaf.css">
+<style>
+:root{font-family:Inter,"Segoe UI",sans-serif;color:#282923;background:#e9e3d7}*{box-sizing:border-box}body{margin:0;padding:clamp(14px,2.5vw,36px)}button,input,select,textarea{font:inherit}.page{width:100%;max-width:none;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:26px;font-size:12px;color:#716e63}.top a{color:#315b3d;text-decoration-thickness:1px;text-underline-offset:3px}.intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,.45fr);gap:24px;align-items:end;margin-bottom:24px}.eyebrow{font-size:10px;letter-spacing:.15em;text-transform:uppercase;font-weight:800;color:#426b50}.intro h1{font-family:"Segoe Print","Comic Sans MS",cursive;font-size:clamp(32px,4vw,52px);line-height:1.08;margin:10px 0}.intro p{max-width:720px;color:#716e63;line-height:1.7;margin:0}.intro aside{font-size:12px;color:#716e63;line-height:1.7;border-left:3px solid #426b50;padding:10px 14px}.catalog{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px;align-items:stretch}.component{grid-column:span 6;min-width:0;display:flex;flex-direction:column;gap:14px;padding:clamp(16px,2vw,24px)}.component.wide{grid-column:span 12}.component h2{font-size:16px;margin:0}.component .sub{font-size:11px;color:#716e63;margin:5px 0 0}.demo{display:flex;flex-wrap:wrap;align-items:center;gap:10px;min-width:0}.demo.stack{align-items:stretch;flex-direction:column}.demo label{font-size:12px;color:#55574c}.ll-ink-button.secondary{background:#fffcf4;color:#282923}.ll-ink-button.danger{background:#9c4636;color:#fff}.ll-ink-button:disabled{opacity:.48;cursor:not-allowed}.ll-ink-input,select.ll-ink-input,textarea.ll-ink-input{min-height:44px}.ll-ink-input:disabled{opacity:.6;cursor:not-allowed}.hint{font-size:11px;color:#716e63}.code-label{font-size:10px;color:#716e63;letter-spacing:.08em;text-transform:uppercase}.status{font-size:11px;color:#315b3d;min-height:16px}.footer{margin-top:20px;padding-top:14px;border-top:1px dashed #aaa18f;color:#716e63;font-size:10px;display:flex;justify-content:space-between;gap:12px}
+@media(max-width:760px){.intro{grid-template-columns:1fr}.component{grid-column:span 12}.component.wide{grid-column:span 12}.top{align-items:flex-start;flex-direction:column}.footer{flex-direction:column}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+</style>
+</head>
+<body class="ll-paper-surface">
+<div class="page">
+<header class="top"><strong>DAVYLAB / DESIGNOS · LOOSELEAF PAPER</strong><nav aria-label="Looseleaf 页面"><a href="./looseleaf-showcase.html">风格总览</a> · <a href="./looseleaf-workspace.html">体验工作台 ↗</a></nav></header>
+<section class="intro"><div><div class="eyebrow">Reusable UI primitives · 01</div><h1>Small pieces,<br>thoughtfully made.</h1><p>一套可复用的纸感组件样例。每个组件都提供明确状态、键盘焦点和移动端操作尺寸；交互仅在本页本地演示，不连接后端。</p></div><aside>组件原则<br>清晰优先 · 状态完整 · 轻量克制<br>适用于知识工具、个人工作台与轻量创作产品。</aside></section>
+<main class="catalog">
+<section class="ll-paper-card component"><div><h2>01 · Buttons 按钮</h2><p class="sub">主操作、次操作、危险操作与禁用状态。</p></div><div class="demo"><button class="ll-ink-button" id="primaryAction">主要操作</button><button class="ll-ink-button secondary" id="secondaryAction">次要操作</button><button class="ll-ink-button danger" id="dangerAction">危险操作</button><button class="ll-ink-button" disabled>不可用</button></div><p class="status" id="buttonStatus" aria-live="polite"></p><div class="code-label">Interaction · hover / focus / disabled</div></section>
+<section class="ll-paper-card component"><div><h2>02 · Form controls 表单控件</h2><p class="sub">输入、选择、复选与多行文本。</p></div><div class="demo stack"><label class="ll-field">项目名称<input class="ll-ink-input" id="projectName" placeholder="例如：灵感收集工作台"></label><label class="ll-field">项目类型<select class="ll-ink-input" id="projectType"><option>个人工作台</option><option>知识管理</option><option>内容创作</option></select></label><label class="ll-checkline"><input id="notifyCheck" type="checkbox" checked> 接收本地演示提醒</label><label class="ll-field">补充说明<textarea class="ll-ink-input" rows="2" placeholder="写下更多背景…"></textarea></label><button class="ll-ink-button" id="submitForm">提交示例</button><p class="status" id="formStatus" aria-live="polite"></p></div></section>
+<section class="ll-paper-card component"><div><h2>03 · Feedback 反馈状态</h2><p class="sub">成功、注意与错误状态同时使用文字说明，不依赖颜色传达。</p></div><div class="demo stack"><div class="ll-feedback"><strong>✓ 已保存</strong>你的更改已保存在当前演示状态中。</div><div class="ll-feedback ll-feedback--warning"><strong>! 需要确认</strong>此操作可能影响现有内容，请先检查。</div><div class="ll-feedback ll-feedback--error"><strong>× 无法完成</strong>输入内容不完整，请补充必填信息。</div></div></section>
+<section class="ll-paper-card component"><div><h2>04 · Lists 列表与状态</h2><p class="sub">信息层级、状态标签和可操作清单。</p></div><div class="ll-list"><div class="ll-list-item"><span>✳</span><span>整理灵感收集箱</span><span class="ll-list-item__meta">进行中</span></div><div class="ll-list-item"><span>✓</span><span>确认本周优先事项</span><span class="ll-list-item__meta">已完成</span></div><div class="ll-list-item"><span>○</span><span>安排下周复盘</span><span class="ll-list-item__meta">待开始</span></div></div></section>
+<section class="ll-paper-card component"><div><h2>05 · Empty state 空状态</h2><p class="sub">解释当前状态，并给出明确的下一步入口。</p></div><div class="ll-empty-state"><div class="ll-empty-state__symbol" aria-hidden="true">✳</div><h3>这里还没有内容</h3><p>创建第一条记录，开始整理你的想法。</p><button class="ll-ink-button" id="emptyAction">创建第一条记录</button></div><p class="status" id="emptyStatus" aria-live="polite"></p></section>
+<section class="ll-paper-card component"><div><h2>06 · Dialog 对话框</h2><p class="sub">支持关闭按钮、取消、确认与 Escape 关闭。</p></div><div class="demo"><button class="ll-ink-button" id="openDialog">打开确认弹窗</button></div><p class="hint">打开后可点击遮罩、取消按钮或按 Escape 关闭。</p><p class="status" id="dialogStatus" aria-live="polite"></p></section>
+<section class="ll-paper-card component wide"><div><h2>07 · Usage notes 使用约定</h2><p class="sub">将样例用于真实项目时，请根据业务语义调整文案、校验和状态。</p></div><div class="demo stack"><div class="ll-feedback"><strong>组件状态</strong>默认、悬停、焦点、禁用、成功、警告、错误与空状态均需有明确视觉反馈。</div><div class="ll-feedback"><strong>触屏与键盘</strong>主要交互目标至少 44px；表单具备可见标签；弹窗可通过 Escape 关闭并保持可见焦点样式。</div><div class="ll-feedback ll-feedback--warning"><strong>集成边界</strong>此页为视觉与交互参考，不包含业务校验、持久化、服务端请求或生产级表单提交。</div></div></section>
+</main>
+<footer class="footer"><span>LOOSELEAF PAPER · COMPONENT REFERENCE</span><span>静态样例 · 本地交互 · 无后端连接</span></footer>
+</div>
+<div class="ll-dialog-backdrop" id="dialogBackdrop" aria-hidden="true"><section class="ll-dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle" aria-describedby="dialogDesc" tabindex="-1"><h2 id="dialogTitle">确认这项操作？</h2><p id="dialogDesc">这是一个本地交互示例。确认后不会向服务器提交数据。</p><div class="ll-dialog-actions"><button class="ll-ink-button secondary" id="cancelDialog">取消</button><button class="ll-ink-button" id="confirmDialog">确认</button></div></section></div>
+<script>
+const status=(id,message)=>document.getElementById(id).textContent=message;
+document.getElementById('primaryAction').addEventListener('click',()=>status('buttonStatus','已触发主要操作示例。'));
+document.getElementById('secondaryAction').addEventListener('click',()=>status('buttonStatus','已触发次要操作示例。'));
+document.getElementById('dangerAction').addEventListener('click',()=>status('buttonStatus','危险操作仅演示，不会删除任何数据。'));
+document.getElementById('submitForm').addEventListener('click',()=>{const name=document.getElementById('projectName').value.trim();status('formStatus',name?'已接收「'+name+'」的本地演示输入。':'请先填写项目名称。');if(!name)document.getElementById('projectName').focus();});
+document.getElementById('emptyAction').addEventListener('click',()=>status('emptyStatus','已创建一条本地示例记录（刷新页面后不会保留）。'));
+const backdrop=document.getElementById('dialogBackdrop'),dialog=backdrop.querySelector('[role=dialog]'),openButton=document.getElementById('openDialog');
+function closeDialog(message){backdrop.classList.remove('open');backdrop.setAttribute('aria-hidden','true');openButton.focus();if(message)status('dialogStatus',message);}
+openButton.addEventListener('click',()=>{backdrop.classList.add('open');backdrop.setAttribute('aria-hidden','false');document.getElementById('cancelDialog').focus();});
+document.getElementById('cancelDialog').addEventListener('click',()=>closeDialog('已取消。'));
+document.getElementById('confirmDialog').addEventListener('click',()=>closeDialog('已确认本地演示操作，没有发送请求。'));
+backdrop.addEventListener('click',event=>{if(event.target===backdrop)closeDialog('已关闭弹窗。');});
+document.addEventListener('keydown',event=>{
+  if(!backdrop.classList.contains('open'))return;
+  if(event.key==='Escape'){closeDialog('已通过 Escape 关闭弹窗。');return;}
+  if(event.key==='Tab'){
+    const items=[...dialog.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')];
+    if(!items.length){event.preventDefault();dialog.focus();return;}
+    const first=items[0],last=items[items.length-1];
+    if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+    else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+/* Looseleaf Paper design tokens. Loaded only by the dedicated style pack. */
+.looseleaf-thumb,#livePreview[data-profile="looseleaf-paper"],.ll-paper-surface,.ll-paper-card,.ll-ink-button,.ll-ink-input,.ll-sticker,.ll-ink-divider{
+  --ll-paper:#F7F1E5;
+  --ll-surface:#FFFCF4;
+  --ll-ink:#282923;
+  --ll-muted:#716E63;
+  --ll-line:#D8CFBD;
+  --ll-accent:#426B50;
+  --ll-terra:#B96E45;
+  --ll-shadow:rgba(40,41,35,.08);
+  --ll-radius:4px 8px 5px 7px;
+}

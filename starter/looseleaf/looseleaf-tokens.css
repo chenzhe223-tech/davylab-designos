@@ -1,0 +1,15 @@
+/* Portable Looseleaf Paper tokens. Override on .ll-theme or a descendant. */
+.ll-theme{
+  --ll-paper:#F7F1E5;
+  --ll-surface:#FFFCF4;
+  --ll-ink:#282923;
+  --ll-muted:#716E63;
+  --ll-line:#D8CFBD;
+  --ll-line-strong:#77715F;
+  --ll-accent:#426B50;
+  --ll-terra:#B96E45;
+  --ll-shadow:rgba(40,41,35,.08);
+  --ll-radius:4px 8px 5px 7px;
+  color:var(--ll-ink);
+  font-family:Inter,"Noto Sans SC",system-ui,sans-serif;
+}

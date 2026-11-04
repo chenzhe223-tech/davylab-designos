@@ -12,8 +12,8 @@ test("preview contains the DesignOS entry point and accessible landmarks", () =>
   assert.match(html, /aria-label="搜索设计档案"/);
 });
 
-test("all four documented visual profiles are present", () => {
-  for (const id of ["balanced-saas", "analytics-dashboard", "warm-editorial", "dashboard-studio"]) {
+test("all selectable visual profiles are present", () => {
+  for (const id of ["balanced-saas", "saas-product", "analytics-dashboard", "warm-editorial", "dashboard-studio", "looseleaf-paper"]) {
     assert.ok(html.includes('"id":"' + id + '"'), "missing profile " + id);
   }
   assert.match(html, /"protected":true/);
@@ -281,4 +281,43 @@ test("Visual DNA Motion Lab is integrated into candidate generation, previews an
 test("Markdown export can append the selected Motion Lab specification", () => {
   assert.match(html, /let lines=\["# "\+d\.name/);
   assert.match(html, /lines\+="\\n\\n"\+window\.DesignOSMotionLab\.getMarkdown\(\)/);
+});
+
+
+test("Looseleaf Paper is a distinct canonical profile with provenance and responsive design rules", () => {
+  assert.ok(html.includes('"profileId":"davylab-looseleaf"'));
+  assert.ok(html.includes('"id":"looseleaf-paper"'));
+  assert.ok(html.includes('"extends":"davylab-default"'));
+  assert.match(html, /hand-drawn|手绘/);
+  assert.match(html, /prefers-reduced-motion|减少动态效果/);
+  assert.match(html, /kevintngo\/looseleaf/);
+  assert.match(html, /IBM Plex Mono.*OFL|OFL.*IBM Plex Mono/);
+});
+
+test("Looseleaf Paper has an isolated paper-and-ink thumbnail and live preview", () => {
+  assert.match(html, /looseleaf-thumb/);
+  assert.match(html, /\.classList\.toggle\("looseleaf-preview",p\.id==="looseleaf-paper"\)/);
+  assert.match(html, /\.dataset\.profile=p\.id/);
+  assert.match(html, /assets\/looseleaf\/looseleaf-tokens\.css/);
+  assert.match(html, /assets\/looseleaf\/looseleaf\.css/);
+});
+
+test("Looseleaf Paper rules flow through the generic details and Agent prompt", () => {
+  assert.match(html, /function showDetail\(id\)/);
+  assert.match(html, /function buildPrompt\(\)/);
+  assert.match(html, /Looseleaf Paper/);
+  assert.match(html, /手绘墨线/);
+  assert.match(html, /移动端/);
+});
+
+test("Looseleaf style pack ships scoped tokens and reusable accessible primitives", async () => {
+  const css = await readFile(new URL("../dist/assets/looseleaf/looseleaf.css", import.meta.url), "utf8");
+  const tokens = await readFile(new URL("../dist/assets/looseleaf/looseleaf-tokens.css", import.meta.url), "utf8");
+  assert.match(css, /#livePreview\[data-profile="looseleaf-paper"\]/);
+  assert.match(css, /\.ll-paper-surface/);
+  assert.match(css, /\.ll-ink-button/);
+  assert.match(css, /\.ll-ink-input/);
+  assert.match(css, /prefers-reduced-motion/);
+  assert.match(tokens, /--ll-paper/);
+  assert.match(tokens, /--ll-accent/);
 });

@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f7f1e5">
+<title>Looseleaf Workspace · DAVYLAB DesignOS</title>
+<link rel="stylesheet" href="../assets/looseleaf/looseleaf-tokens.css">
+<link rel="stylesheet" href="../assets/looseleaf/looseleaf.css">
+<style>
+:root{font-family:Inter,"Segoe UI",sans-serif;color:#282923;background:#e9e3d7}*{box-sizing:border-box}body{margin:0;padding:clamp(10px,2vw,24px)}button,input,select,textarea{font:inherit}.app{width:100%;max-width:none;margin:auto;min-height:calc(100vh - 48px);display:grid;grid-template-columns:220px minmax(260px,.9fr) minmax(320px,1.1fr);border:1.5px solid #77715f;background:#fffcf4;box-shadow:5px 6px 0 #28292312}.sidebar{padding:22px 16px;background:#f1e9d9;border-right:1px dashed #aaa18f;display:flex;flex-direction:column;gap:20px}.brand{font-size:12px;letter-spacing:.08em;font-weight:800}.brand small{display:block;font-weight:500;color:#716e63;letter-spacing:0;margin-top:5px}.nav{display:grid;gap:5px}.nav button{display:flex;justify-content:space-between;align-items:center;text-align:left;border:0;background:transparent;color:#55574c;padding:10px 11px;min-height:44px;border-radius:3px 6px 4px 5px;cursor:pointer}.nav button[aria-pressed=true]{background:#dce6d7;color:#315b3d;outline:1px solid #426b50;font-weight:700}.nav small{color:inherit;opacity:.7}.sidebar-note{margin-top:auto;font-size:10px;line-height:1.6;color:#716e63}.list-panel{min-width:0;padding:22px 18px;border-right:1px dashed #aaa18f;display:flex;flex-direction:column;gap:14px}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.panel-head h1{font-size:19px;margin:0}.count{font-size:10px;color:#716e63}.search{min-height:44px}.note-list{display:grid;gap:8px;overflow:auto;align-content:start}.note-card{display:grid;gap:7px;text-align:left;padding:13px;border:1px solid #d8cfbd;background:#f7f1e5;color:#282923;border-radius:4px 7px 5px 6px;cursor:pointer;min-width:0}.note-card[aria-pressed=true]{border:1.5px solid #426b50;background:#edf1e8;box-shadow:2px 2px 0 #28292310}.note-card strong{font-size:13px;overflow-wrap:anywhere}.note-card p{margin:0;color:#716e63;font-size:11px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.note-meta{display:flex;justify-content:space-between;gap:8px;font-size:10px;color:#716e63}.tag{display:inline-flex;width:max-content;padding:3px 7px;border:1px dashed #426b50;border-radius:2px 5px 3px 4px;color:#315b3d;font-size:10px}.editor{min-width:0;padding:24px clamp(16px,3vw,38px);display:flex;flex-direction:column;gap:15px}.editor-head{display:flex;justify-content:space-between;gap:12px;align-items:center}.editor-head h2{font-size:16px;margin:0}.field{display:grid;gap:7px}.field label{font-size:11px;color:#716e63}.field input,.field select,.field textarea{width:100%;min-width:0;border:1.5px solid #77715f;border-radius:3px 6px 4px 5px;background:#fffdf7;color:#282923;padding:11px 12px;font:inherit}.field input,.field select{min-height:44px}.field textarea{min-height:220px;resize:vertical;line-height:1.7}.editor-actions{display:flex;gap:9px;flex-wrap:wrap}.editor-actions button{min-height:44px}.helper{font-size:10px;line-height:1.6;color:#716e63}.empty{padding:26px 14px;border:1.5px dashed #aaa18f;text-align:center;color:#716e63;font-size:12px}.status{min-height:18px;font-size:11px;color:#315b3d}.top-mobile{display:none}.foot{margin-top:auto;border-top:1px dashed #d8cfbd;padding-top:12px;font-size:10px;color:#716e63;line-height:1.6}
+@media(max-width:900px){.app{grid-template-columns:180px minmax(240px,1fr)}.editor{grid-column:1/-1;border-top:1px dashed #aaa18f}.field textarea{min-height:150px}}
+@media(max-width:620px){body{padding:0}.app{min-height:100vh;border:0;grid-template-columns:minmax(0,1fr)}.sidebar{padding:14px;border:0;border-bottom:1px dashed #aaa18f;gap:10px}.sidebar-note{display:none}.nav{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}.nav button{justify-content:center;text-align:center;padding:8px 4px;font-size:11px}.nav small{display:none}.list-panel{padding:17px 14px;border:0}.editor{grid-column:auto;padding:18px 14px;border-top:1px dashed #aaa18f}.field textarea{min-height:130px}.editor-actions{display:grid;grid-template-columns:1fr 1fr}.panel-head h1{font-size:17px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+</style>
+</head>
+<body class="ll-paper-surface">
+<main class="app" aria-label="Looseleaf 灵感工作台">
+<aside class="sidebar">
+<div class="brand">DAVYLAB / LOOSELEAF<small>纸感灵感工作台 · Starter</small></div>
+<nav class="nav" aria-label="记录分类">
+<button type="button" data-filter="all" aria-pressed="true">全部 <small id="countAll">0</small></button>
+<button type="button" data-filter="灵感" aria-pressed="false">灵感 <small id="countIdea">0</small></button>
+<button type="button" data-filter="项目" aria-pressed="false">项目 <small id="countProject">0</small></button>
+<button type="button" data-filter="归档" aria-pressed="false">归档 <small id="countArchive">0</small></button>
+</nav>
+<div class="sidebar-note">轻量记录 · 本地保存<br>你的内容只保存在当前浏览器，不会上传服务器。</div>
+</aside>
+<section class="list-panel" aria-labelledby="listTitle">
+<div class="panel-head"><div><h1 id="listTitle">我的记录</h1><span class="count" id="listCount">0 条记录</span></div><button class="ll-ink-button" id="newNote" type="button">＋ 新建</button></div>
+<input class="ll-ink-input search" id="searchNotes" type="search" placeholder="搜索标题或内容…" aria-label="搜索记录">
+<div class="note-list" id="noteList" aria-live="polite"></div>
+<div class="foot">示例内容仅用于展示模板。新建、编辑和分类会保存在当前浏览器。</div>
+</section>
+<section class="editor" aria-labelledby="editorTitle">
+<div class="editor-head"><h2 id="editorTitle">记录详情</h2><span class="ll-sticker" id="editMode">查看中</span></div>
+<div class="field"><label for="noteTitle">标题</label><input id="noteTitle" maxlength="80" placeholder="给这条记录起个名字…"></div>
+<div class="field"><label for="noteCategory">分类</label><select id="noteCategory"><option>灵感</option><option>项目</option><option>归档</option></select></div>
+<div class="field"><label for="noteBody">内容</label><textarea id="noteBody" maxlength="5000" placeholder="写下你的想法、观察或下一步行动…"></textarea></div>
+<div class="editor-actions"><button class="ll-ink-button" id="saveNote" type="button">保存记录</button><button class="ll-ink-button" id="newFromEditor" type="button" style="background:#fffcf4;color:#282923">新建空白</button></div>
+<p class="helper">保存后会写入本机浏览器存储。清理浏览器数据或更换设备不会自动同步。</p>
+<p class="status" id="saveStatus" role="status" aria-live="polite"></p>
+</section>
+</main>
+<script>
+(() => {
+  const STORAGE_KEY = 'davylab.looseleaf.workspace.v1';
+  const seed = [
+    {id:'seed-1',title:'让灵感更容易被留下',category:'灵感',body:'记录不应该成为额外负担。先捕捉一句话，再慢慢补充背景、判断和行动。\n\n下一步：测试更轻量的快速记录入口。',updatedAt:'2026-11-04T08:00:00.000Z'},
+    {id:'seed-2',title:'个人知识工作台',category:'项目',body:'把零散的想法、资料和待办串成可回顾的工作流。\n\n需要关注：搜索、标签、跨设备同步和导出。',updatedAt:'2026-11-03T08:00:00.000Z'},
+    {id:'seed-3',title:'周末观察清单',category:'归档',body:'收集生活中的小观察，为下一次创作保留素材。',updatedAt:'2026-11-02T08:00:00.000Z'}
+  ];
+  const $ = id => document.getElementById(id);
+  let notes = seed.map(note => ({...note}));
+  let activeId = null;
+  let activeFilter = 'all';
+  let storageAvailable = true;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.every(n => n && typeof n.id === 'string' && typeof n.title === 'string' && typeof n.body === 'string' && ['灵感','项目','归档'].includes(n.category))) notes = parsed;
+    }
+  } catch { storageAvailable = false; }
+  function persist() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(notes)); storageAvailable = true; return true; }
+    catch { storageAvailable = false; return false; }
+  }
+  function announce(message) { $('saveStatus').textContent = message; }
+  function filteredNotes() {
+    const q = $('searchNotes').value.trim().toLocaleLowerCase();
+    return notes.filter(n => (activeFilter === 'all' || n.category === activeFilter) && (!q || (n.title + ' ' + n.body).toLocaleLowerCase().includes(q))).sort((a,b) => String(b.updatedAt).localeCompare(String(a.updatedAt)));
+  }
+  function updateCounts() {
+    $('countAll').textContent = notes.length;
+    $('countIdea').textContent = notes.filter(n=>n.category==='灵感').length;
+    $('countProject').textContent = notes.filter(n=>n.category==='项目').length;
+    $('countArchive').textContent = notes.filter(n=>n.category==='归档').length;
+  }
+  function renderList() {
+    const list = $('noteList');
+    const visible = filteredNotes();
+    $('listCount').textContent = visible.length + ' 条记录';
+    list.replaceChildren();
+    if (!visible.length) {
+      const empty = document.createElement('div'); empty.className = 'll-empty-state';
+      const title = document.createElement('h3'); title.textContent = '没有找到记录';
+      const desc = document.createElement('p'); desc.textContent = '试试其他关键词，或新建一条记录。';
+      empty.append(title, desc); list.append(empty); updateCounts(); return;
+    }
+    visible.forEach(note => {
+      const button = document.createElement('button'); button.type='button'; button.className='note-card'; button.setAttribute('aria-pressed', String(note.id===activeId));
+      const title = document.createElement('strong'); title.textContent = note.title || '未命名记录';
+      const body = document.createElement('p'); body.textContent = note.body;
+      const meta = document.createElement('span'); meta.className='note-meta';
+      const category = document.createElement('span'); category.textContent=note.category;
+      const date = document.createElement('time'); date.textContent = new Date(note.updatedAt).toLocaleDateString('zh-CN');
+      meta.append(category,date); button.append(title,body,meta);
+      button.addEventListener('click',()=>selectNote(note.id)); list.append(button);
+    });
+    updateCounts();
+  }
+  function selectNote(id) {
+    const note = notes.find(n=>n.id===id); if(!note) return;
+    activeId=id; $('noteTitle').value=note.title; $('noteCategory').value=note.category; $('noteBody').value=note.body; $('editMode').textContent='编辑中'; $('editorTitle').textContent='记录详情'; renderList(); announce('已载入记录。');
+  }
+  function startNew() {
+    activeId=null; $('noteTitle').value=''; $('noteCategory').value='灵感'; $('noteBody').value=''; $('editMode').textContent='新建中'; $('editorTitle').textContent='新建记录'; renderList(); $('noteTitle').focus(); announce('新建一条记录，完成后点击保存。');
+  }
+  function save() {
+    const title=$('noteTitle').value.trim(), body=$('noteBody').value.trim();
+    if(!title){announce('请先填写标题。');$('noteTitle').focus();return;}
+    if(!body){announce('请填写记录内容。');$('noteBody').focus();return;}
+    const now=new Date().toISOString();
+    if(activeId){const note=notes.find(n=>n.id===activeId);if(note){note.title=title;note.body=body;note.category=$('noteCategory').value;note.updatedAt=now;}}
+    else {activeId='note-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7);notes.push({id:activeId,title,body,category:$('noteCategory').value,updatedAt:now});}
+    const saved=persist(); $('editMode').textContent='已保存'; $('editorTitle').textContent='记录详情'; renderList();
+    announce(saved?'已保存到当前浏览器。':'浏览器存储不可用；本次更改暂留在当前页面内存中。');
+  }
+  document.querySelectorAll('[data-filter]').forEach(button=>button.addEventListener('click',()=>{activeFilter=button.dataset.filter;document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));$('listTitle').textContent=activeFilter==='all'?'我的记录':activeFilter+'记录';renderList();}));
+  $('searchNotes').addEventListener('input',renderList);
+  $('newNote').addEventListener('click',startNew); $('newFromEditor').addEventListener('click',startNew); $('saveNote').addEventListener('click',save);
+  if(notes.length){activeId=notes[0].id;selectNote(activeId);}else startNew();
+  renderList();
+  if(!storageAvailable) announce('本机存储不可用或数据格式损坏；当前仍可临时体验，刷新后更改不会保留。');
+})();
+</script>
+</body>
+</html>

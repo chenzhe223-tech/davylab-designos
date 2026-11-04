@@ -10,7 +10,7 @@ test('desktop: search, select, preview, compare and generate an agent prompt', a
   page.on('pageerror', error => errors.push(error.message));
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(appUrl);
-  await expect(page.locator('#cards .profile')).toHaveCount(5);
+  await expect(page.locator('#cards .profile')).toHaveCount(6);
   await page.locator('#intentInput').fill('高级、有科技感、适合手机的 AI 数据看板');
   await page.locator('#matchIntent').click();
   await expect(page.locator('#matchSummary')).toContainText('Analytics Dashboard');
@@ -25,7 +25,7 @@ test('mobile: layout fits viewport and keyboard focus hides fixed action dock', 
   page.on('pageerror', error => errors.push(error.message));
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(appUrl);
-  await expect(page.locator('#cards .profile')).toHaveCount(5);
+  await expect(page.locator('#cards .profile')).toHaveCount(6);
   const widths = await page.evaluate(() => ({ body: document.body.scrollWidth, viewport: document.documentElement.clientWidth }));
   expect(widths.body).toBeLessThanOrEqual(widths.viewport + 1);
   await page.locator('#intentInput').focus();
@@ -39,13 +39,13 @@ test('JSON export preview contains canonical profile identifiers and version', a
   await page.locator('#exportAll').click();
   const json = await page.locator('#jsonPreview').textContent();
   const parsed = JSON.parse(json);
-  expect(parsed.profiles.length).toBe(5);
+  expect(parsed.profiles.length).toBe(6);
   expect(parsed.profiles.some(profile => profile.profileId === 'davylab-warm-editorial')).toBeTruthy();
   expect(parsed.profiles.every(profile => Boolean(profile.version))).toBeTruthy();
   const [download] = await Promise.all([page.waitForEvent('download'), page.locator('#confirmDownload').click()]);
   const filePath = await download.path();
   const downloaded = JSON.parse(await readFile(filePath, 'utf8'));
-  expect(downloaded.profiles.length).toBe(5);
+  expect(downloaded.profiles.length).toBe(6);
   expect(downloaded.profiles.some(profile => profile.profileId === 'davylab-warm-editorial')).toBeTruthy();
 });
 
@@ -58,6 +58,166 @@ test('first-run experience is product-category agnostic, not dashboard-first', a
   expect(firstProjectType).toContain('移动应用');
   expect(firstProjectType).not.toMatch(/dashboard|看板/i);
   await expect(page.locator('[data-intent="AI 旅行 App，探索小众目的地并记录旅行记忆"]')).toBeVisible();
+});
+
+
+test('Looseleaf Paper: profile selection renders the paper-and-ink preview on desktop and mobile', async ({ page }) => {
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto(appUrl);
+  const looseleafCard = page.locator('.profile[data-id="looseleaf-paper"]');
+  await expect(looseleafCard).toBeVisible();
+  await looseleafCard.locator('[data-preview="looseleaf-paper"]').click();
+  const preview = page.locator('#livePreview');
+  await expect(preview).toHaveAttribute('data-profile', 'looseleaf-paper');
+  await expect(preview).toHaveClass(/looseleaf-preview/);
+  const paperStyle = await preview.evaluate(element => ({
+    background: getComputedStyle(element).backgroundColor,
+    borderWidth: getComputedStyle(element).borderTopWidth,
+  }));
+  expect(paperStyle.background).toBe('rgb(247, 241, 229)');
+  expect(paperStyle.borderWidth).toBe('2px');
+  await expect(page.locator('#detail')).toContainText('手绘墨线');
+  await expect(page.locator('#detail a[href="https://looseleaf-preview.davylab-designos.pages.dev/examples/looseleaf-showcase.html"]')).toBeVisible();
+  await expect(page.locator('#detail a[href*="looseleaf-components.html"]')).toBeVisible()
+  await expect(page.locator('#detail a[href*="looseleaf-workspace.html"]')).toBeVisible()
+  await expect(page.locator('#detail a[href*="/starter/looseleaf/"]')).toBeVisible()
+  await page.setViewportSize({ width: 1024, height: 900 });
+  let widths = await page.evaluate(() => ({ body: document.body.scrollWidth, viewport: document.documentElement.clientWidth }));
+  expect(widths.body).toBeLessThanOrEqual(widths.viewport + 1);
+  await page.locator('[data-device="mobile"]').click();
+  await page.setViewportSize({ width: 390, height: 844 });
+  widths = await page.evaluate(() => ({ body: document.body.scrollWidth, viewport: document.documentElement.clientWidth }));
+  expect(widths.body).toBeLessThanOrEqual(widths.viewport + 1);
+  await page.locator('#confirmDesign').click();
+  await expect(page.locator('#promptOutput')).toBeVisible();
+  await expect(page.locator('#promptOutput')).toHaveValue(/贴纸、印章、涂鸦仅作为少量辅助标记/);
+  await expect(page.locator('#promptOutput')).toHaveValue(/"displayFamily"/);
+  expect(errors).toEqual([]);
+});
+
+
+test('Looseleaf showcase: responsive navigation, checklist and quick-add work in a real browser', async ({ page }) => {
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  const showcaseUrl = pathToFileURL(resolve('dist/examples/looseleaf-showcase.html')).href;
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto(showcaseUrl);
+  await expect(page.locator('h1')).toContainText('Make room for');
+  await page.getByRole('button', { name: /灵感 Notes/ }).click();
+  await expect(page.locator('#sectionTitle')).toHaveText('灵感收集页');
+  const checklist = page.locator('.task input');
+  await checklist.nth(1).check();
+  await expect(page.locator('#doneCount')).toHaveText('09');
+  await page.locator('#quickInput').fill('验证交互预览');
+  await page.locator('#addTask').click();
+  await expect(page.locator('.task').last()).toContainText('验证交互预览');
+  await page.setViewportSize({ width: 390, height: 844 });
+  const mobile = await page.evaluate(() => ({
+    bodyWidth: document.body.scrollWidth,
+    viewportWidth: document.documentElement.clientWidth,
+    navTargetHeight: Math.round(document.querySelector('.rail button').getBoundingClientRect().height),
+    addTargetHeight: Math.round(document.querySelector('#addTask').getBoundingClientRect().height),
+  }));
+  expect(mobile.bodyWidth).toBeLessThanOrEqual(mobile.viewportWidth + 1);
+  expect(mobile.navTargetHeight).toBeGreaterThanOrEqual(44);
+  expect(mobile.addTargetHeight).toBeGreaterThanOrEqual(44);
+  expect(errors).toEqual([]);
+});
+
+
+test('Looseleaf component reference: button states, form feedback, dialog keyboard flow and mobile targets', async ({ page }) => {
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  const componentsUrl = pathToFileURL(resolve('dist/examples/looseleaf-components.html')).href;
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto(componentsUrl);
+  await expect(page.locator('h1')).toContainText('Small pieces');
+  await expect(page.locator('.ll-feedback').first()).toBeVisible()
+  const sharedStyles = await page.locator('.ll-feedback').first().evaluate(element => ({
+    borderLeftWidth: getComputedStyle(element).borderLeftWidth,
+    borderStyle: getComputedStyle(element).borderLeftStyle,
+  }))
+  expect(sharedStyles.borderLeftWidth).toBe('4px')
+  expect(sharedStyles.borderStyle).toBe('solid')
+  await page.locator('#primaryAction').click();
+  await expect(page.locator('#buttonStatus')).toContainText('主要操作');
+  await page.locator('#submitForm').click();
+  await expect(page.locator('#formStatus')).toContainText('请先填写项目名称');
+  await page.locator('#projectName').fill('E2E component form');
+  await page.locator('#submitForm').click();
+  await expect(page.locator('#formStatus')).toContainText('E2E component form');
+  const dialog = page.locator('[role="dialog"]');
+  await page.locator('#openDialog').click();
+  await expect(dialog).toBeVisible();
+  await expect(page.locator('#dialogBackdrop')).toHaveCSS('display', 'grid')
+  await expect(page.locator('#cancelDialog')).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(page.locator('#confirmDialog')).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(page.locator('#cancelDialog')).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#dialogBackdrop')).toBeHidden();
+  await expect(page.locator('#openDialog')).toBeFocused();
+  await page.locator('#openDialog').click();
+  await page.locator('#confirmDialog').click();
+  await expect(page.locator('#dialogStatus')).toContainText('没有发送请求');
+  await page.setViewportSize({ width: 390, height: 844 });
+  const mobile = await page.evaluate(() => ({
+    bodyWidth: document.body.scrollWidth,
+    viewportWidth: document.documentElement.clientWidth,
+    buttonHeight: Math.round(document.querySelector('#primaryAction').getBoundingClientRect().height),
+    inputHeight: Math.round(document.querySelector('#projectName').getBoundingClientRect().height),
+  }));
+  expect(mobile.bodyWidth).toBeLessThanOrEqual(mobile.viewportWidth + 1);
+  expect(mobile.buttonHeight).toBeGreaterThanOrEqual(44);
+  expect(mobile.inputHeight).toBeGreaterThanOrEqual(44);
+  expect(errors).toEqual([]);
+});
+
+
+test('Looseleaf workspace starter: create, edit, search, filter, persist and fit mobile', async ({ page }) => {
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  const workspaceUrl = pathToFileURL(resolve('dist/examples/looseleaf-workspace.html')).href;
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto(workspaceUrl);
+  await expect(page.locator('#noteList .note-card')).toHaveCount(3);
+  await page.locator('#newNote').click();
+  await page.locator('#noteTitle').fill('E2E 首期交付记录');
+  await page.locator('#noteCategory').selectOption('项目');
+  await page.locator('#noteBody').fill('验证新增、保存和浏览器本地持久化。');
+  await page.locator('#saveNote').click();
+  await expect(page.locator('#saveStatus')).toContainText('已保存到当前浏览器');
+  await expect(page.locator('#noteList')).toContainText('E2E 首期交付记录');
+  await page.reload();
+  await expect(page.locator('#noteList')).toContainText('E2E 首期交付记录');
+  await page.locator('#searchNotes').fill('E2E 首期');
+  await expect(page.locator('#noteList .note-card')).toHaveCount(1);
+  await page.locator('[data-filter="灵感"]').click();
+  await expect(page.locator('#noteList .note-card')).toHaveCount(0);
+  await page.locator('[data-filter="项目"]').click();
+  await expect(page.locator('#noteList .note-card')).toHaveCount(1);
+  await page.locator('#searchNotes').fill('');
+  await page.locator('#noteList .note-card').filter({ hasText: 'E2E 首期交付记录' }).click();
+  await page.locator('#noteBody').fill('内容已更新，编辑后再次保存。');
+  await page.locator('#saveNote').click();
+  await expect(page.locator('#saveStatus')).toContainText('已保存到当前浏览器');
+  await page.setViewportSize({ width: 390, height: 844 });
+  const mobile = await page.evaluate(() => ({
+    bodyWidth: document.body.scrollWidth,
+    viewportWidth: document.documentElement.clientWidth,
+    saveHeight: Math.round(document.querySelector('#saveNote').getBoundingClientRect().height),
+    searchHeight: Math.round(document.querySelector('#searchNotes').getBoundingClientRect().height),
+  }));
+  expect(mobile.bodyWidth).toBeLessThanOrEqual(mobile.viewportWidth + 1);
+  expect(mobile.saveHeight).toBeGreaterThanOrEqual(44);
+  expect(mobile.searchHeight).toBeGreaterThanOrEqual(44);
+  await page.evaluate(() => localStorage.setItem('davylab.looseleaf.workspace.v1', '{broken-json'));
+  await page.reload();
+  await expect(page.locator('#saveStatus')).toContainText('数据格式损坏');
+  expect(errors).toEqual([]);
 });
 
 test('production UI: live Skill search, candidate generation, selection and capability catalog', async ({ page }) => {
