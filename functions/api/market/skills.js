@@ -17,9 +17,13 @@ function normalizeSkill(raw) {
   const rawSlug = clean(item.slug || item.id, 180);
   const slugParts = rawSlug.split("/").filter(Boolean);
   const slug = slugParts.at(-1) || rawSlug;
-  const owner = clean(item.owner || item.author || item.publisher || slugParts[0], 100);
-  let url = clean(item.url || item.href, 1000);
+  const ownerValue = item.owner && typeof item.owner === "object"
+    ? (item.owner.handle || item.owner.slug || item.owner.name)
+    : item.owner;
+  const owner = clean(ownerValue || item.ownerSlug || item.author || item.publisher || slugParts[0], 100);
+  let url = clean(item.url || item.href || item.permalink, 1000);
   if (!url && owner && slug) url = "https://clawhub.ai/" + encodeURIComponent(owner) + "/skills/" + encodeURIComponent(slug);
+  if (!url && slug) url = "https://clawhub.ai/?q=" + encodeURIComponent(slug);
   try {
     const parsed = new URL(url);
     if (parsed.protocol !== "https:" || parsed.hostname !== "clawhub.ai") return null;
