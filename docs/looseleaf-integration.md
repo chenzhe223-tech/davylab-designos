@@ -4,7 +4,7 @@ This folder contains the reusable CSS layer for the optional Looseleaf Paper pro
 
 ## Interactive showcase
 
-Open `examples/looseleaf-showcase.html` from the repository or the built site's `/examples/looseleaf-showcase.html`. It demonstrates the responsive visual language with sample KPI tiles, navigation, task controls, a quick-add interaction and mobile layout. All data is illustrative and all interactions are local to the page; nothing is persisted or sent to a server.
+Open `examples/looseleaf-showcase.html` from the repository, the built site's `/examples/looseleaf-showcase.html`, or the isolated review preview at https://looseleaf-preview.davylab-designos.pages.dev/examples/looseleaf-showcase.html after its deployment workflow succeeds. It demonstrates the responsive visual language with sample KPI tiles, navigation, task controls, a quick-add interaction and mobile layout. All data is illustrative and all interactions are local to the page; nothing is persisted or sent to a server.
 
 ## Files
 
