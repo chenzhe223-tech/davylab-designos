@@ -149,7 +149,11 @@ test('Looseleaf component reference: button states, form feedback, dialog keyboa
   await page.locator('#openDialog').click();
   await expect(dialog).toBeVisible();
   await expect(page.locator('#dialogBackdrop')).toHaveCSS('display', 'grid')
-  await expect(dialog).toBeFocused();
+  await expect(page.locator('#cancelDialog')).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(page.locator('#confirmDialog')).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(page.locator('#cancelDialog')).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(page.locator('#dialogBackdrop')).toBeHidden();
   await expect(page.locator('#openDialog')).toBeFocused();
@@ -166,6 +170,47 @@ test('Looseleaf component reference: button states, form feedback, dialog keyboa
   expect(mobile.bodyWidth).toBeLessThanOrEqual(mobile.viewportWidth + 1);
   expect(mobile.buttonHeight).toBeGreaterThanOrEqual(44);
   expect(mobile.inputHeight).toBeGreaterThanOrEqual(44);
+  expect(errors).toEqual([]);
+});
+
+
+test('Looseleaf workspace starter: create, edit, search, filter, persist and fit mobile', async ({ page }) => {
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  const workspaceUrl = pathToFileURL(resolve('dist/examples/looseleaf-workspace.html')).href;
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto(workspaceUrl);
+  await expect(page.locator('#noteList .note-card')).toHaveCount(3);
+  await page.locator('#newNote').click();
+  await page.locator('#noteTitle').fill('E2E 首期交付记录');
+  await page.locator('#noteCategory').selectOption('项目');
+  await page.locator('#noteBody').fill('验证新增、保存和浏览器本地持久化。');
+  await page.locator('#saveNote').click();
+  await expect(page.locator('#saveStatus')).toContainText('已保存到当前浏览器');
+  await expect(page.locator('#noteList')).toContainText('E2E 首期交付记录');
+  await page.reload();
+  await expect(page.locator('#noteList')).toContainText('E2E 首期交付记录');
+  await page.locator('#searchNotes').fill('E2E 首期');
+  await expect(page.locator('#noteList .note-card')).toHaveCount(1);
+  await page.locator('[data-filter="灵感"]').click();
+  await expect(page.locator('#noteList .note-card')).toHaveCount(0);
+  await page.locator('[data-filter="项目"]').click();
+  await expect(page.locator('#noteList .note-card')).toHaveCount(1);
+  await page.locator('#searchNotes').fill('');
+  await page.locator('#noteList .note-card').filter({ hasText: 'E2E 首期交付记录' }).click();
+  await page.locator('#noteBody').fill('内容已更新，编辑后再次保存。');
+  await page.locator('#saveNote').click();
+  await expect(page.locator('#saveStatus')).toContainText('已保存到当前浏览器');
+  await page.setViewportSize({ width: 390, height: 844 });
+  const mobile = await page.evaluate(() => ({
+    bodyWidth: document.body.scrollWidth,
+    viewportWidth: document.documentElement.clientWidth,
+    saveHeight: Math.round(document.querySelector('#saveNote').getBoundingClientRect().height),
+    searchHeight: Math.round(document.querySelector('#searchNotes').getBoundingClientRect().height),
+  }));
+  expect(mobile.bodyWidth).toBeLessThanOrEqual(mobile.viewportWidth + 1);
+  expect(mobile.saveHeight).toBeGreaterThanOrEqual(44);
+  expect(mobile.searchHeight).toBeGreaterThanOrEqual(44);
   expect(errors).toEqual([]);
 });
 
