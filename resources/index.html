@@ -215,6 +215,13 @@ POST /api/skills/match</div><button class="btn small" id="copyApi">复制 API �
   const actions=document.createElement("div");actions.className="detail-actions";
   const use=document.createElement("button");use.className="btn primary";use.textContent="生成此 Skill 的 Agent 调用指令";use.addEventListener("click",()=>makePrompt(r));
   const copySource=document.createElement("button");copySource.className="btn";copySource.textContent="复制来源路径";copySource.addEventListener("click",()=>copy(r.source?.repository ? r.source.repository+"/"+r.source.path : r.source?.url||""));
+  const sourceRepo=String(r.source?.repository||"");
+  const sourceVisibility=r.source?.visibility||"";
+  if(sourceVisibility==="public"&&sourceRepo.includes("/")&&!sourceRepo.includes(" ")){
+   const kp=document.createElement("button");kp.className="btn";kp.textContent="发送到 KeyPocket";
+   kp.addEventListener("click",()=>handoffKeyPocket({name:r.name,description:r.summary,url:"https://github.com/"+sourceRepo,tags:r.tags||[]}));
+   actions.append(kp);
+  }
   const collectIdea=document.createElement("button");collectIdea.className="btn";collectIdea.textContent="收录到念头盒";
   collectIdea.addEventListener("click",()=>{
    if(r.source?.visibility==="private"){notify("私有 Skill 不通过跨站链接传递；请在本地复制来源后手动记录。");return;}
@@ -389,6 +396,12 @@ POST /api/skills/match</div><button class="btn small" id="copyApi">复制 API �
   const target="https://chenzhe223-tech.github.io/niantou-box-app/?davySkill="+encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(packet)))));
   window.open(target,"_blank","noopener");
   notify("已打开念头盒收录入口；请在念头盒确认保存。");
+ }
+ function handoffKeyPocket(item){
+  const packet={id:"davy-radar-resourcehub-"+Date.now()+"-"+Math.random().toString(36).slice(2,8),source:"davy-radar",createdAt:Date.now(),name:item.name,url:item.url,description:item.description||"",topics:Array.isArray(item.tags)?item.tags.slice(0,8):[],sourcePage:location.href};
+  const target="https://chenzhe223-tech.github.io/keypocket/?kp_capture="+encodeURIComponent(JSON.stringify(packet));
+  window.open(target,"_blank","noopener");
+  notify("已发送至 KeyPocket 待收录队列；解锁后请确认收录。");
  }
  function selectedResourcePacket(){
   const r=resources.find(x=>x.id===state.chosen);
