@@ -48,5 +48,6 @@ html = html.replace(profileBlock, 'const profiles=' + JSON.stringify(runtimeProf
 await writeFile(resolve(out, 'index.html'), html, 'utf8')
 await cp(resolve(root, 'profiles'), resolve(out, 'profiles'), { recursive: true })
 await cp(resolve(root, 'assets'), resolve(out, 'assets'), { recursive: true })
+await cp(resolve(root, 'examples'), resolve(out, 'examples'), { recursive: true })
 await cp(resolve(root, 'engine.lock.json'), resolve(out, 'engine.lock.json'))
 console.log('PASS: static DesignOS site built from canonical profile registry (' + runtimeProfiles.length + ' selectable profiles).')
