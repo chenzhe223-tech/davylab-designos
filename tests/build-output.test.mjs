@@ -32,6 +32,13 @@ test('public build includes the preview and design profiles, not private project
   for (const primitive of ['.ll-field', '.ll-feedback--warning', '.ll-list-item', '.ll-empty-state', '.ll-dialog-backdrop']) {
     assert.ok(looseleafCss.includes(primitive), 'missing reusable primitive ' + primitive)
   }
+  const starter = await readFile(join(dist, 'starter', 'looseleaf', 'index.html'), 'utf8')
+  assert.match(starter, /Looseleaf Paper starter/)
+  assert.match(starter, /data-ll-dialog-open/)
+  const starterCss = await readFile(join(dist, 'starter', 'looseleaf', 'looseleaf.css'), 'utf8')
+  assert.match(starterCss, /\.ll-paper-card/)
+  const starterJs = await readFile(join(dist, 'starter', 'looseleaf', 'looseleaf.js'), 'utf8')
+  assert.match(starterJs, /Escape/)
   const assets = await readdir(join(dist, 'assets'))
   assert.ok(assets.includes('davylab-motion.js'))
   assert.ok(assets.includes('motion-tokens.css'))

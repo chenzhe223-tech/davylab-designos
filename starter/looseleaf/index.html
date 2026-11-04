@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#F7F1E5"><title>Looseleaf Paper starter</title>
+<link rel="stylesheet" href="./looseleaf-tokens.css"><link rel="stylesheet" href="./looseleaf.css">
+<style>
+*{box-sizing:border-box}body{margin:0;padding:clamp(14px,3vw,40px);background:#eee8dc}.demo{width:min(100%,920px);margin:auto}.demo-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:20px}.demo-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}.demo h1{font-size:clamp(28px,5vw,44px);line-height:1.1;margin:0 0 8px}.demo p{line-height:1.7}.demo-form{display:grid;gap:12px}.demo-actions{display:flex;gap:8px;flex-wrap:wrap}@media(max-width:680px){.demo-grid{grid-template-columns:1fr}.demo-head{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<main class="ll-theme ll-paper-surface demo">
+  <header class="demo-head"><span class="ll-sticker">DAVYLAB · STARTER</span><span>Looseleaf Paper / v1</span></header>
+  <section class="demo-grid">
+    <article class="ll-paper-card">
+      <h1>把想法，轻轻放在纸上。</h1>
+      <p>这是可复制的静态 HTML / CSS / JS 起步模板。暖纸白、墨色边界与森林绿强调，保留清晰的内容层级。</p>
+      <div class="demo-actions"><button class="ll-ink-button" type="button" data-ll-dialog-open>打开示例对话框</button><button class="ll-ink-button ll-ink-button--secondary" type="button" id="showFeedback">查看反馈状态</button></div>
+      <div id="feedback" class="ll-feedback" role="status" aria-live="polite" hidden>示例反馈：交互已在本地触发，没有发送请求。</div>
+    </article>
+    <aside class="ll-paper-card">
+      <h2>快速接入</h2>
+      <form class="demo-form" id="demoForm">
+        <label class="ll-field"><span>项目名称</span><input class="ll-ink-input" name="project" placeholder="例如：我的新工具" required></label>
+        <label class="ll-checkline"><input type="checkbox" name="confirm"> 我已了解这是演示表单</label>
+        <button class="ll-ink-button" type="submit">本地验证表单</button>
+        <p id="formMessage" class="ll-feedback" role="status" aria-live="polite" hidden></p>
+      </form>
+    </aside>
+  </section>
+</main>
+<div class="ll-theme ll-dialog-backdrop" data-ll-dialog-backdrop>
+  <section class="ll-dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle" tabindex="-1">
+    <h2 id="dialogTitle">这是一个示例弹窗</h2><p>此弹窗演示键盘焦点、Escape 关闭、遮罩关闭和焦点恢复。请替换成你的业务逻辑。</p>
+    <div class="ll-dialog-actions"><button class="ll-ink-button ll-ink-button--secondary" type="button" data-ll-dialog-close>取消</button><button class="ll-ink-button" type="button" data-ll-dialog-confirm>确认</button></div>
+  </section>
+</div>
+<script src="./looseleaf.js" defer></script>
+</body></html>

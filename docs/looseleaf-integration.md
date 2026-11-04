@@ -1,45 +1,47 @@
 # Looseleaf Paper Style Pack
 
-This folder contains the reusable CSS layer for the optional Looseleaf Paper profile in DAVYLAB DesignOS.
+This folder contains the reusable CSS layer for the optional Looseleaf Paper profile in DAVYLAB DesignOS. The portable, copy-ready starter is published under `starter/looseleaf/` in the repository and build output.
 
-## Interactive showcase
+## Preview and examples
 
-Open `examples/looseleaf-showcase.html` from the repository, the built site's `/examples/looseleaf-showcase.html`, or the isolated review preview at https://looseleaf-preview.davylab-designos.pages.dev/examples/looseleaf-showcase.html after its deployment workflow succeeds. It demonstrates the responsive visual language with sample KPI tiles, navigation, task controls, a quick-add interaction and mobile layout. All data is illustrative and all interactions are local to the page; nothing is persisted or sent to a server.
+- [Visual showcase](https://looseleaf-preview.davylab-designos.pages.dev/examples/looseleaf-showcase.html): responsive visual direction and local-only interactions.
+- [Component reference](https://looseleaf-preview.davylab-designos.pages.dev/examples/looseleaf-components.html): buttons, form controls, feedback, lists, empty states and keyboard-accessible dialog.
+- [Functional workspace](https://looseleaf-preview.davylab-designos.pages.dev/examples/looseleaf-workspace.html): local-first create/edit/search/filter with browser persistence. No account, server API, cloud sync or cross-device sync.
+- [Portable starter](https://looseleaf-preview.davylab-designos.pages.dev/starter/looseleaf/): copy-ready static HTML/CSS/JS starter.
 
-The first functional starter template is available at `examples/looseleaf-workspace.html` and `/examples/looseleaf-workspace.html` in the built site. It demonstrates a local-first inspiration workspace with create, edit, search, category filters, empty states and browser persistence. It seeds clearly illustrative sample notes only when no valid local data exists. The storage key is versioned (`davylab.looseleaf.workspace.v1`); malformed or unavailable storage falls back to in-memory interaction. No account, server API, cloud sync or cross-device sync is included.
+## Portable installation
 
-The component reference is available at `examples/looseleaf-components.html` and `/examples/looseleaf-components.html` in the built site. It demonstrates primary/secondary/danger/disabled buttons, labeled form controls, success/warning/error feedback, task lists, empty states, and a modal dialog with focus entry, Escape dismissal, backdrop dismissal and focus restoration. Its interactions are local-only and explicitly do not submit or persist data. The shared `.ll-ink-button` primitive enforces a 44px minimum target; verify the full layout at desktop, tablet and mobile widths before production use.\n\n## Files
+Copy the contents of `starter/looseleaf/` into a static web project, preserving the three asset filenames. Open `index.html` directly or serve the folder through your normal development server. The starter has no npm dependency, framework requirement, build plugin, API or remote font dependency.
 
-- `looseleaf-tokens.css`: paper, surface, ink, muted, line, accent, terracotta, shadow and radius tokens.
-- `looseleaf.css`: DesignOS preview styling plus small reusable CSS primitives.
+Files:
+- `index.html`: semantic example page with paper surface, card, button, form and dialog.
+- `looseleaf-tokens.css`: editable CSS custom properties, scoped under `.ll-theme`.
+- `looseleaf.css`: reusable visual primitives and responsive/reduced-motion rules.
+- `looseleaf.js`: small accessible dialog behavior (focus entry, Tab loop, Escape, backdrop dismissal and focus restoration).
 
-## Use in another static web project
+The starter is deliberately a visual/integration baseline, not an application backend. Replace sample copy and connect form actions to your own application logic. Do not treat the demo form as data submission.
 
-Copy both files into the target project's public/static assets and load them in this order:
+## Design tokens
 
-```html
-<link rel="stylesheet" href="/assets/looseleaf-tokens.css">
-<link rel="stylesheet" href="/assets/looseleaf.css">
-```
+Apply `.ll-theme` to the page root or a containing element. Override individual custom properties in a project-specific stylesheet; do not edit the source pack if you want straightforward future upgrades.
 
-Available primitives:
+Supported tokens: `--ll-paper`, `--ll-surface`, `--ll-ink`, `--ll-muted`, `--ll-line`, `--ll-line-strong`, `--ll-accent`, `--ll-terra`, `--ll-shadow`, and `--ll-radius`.
 
-- `.ll-paper-surface` — ruled paper texture and warm paper canvas.
-- `.ll-paper-card` — ink-outlined paper card.
-- `.ll-ink-button` — hand-drawn-style button with a 44px minimum target; apply modifier classes for secondary/danger states in the reference page.
-- `.ll-ink-input` — paper input control.
-- `.ll-sticker` — restrained sticker/tag accent.
-- `.ll-ink-divider` — dashed ink divider.
-- `.ll-field` and `.ll-checkline` — labeled form rows and touch-friendly checkboxes.
-- `.ll-feedback`, `.ll-feedback--warning`, `.ll-feedback--error` — semantic feedback states.
-- `.ll-list` and `.ll-list-item` — structured rows with optional `.ll-list-item__meta`.
-- `.ll-empty-state` and `.ll-empty-state__symbol` — explanatory empty state with a clear next action.
-- `.ll-dialog-backdrop`, `.ll-dialog`, and `.ll-dialog-actions` — modal presentation primitives; the adopting app must implement focus management, Escape handling, focus restoration and dismissal behavior.
+## Available primitives
 
-These are CSS primitives, not React components. They do not require React, Tailwind, Radix, a build plugin or a JavaScript runtime. Use semantic HTML controls and keep visible focus. Check text contrast and touch target sizing in the target application before shipping.
+- `.ll-paper-surface`, `.ll-paper-card`
+- `.ll-ink-button` (minimum 44px target), `.ll-ink-button--secondary`, `.ll-ink-button--danger`
+- `.ll-ink-input`, `.ll-field`, `.ll-checkline`
+- `.ll-sticker`, `.ll-ink-divider`
+- `.ll-feedback`, `.ll-feedback--warning`, `.ll-feedback--error`
+- `.ll-list`, `.ll-list-item`, `.ll-list-item__meta`
+- `.ll-empty-state`, `.ll-empty-state__symbol`
+- `.ll-dialog-backdrop`, `.ll-dialog`, `.ll-dialog-actions`
+
+The CSS provides presentation only. The included JavaScript handles the example dialog; application-specific form validation, persistence, routing and server actions remain the adopting project's responsibility.
 
 ## Typography and licensing
 
-The current pack does not bundle or load a font binary. It uses system font stacks and optional system handwriting fallbacks; actual font availability varies by device. Do not describe a handwritten font as deployed unless the target project adds and verifies an appropriately licensed font file.
+No font binary is bundled or loaded. The starter uses system font stacks; handwriting fallbacks are optional and vary by device. Do not claim a font is deployed unless the target project adds and verifies an appropriately licensed font file.
 
-The visual direction is adapted from [kevintngo/looseleaf](https://github.com/kevintngo/looseleaf). The upstream repository declares MIT for its source and art; its README identifies IBM Plex Mono as SIL OFL 1.1. This pack does not copy upstream code, font binaries or image assets. Retain upstream attribution when redistributing substantial adapted portions of upstream material.
+The visual direction is adapted from [kevintngo/looseleaf](https://github.com/kevintngo/looseleaf). The upstream repository declares MIT for its source and art; its README identifies IBM Plex Mono as SIL OFL 1.1. This pack does not copy upstream code, font binaries or image assets. Retain upstream attribution when redistributing substantial adapted portions.
