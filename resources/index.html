@@ -243,8 +243,8 @@ POST /api/skills/match</div><button class="btn small" id="copyApi">复制 API �
   $("resultMeta").textContent="显示 "+list.length+" / "+resources.length+" 项";
   $("listTitle").textContent=state.query?"匹配结果":"资源清单";
   if(!list.length){const e=document.createElement("div");e.className="empty";e.textContent="没有找到匹配资源。换个关键词，或清除筛选条件。";host.append(e);return;}
-  list.forEach(r=>{
-   const card=document.createElement("article");card.className="resource-card"+(state.chosen===r.id?" selected":"");card.tabIndex=0;card.setAttribute("role","button");card.setAttribute("aria-label","查看 "+r.name+" 的详情");
+  list.forEach((r,index)=>{
+   const card=document.createElement("article");card.style.setProperty("--card-index",index);card.className="resource-card"+(state.chosen===r.id?" selected":"");card.tabIndex=0;card.setAttribute("role","button");card.setAttribute("aria-label","查看 "+r.name+" 的详情");
    card.addEventListener("click",()=>{state.chosen=r.id;renderCards();renderDetail();$("resourceDetail").scrollIntoView({behavior:"smooth",block:"nearest"});});
    card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();card.click();}});
    const top=document.createElement("div");top.className="card-top";const symbol=document.createElement("div");symbol.className="resource-symbol";symbol.textContent=symbols[r.type]||"✳";
