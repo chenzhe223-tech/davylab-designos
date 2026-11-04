@@ -19,6 +19,14 @@ test('public build includes the preview and design profiles, not private project
   assert.match(showcase, /Looseleaf Paper/)
   assert.match(showcase, /data-tab/)
   assert.match(showcase, /aria-live/)
+  const components = await readFile(join(dist, 'examples', 'looseleaf-components.html'), 'utf8')
+  assert.match(components, /Reusable UI primitives/)
+  assert.match(components, /class="ll-dialog"/)
+  assert.match(components, /class="ll-feedback/)
+  const looseleafCss = await readFile(join(dist, 'assets', 'looseleaf', 'looseleaf.css'), 'utf8')
+  for (const primitive of ['.ll-field', '.ll-feedback--warning', '.ll-list-item', '.ll-empty-state', '.ll-dialog-backdrop']) {
+    assert.ok(looseleafCss.includes(primitive), 'missing reusable primitive ' + primitive)
+  }
   const assets = await readdir(join(dist, 'assets'))
   assert.ok(assets.includes('davylab-motion.js'))
   assert.ok(assets.includes('motion-tokens.css'))
