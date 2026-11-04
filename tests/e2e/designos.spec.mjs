@@ -72,6 +72,12 @@ test('Looseleaf Paper: profile selection renders the paper-and-ink preview on de
   const preview = page.locator('#livePreview');
   await expect(preview).toHaveAttribute('data-profile', 'looseleaf-paper');
   await expect(preview).toHaveClass(/looseleaf-preview/);
+  const paperStyle = await preview.evaluate(element => ({
+    background: getComputedStyle(element).backgroundColor,
+    borderWidth: getComputedStyle(element).borderTopWidth,
+  }));
+  expect(paperStyle.background).toBe('rgb(247, 241, 229)');
+  expect(paperStyle.borderWidth).toBe('2px');
   await expect(page.locator('#detail')).toContainText('手绘墨线');
   await page.setViewportSize({ width: 1024, height: 900 });
   let widths = await page.evaluate(() => ({ body: document.body.scrollWidth, viewport: document.documentElement.clientWidth }));
