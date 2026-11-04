@@ -32,7 +32,7 @@ test("theme, layout, navigation, typography and color tokens are configurable", 
 test("Motion Lab includes six previewable effects and tuning controls", () => {
   for (const motion of ["fade-up", "spring", "slide", "blur", "stagger", "orbit"]) {
     assert.match(html, new RegExp('data-motion="' + motion + '"'));
-    assert.match(html, new RegExp('"' + motion + '":\\['));
+    assert.match(html, new RegExp('"?' + motion + '"?\\s*:\\['));
   }
   for (const id of ["uiMotionPreview", "replayUiMotion", "uiMotionIntensity", "uiMotionDuration"]) {
     assert.match(html, new RegExp('id="' + id + '"'));
