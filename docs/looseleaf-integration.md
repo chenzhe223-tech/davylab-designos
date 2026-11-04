@@ -6,7 +6,7 @@ This folder contains the reusable CSS layer for the optional Looseleaf Paper pro
 
 Open `examples/looseleaf-showcase.html` from the repository, the built site's `/examples/looseleaf-showcase.html`, or the isolated review preview at https://looseleaf-preview.davylab-designos.pages.dev/examples/looseleaf-showcase.html after its deployment workflow succeeds. It demonstrates the responsive visual language with sample KPI tiles, navigation, task controls, a quick-add interaction and mobile layout. All data is illustrative and all interactions are local to the page; nothing is persisted or sent to a server.
 
-## Files
+The component reference is available at `examples/looseleaf-components.html` and `/examples/looseleaf-components.html` in the built site. It demonstrates primary/secondary/danger/disabled buttons, labeled form controls, success/warning/error feedback, task lists, empty states, and a modal dialog with focus entry, Escape dismissal, backdrop dismissal and focus restoration. Its interactions are local-only and explicitly do not submit or persist data. The shared `.ll-ink-button` primitive enforces a 44px minimum target; verify the full layout at desktop, tablet and mobile widths before production use.\n\n## Files
 
 - `looseleaf-tokens.css`: paper, surface, ink, muted, line, accent, terracotta, shadow and radius tokens.
 - `looseleaf.css`: DesignOS preview styling plus small reusable CSS primitives.
@@ -24,7 +24,7 @@ Available primitives:
 
 - `.ll-paper-surface` — ruled paper texture and warm paper canvas.
 - `.ll-paper-card` — ink-outlined paper card.
-- `.ll-ink-button` — hand-drawn-style primary button.
+- `.ll-ink-button` — hand-drawn-style button with a 44px minimum target; apply modifier classes for secondary/danger states in the reference page.
 - `.ll-ink-input` — paper input control.
 - `.ll-sticker` — restrained sticker/tag accent.
 - `.ll-ink-divider` — dashed ink divider.
