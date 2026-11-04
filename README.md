@@ -24,6 +24,12 @@ The UI examples are locally rendered HTML/CSS templates based on documented prof
 
 The generated agent prompt includes the selected profile rules, source notes, project brief, implementation steps, safety constraints, and acceptance criteria. It is generated locally in the browser. Copying or downloading it does not send it to an agent or claim the agent has executed it.
 
+## Skill Resource Hub
+
+A Looseleaf Paper-inspired resource center is available at `/resources/`. It catalogs 29 reusable Skills, integrated engines, design profiles and visual reference packs from 28 personal repositories (46 discovered `SKILL.md` paths, with repeated project copies and versions consolidated) in the canonical `resources/registry.json`. Private Skill bodies remain in their source repository; the public registry contains summaries, source paths and blob fingerprints only.
+
+Agent discovery protocol: see [resources/agent-discovery.md](resources/agent-discovery.md). The DesignOS Render API provides read-only `GET /api/skills`, `GET /api/skills/{id}`, and `POST /api/skills/match` endpoints. Matching is deterministic keyword ranking and does not grant access to private source files or authorize external actions.
+
 ## Local development
 
 Requires Node.js 20+ and Python 3. Run:

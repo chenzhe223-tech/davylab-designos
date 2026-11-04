@@ -3,13 +3,15 @@
 import ipaddress
 import json
 import os
+import re
+import unicodedata
 import subprocess
 import time
 import uuid
 from collections import defaultdict, deque
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, unquote, urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
 PORT = int(os.environ.get("PORT", "10000"))
@@ -23,6 +25,95 @@ RATE_LIMIT = 60
 RATE_WINDOW = 60
 REQUEST_LIMIT = 12_000
 requests_by_ip = defaultdict(deque)
+
+REGISTRY_PATH = ROOT / "resources" / "registry.json"
+
+
+def load_resource_registry():
+    """Load the canonical metadata registry. Skill bodies are never served here."""
+    data = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    if not isinstance(data, dict) or not isinstance(data.get("resources"), list):
+        raise RuntimeError("resource_registry_invalid")
+    return data
+
+
+def resource_tokens(value):
+    """Create deterministic English word and Chinese bigram tokens."""
+    text = unicodedata.normalize("NFKC", str(value or "")).casefold()
+    tokens = set(re.findall(r"[a-z0-9][a-z0-9.+_-]*", text))
+    for chunk in re.findall(r"[\u3400-\u9fff]+", text):
+        if len(chunk) == 1:
+            tokens.add(chunk)
+        else:
+            for index in range(len(chunk) - 1):
+                tokens.add(chunk[index:index + 2])
+    return tokens
+
+
+def resource_has_visibility(resource, visibility):
+    """Match source visibility across the primary and alternate repository copies."""
+    requested = str(visibility or "").casefold().strip()
+    if not requested:
+        return True
+    sources = [resource.get("source", {})] + list(resource.get("alternateSources", []))
+    return any(str(source.get("visibility", "")).casefold() == requested for source in sources)
+
+
+def match_resource(resource, intent):
+    """Weighted lexical match with transparent reasons; not an LLM semantic score."""
+    query = unicodedata.normalize("NFKC", intent).casefold().strip()
+    query_tokens = resource_tokens(query)
+    if not query_tokens:
+        return 0, []
+    fields = [
+        ("name", " ".join([str(resource.get("name", "")), str(resource.get("englishName", ""))]), 7),
+        ("triggers", " ".join(resource.get("triggers", [])), 6),
+        ("tags", " ".join(resource.get("tags", [])), 4),
+        ("whenToUse", " ".join(resource.get("whenToUse", [])), 3),
+        ("capabilities", " ".join(resource.get("capabilities", [])), 2),
+        ("summary", str(resource.get("summary", "")), 2),
+    ]
+    score = 0
+    reasons = []
+    for label, value, weight in fields:
+        normalized = unicodedata.normalize("NFKC", value).casefold()
+        overlap = query_tokens.intersection(resource_tokens(value))
+        if overlap:
+            score += len(overlap) * weight
+            reasons.append(label + ":" + ",".join(sorted(overlap)[:6]))
+        if len(query) >= 2 and query in normalized:
+            score += weight * 3
+            reasons.append(label + ":phrase")
+    return score, reasons
+
+
+def find_resource_matches(resources, intent, agent=None, resource_type=None, category=None, visibility=None, limit=5):
+    """Return deterministic resource ranking with agent/type/category constraints."""
+    matches = []
+    agent_key = str(agent or "").casefold().strip()
+    type_key = str(resource_type or "").casefold().strip()
+    category_key = str(category or "").casefold().strip()
+    visibility_key = str(visibility or "").casefold().strip()
+    for resource in resources:
+        if type_key and str(resource.get("type", "")).casefold() != type_key:
+            continue
+        if category_key and str(resource.get("category", "")).casefold() != category_key:
+            continue
+        supported_agents = [str(x).casefold() for x in resource.get("agentSupport", [])]
+        if agent_key and agent_key not in supported_agents:
+            continue
+        if visibility_key and not resource_has_visibility(resource, visibility_key):
+            continue
+        score, reasons = match_resource(resource, intent)
+        if score > 0:
+            matches.append({
+                "resource": resource,
+                "matchScore": score,
+                "matchReasons": reasons,
+            })
+    matches.sort(key=lambda item: (-item["matchScore"], item["resource"].get("name", "")))
+    return matches[:max(1, min(20, int(limit)))]
+
 
 
 def client_rate_limit_key(handler):
@@ -166,6 +257,67 @@ class Handler(BaseHTTPRequestHandler):
                 self._json(200 if status.get("ready") else 503, status)
             except Exception as exc:
                 self._json(503, {"ready": False, "error": str(exc)})
+        elif path == "/api/skills":
+            try:
+                registry = load_resource_registry()
+                params = parse_qs(urlparse(self.path).query)
+                query = params.get("q", params.get("query", [""]))[0].strip()[:2000]
+                resource_type = params.get("type", params.get("resourceType", [""]))[0].strip()
+                category = params.get("category", [""])[0].strip()
+                agent = params.get("agent", [""])[0].strip()
+                visibility = params.get("visibility", [""])[0].strip()
+                if visibility.casefold() == "private":
+                    self._json(403, {"error": "private_registry_requires_cloudflare_access"})
+                    return
+                if visibility and visibility.casefold() not in {"private", "public", "reference"}:
+                    self._json(400, {"error": "invalid_visibility"})
+                    return
+                try:
+                    limit = max(1, min(100, int(params.get("limit", ["100"])[0])))
+                    offset = max(0, int(params.get("offset", ["0"])[0]))
+                except ValueError:
+                    limit, offset = 100, 0
+                resources = registry["resources"]
+                if resource_type:
+                    resources = [r for r in resources if str(r.get("type", "")).casefold() == resource_type.casefold()]
+                if category:
+                    resources = [r for r in resources if str(r.get("category", "")).casefold() == category.casefold()]
+                if agent:
+                    resources = [r for r in resources if agent.casefold() in [str(x).casefold() for x in r.get("agentSupport", [])]]
+                if visibility:
+                    resources = [r for r in resources if resource_has_visibility(r, visibility)]
+                if query:
+                    matches = find_resource_matches(resources, query, limit=20)
+                    resources = [item["resource"] for item in matches]
+                total = len(resources)
+                page = resources[offset:offset + limit]
+                self._json(200, {
+                    "schemaVersion": registry.get("schemaVersion"),
+                    "registryVersion": registry.get("registryVersion"),
+                    "title": registry.get("title"),
+                    "matching": registry.get("matching"),
+                    "count": total,
+                    "offset": offset,
+                    "limit": limit,
+                    "resources": page,
+                })
+            except Exception as exc:
+                self._json(503, {"error": "skill_registry_unavailable", "message": str(exc)[:300]})
+        elif path.startswith("/api/skills/"):
+            try:
+                resource_id = unquote(path[len("/api/skills/"):]).strip()
+                registry = load_resource_registry()
+                resource = next((item for item in registry["resources"] if item.get("id") == resource_id), None)
+                if not resource:
+                    self._json(404, {"error": "resource_not_found", "id": resource_id[:120]})
+                else:
+                    self._json(200, {
+                        "schemaVersion": registry.get("schemaVersion"),
+                        "registryVersion": registry.get("registryVersion"),
+                        "resource": resource,
+                    })
+            except Exception as exc:
+                self._json(503, {"error": "skill_registry_unavailable", "message": str(exc)[:300]})
         elif path == "/api/capabilities":
             inventory_path = ROOT / "generated" / "skill-capability-inventory.json"
             try:
@@ -241,11 +393,54 @@ class Handler(BaseHTTPRequestHandler):
         if not isinstance(payload, dict):
             self._json(400, {"error": "request_must_be_object"})
             return
+        path = urlparse(self.path).path
+        if path == "/api/skills/match":
+            intent = payload.get("intent", payload.get("query", ""))
+            if not isinstance(intent, str) or not intent.strip() or len(intent) > 2000:
+                self._json(400, {"error": "intent_required", "maxCharacters": 2000})
+                return
+            agent = payload.get("agent")
+            resource_type = payload.get("type")
+            category = payload.get("category")
+            visibility = payload.get("visibility")
+            if isinstance(visibility, str) and visibility.casefold() == "private":
+                self._json(403, {"error": "private_registry_requires_cloudflare_access"})
+                return
+            for label, value, maximum in (("agent", agent, 80), ("type", resource_type, 80), ("category", category, 120), ("visibility", visibility, 20)):
+                if value is not None and (not isinstance(value, str) or len(value) > maximum):
+                    self._json(400, {"error": "invalid_" + label})
+                    return
+            if visibility and visibility.casefold() not in {"private", "public", "reference"}:
+                self._json(400, {"error": "invalid_visibility"})
+                return
+            raw_limit = payload.get("limit", 5)
+            if isinstance(raw_limit, bool) or not isinstance(raw_limit, int) or not 1 <= raw_limit <= 20:
+                self._json(400, {"error": "invalid_limit", "min": 1, "max": 20})
+                return
+            try:
+                registry = load_resource_registry()
+                matches = find_resource_matches(
+                    registry["resources"], intent, agent=agent,
+                    resource_type=resource_type, category=category, visibility=visibility, limit=raw_limit
+                )
+                self._json(200, {
+                    "schemaVersion": registry.get("schemaVersion"),
+                    "registryVersion": registry.get("registryVersion"),
+                    "matchMode": "weighted-keyword",
+                    "semantic": False,
+                    "notice": "Lexical ranking is advisory. Read and verify the complete source Skill before applying it.",
+                    "intent": intent,
+                    "agent": agent,
+                    "count": len(matches),
+                    "matches": matches,
+                })
+            except Exception as exc:
+                self._json(503, {"error": "skill_registry_unavailable", "message": str(exc)[:300]})
+            return
         query = payload.get("query", "")
         if not isinstance(query, str) or not query.strip() or len(query) > 2000:
             self._json(400, {"error": "query_required", "maxCharacters": 2000})
             return
-        path = urlparse(self.path).path
         try:
             if path == "/api/search":
                 domain = payload.get("domain", "ux")
