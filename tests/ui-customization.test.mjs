@@ -6,7 +6,8 @@ const html = await readFile(new URL("../resources/index.html", import.meta.url),
 
 test("unified UI customization entry and accessible dialog exist", () => {
   assert.match(html, /id="openUiStudio"/);
-  assert.match(html, /id="uiStudioBackdrop"/);\n  assert.match(html, /role="dialog"/);
+  assert.match(html, /id="uiStudioBackdrop"/);
+  assert.match(html, /role="dialog"/);
   assert.match(html, /aria-modal="true"/);
   for (const id of ["closeUiStudio", "doneUiStudio", "resetUiStudio"]) {
     assert.match(html, new RegExp('id="' + id + '"'));
