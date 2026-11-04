@@ -42,11 +42,11 @@
 - Produces profile ID `davylab-looseleaf`, presentation ID `looseleaf-paper`; inherits `davylab-default`.
 - Runtime renderer receives merged tokens, rules, tags, aliases, presentation and provenance via existing build pipeline.
 
-- [ ] Add failing tests asserting the canonical profile exists, has the stable IDs, inherits the default, and records MIT/upstream provenance without claiming validated status.
+- [x] Add tests asserting the canonical profile exists, has the stable IDs, inherits the default, and records MIT/upstream provenance without claiming validated status.
 - [ ] Run `npm run validate:rules && node --test tests/preview.test.mjs`; confirm the new profile assertions fail before implementation.
-- [ ] Add profile with paper canvas `#F7F1E5`, surface `#FFFCF4`, ink `#282923`, muted `#716E63`, border `#D8CFBD`, accent `#426B50`, secondary accent `#B96E45`; define typography, spacing, radius and responsive tokens.
-- [ ] Add explicit rules for hand-drawn linework, restrained stickers, readable hierarchy, focus, reduced motion, contrast and mobile stacking.
-- [ ] Run rule validation and focused tests; expect all pass.
+- [x] Add profile with paper canvas `#F7F1E5`, surface `#FFFCF4`, ink `#282923`, muted `#716E63`, border `#D8CFBD`, accent `#426B50`, secondary accent `#B96E45`; define typography, spacing, radius and responsive tokens.
+- [x] Add explicit rules for hand-drawn linework, restrained stickers, readable hierarchy, focus, reduced motion, contrast and mobile stacking.
+- [x] Run rule validation and focused tests; expect all pass (GitHub Actions CI).
 
 ### Task 2: Add profile-specific thumbnail and live preview
 
@@ -60,12 +60,12 @@
 - Keep `previewThumb(profile)` and `renderPreview(id)` signatures.
 - Scope all new CSS to `[data-profile="looseleaf-paper"]` or a class explicitly added only for this profile.
 
-- [ ] Add failing tests asserting Looseleaf thumbnail markup includes paper/ink identity, both CSS assets are linked, and built assets expose scoped preview selectors plus reusable `.ll-*` primitives.
-- [ ] Run focused tests and confirm RED.
-- [ ] Add a dedicated Looseleaf thumbnail composition with notebook/paper surface and a small stamp/hand-drawn accent; retain semantic labels and escaped profile content.
-- [ ] Add reusable tokens and CSS primitives in `assets/looseleaf/`; scope preview overrides to the Looseleaf profile only, with warm paper texture, ink outlines, restrained stamp accents and visible focus.
-- [ ] Extend live preview rendering with a Looseleaf-specific heading/description and class/data attribute. Preserve the existing DOM IDs used by other features.
-- [ ] Run focused tests; expect GREEN.
+- [x] Add tests asserting Looseleaf thumbnail markup includes paper/ink identity, both CSS assets are linked, and built assets expose scoped preview selectors plus reusable `.ll-*` primitives.
+- [x] Run focused E2E tests and confirm RED for missing rules/tokens.
+- [x] Add a dedicated Looseleaf thumbnail composition with notebook/paper surface and a small stamp/hand-drawn accent; retain semantic labels and escaped profile content.
+- [x] Add reusable tokens and CSS primitives in `assets/looseleaf/`; scope preview overrides to the Looseleaf profile only, with warm paper texture, ink outlines, restrained stamp accents and visible focus.
+- [x] Extend live preview rendering with a Looseleaf-specific heading/description and class/data attribute. Preserve the existing DOM IDs used by other features.
+- [x] Run focused tests; expect GREEN (full CI).
 
 ### Task 3: Ensure comparison, exports and agent prompt carry complete rules
 
@@ -77,23 +77,32 @@
 - Reuse existing `showDetail(id)`, `showCompare()`, `buildPrompt()`, and JSON export path.
 - Do not introduce a parallel export schema.
 
-- [ ] Add failing assertions for Looseleaf rules in detail rendering and Agent prompt generation.
+- [x] Add failing assertions for Looseleaf rules and complete token JSON in Agent prompt generation; confirmed RED in CI before implementation.
 - [ ] Run focused tests and confirm RED.
-- [ ] Add profile-specific source/evidence and rule details to the canonical record; rely on existing generic detail/compare/prompt/export functions.
-- [ ] If preview-specific requirements are absent from prompt, add a short profile-specific implementation note in the record's rules and presentation metadata rather than branching export code.
-- [ ] Run focused tests; expect GREEN.
+- [x] Add profile-specific source/evidence and rule details to the canonical record; rely on existing generic detail/compare/prompt/export functions.
+- [x] Include all profile rules and complete merged design tokens in the generic Agent prompt without branching export code.
+- [x] Run focused tests; expect GREEN (CI run 339).
 
 ### Task 4: Regression, responsive E2E and documentation
 
 **Files:**
 - Modify: `tests/e2e/designos.spec.mjs`
 - Modify: `README.md`
-- Create: `docs/looseleaf-integration.md`\n- Create: `docs/looseleaf-integration.md`
+- Create: `docs/looseleaf-integration.md`
 
-- [ ] Update selectable profile count assertions from 5 to 6.
-- [ ] Add E2E assertions for Looseleaf card, selection, preview data-profile, mobile viewport width, compare inclusion and prompt content.
-- [ ] Run `npm run validate:rules`, `npm test`, `npm run build`.
-- [ ] Run Playwright E2E at 1440px, 1024px and 390px when the repository's configured browser tooling is available; record unavailable checks honestly.
-- [ ] Update README profile list and upstream provenance/license notes.
-- [ ] Review all diffs and confirm no files outside the approved repository/scope were changed.
-- [ ] Commit feature branch changes with descriptive messages. Do not merge or deploy without separate authorization and successful CI/HTTP verification.
+- [x] Update selectable profile count assertions from 5 to 6.
+- [x] Add E2E assertions for Looseleaf card, selection, preview data-profile, computed paper color/border, prompt rules/tokens, and responsive overflow.
+- [x] Run `npm run validate:rules`, `npm test`, `npm run build` (all passed in CI).
+- [x] Run Playwright E2E at 1440px, 1024px and 390px; all responsive checks passed in CI.
+- [x] Update README profile list and upstream provenance/license notes.
+- [x] Review changed files; all 11 changed files are within the approved DesignOS repository scope.
+- [x] Commit feature branch changes with descriptive messages. Branch remains unmerged and undeployed pending separate authorization.
+
+
+## Execution record
+
+- The initial profile/preview implementation was already present before the first full CI run; RED was not observed for every early Task 1/2 assertion. This is recorded rather than retroactively claiming complete TDD compliance.
+- Subsequent regressions were diagnosed from CI output and fixed. Missing complete rules and token JSON in the Agent prompt were both caught by E2E assertions before their implementation fixes (RED → GREEN).
+- Final verified CI run at this plan revision: GitHub Actions run **339** — `npm run validate:rules`, `npm test`, Playwright E2E, responsive document QA, `npm run build`, engine smoke and engine output validation all succeeded.
+- Browser coverage includes 1440px desktop, 1024px tablet, 390px mobile, and computed Looseleaf preview background/border assertions.
+- Merge/deployment intentionally not performed; this branch is a draft PR only.
