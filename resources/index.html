@@ -215,7 +215,14 @@ POST /api/skills/match</div><button class="btn small" id="copyApi">复制 API �
   const actions=document.createElement("div");actions.className="detail-actions";
   const use=document.createElement("button");use.className="btn primary";use.textContent="生成此 Skill 的 Agent 调用指令";use.addEventListener("click",()=>makePrompt(r));
   const copySource=document.createElement("button");copySource.className="btn";copySource.textContent="复制来源路径";copySource.addEventListener("click",()=>copy(r.source?.repository ? r.source.repository+"/"+r.source.path : r.source?.url||""));
-  actions.append(use,copySource);body.append(actions);host.append(body);
+  const collectIdea=document.createElement("button");collectIdea.className="btn";collectIdea.textContent="收录到念头盒";
+  collectIdea.addEventListener("click",()=>{
+   if(r.source?.visibility==="private"){notify("私有 Skill 不通过跨站链接传递；请在本地复制来源后手动记录。");return;}
+   const sourceUrl=r.source?.url||(r.source?.repository? "https://github.com/"+r.source.repository:"");
+   if(!sourceUrl){notify("该资源没有可验证的公开来源链接。");return;}
+   handoffNianBox({name:r.name,description:r.summary,url:sourceUrl,topics:(r.tags||[]).join(" · ")||r.categoryLabel,source:"personal-registry"});
+  });
+  actions.append(use,copySource,collectIdea);body.append(actions);host.append(body);
  }
  function renderCards(){
   const host=$("resourceCards");host.replaceChildren();const list=filtered();
