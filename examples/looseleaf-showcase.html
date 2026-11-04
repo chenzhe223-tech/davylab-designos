@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f7f1e5">
+<title>Looseleaf Paper · DAVYLAB DesignOS Showcase</title>
+<link rel="stylesheet" href="../assets/looseleaf/looseleaf-tokens.css">
+<link rel="stylesheet" href="../assets/looseleaf/looseleaf.css">
+<style>
+:root{font-family:Inter,"Segoe UI",sans-serif;color:#282923;background:#e9e3d7}
+*{box-sizing:border-box}body{margin:0;padding:clamp(14px,3vw,40px)}
+button,input{font:inherit}.showcase{max-width:1180px;margin:auto}.masthead{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:28px;color:#625f54;font-size:12px}.brand{font-weight:800;letter-spacing:.08em;color:#282923}.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:24px;align-items:end;margin-bottom:24px}.eyebrow{text-transform:uppercase;letter-spacing:.16em;font-size:10px;font-weight:800;color:#426b50}.hero h1{font-family:"Segoe Print","Comic Sans MS",cursive;font-size:clamp(34px,5vw,58px);line-height:1.05;letter-spacing:-.05em;margin:12px 0}.hero p{max-width:650px;color:#716e63;line-height:1.7;margin:0}.hero-note{padding:16px;border-left:3px solid #426b50;color:#716e63;font-size:12px;line-height:1.6}.workspace{display:grid;grid-template-columns:220px minmax(0,1fr);gap:18px;align-items:start}.rail{padding:18px}.rail h2{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#716e63;margin:0 0 12px}.rail button{display:block;width:100%;text-align:left;padding:10px 12px;margin:4px 0;border:0;background:transparent;color:#55574c;border-radius:4px 7px 5px 6px;cursor:pointer}.rail button[aria-current=true]{background:#dce6d7;color:#315b3d;outline:1px solid #426b50;font-weight:700}.rail small{display:block;color:#716e63;margin-top:22px;line-height:1.6}.main{padding:clamp(16px,2.5vw,28px);min-width:0}.mainhead{display:flex;justify-content:space-between;align-items:start;gap:16px;margin-bottom:20px}.mainhead h2{font-size:24px;margin:0 0 5px;letter-spacing:-.04em}.mainhead p{font-size:12px;color:#716e63;margin:0}.stamp{font-size:10px;border:1px dashed #426b50;color:#315b3d;background:#dce6d7;padding:6px 9px;transform:rotate(-2deg);white-space:nowrap}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.stat small{display:block;color:#716e63;font-size:11px}.stat strong{display:block;font-size:27px;margin:8px 0 3px;letter-spacing:-.04em}.stat span{font-size:10px;color:#426b50}.lower{display:grid;grid-template-columns:1.15fr .85fr;gap:12px;margin-top:12px}.block h3{font-size:13px;margin:0 0 12px}.barrow{display:grid;grid-template-columns:70px 1fr 34px;gap:8px;align-items:center;margin:12px 0;font-size:10px;color:#716e63}.track{height:8px;background:#eee7d9;border-radius:2px;overflow:hidden}.track i{display:block;height:100%;background:#426b50}.task{display:flex;gap:9px;align-items:center;padding:9px 0;border-bottom:1px dashed #d8cfbd;font-size:11px}.task input{accent-color:#426b50;width:16px;height:16px}.task.done span{text-decoration:line-through;color:#8b887d}.composer{display:flex;gap:8px;margin-top:12px}.composer input{flex:1;min-width:0}.composer button{white-space:nowrap}.notice{margin-top:16px;font-size:10px;color:#716e63}.footer{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:18px;padding-top:12px;border-top:1px dashed #d8cfbd;color:#716e63;font-size:10px}
+@media(max-width:760px){.hero{grid-template-columns:1fr}.workspace{grid-template-columns:1fr}.rail{display:flex;gap:6px;align-items:center;overflow:auto;padding:10px}.rail h2,.rail small{display:none}.rail button{width:auto;white-space:nowrap;margin:0}.lower{grid-template-columns:1fr}}
+@media(max-width:460px){.stats{grid-template-columns:1fr 1fr}.stat:last-child{grid-column:1/-1}.mainhead{align-items:start}.stamp{font-size:9px}.composer{flex-direction:column}.composer button{width:100%}}
+</style>
+</head>
+<body class="ll-paper-surface">
+<div class="showcase">
+<header class="masthead"><div class="brand">DAVYLAB <span style="font-weight:400">/ DESIGNOS</span></div><div>VISUAL PROFILE · 06 / LOOSELEAF PAPER</div></header>
+<section class="hero">
+<div><div class="eyebrow">A softer way to work</div><h1>Make room for<br>good ideas.</h1><p>纸感、手写感与清晰的信息层级。Looseleaf Paper 将轻松的创作氛围带入日常工作界面，同时保留可靠、易读和可操作的产品体验。</p></div>
+<div class="hero-note">视觉关键词：暖纸白 · 墨色描边 · 森林绿 · 手作细节<br>适用方向：知识工具、个人工作台、轻量创作与记录应用。</div>
+</section>
+<div class="workspace">
+<aside class="ll-paper-card rail"><h2>Workspace</h2><button aria-current="true" data-tab="overview">✳ 概览 Overview</button><button data-tab="notes">✎ 灵感 Notes</button><button data-tab="tasks">✓ 待办 Tasks</button><small>一个温和但有秩序的空间。把想法写下来，再慢慢完成它。</small></aside>
+<main class="ll-paper-card main">
+<div class="mainhead"><div><div class="eyebrow" id="sectionLabel">YOUR SPACE / OVERVIEW</div><h2 id="sectionTitle">今天的工作台</h2><p id="sectionDesc">把重要的事放在眼前，其他的慢慢来。</p></div><span class="stamp">SAMPLE UI</span></div>
+<div class="stats">
+<section class="ll-paper-card stat"><small>本周完成事项</small><strong id="doneCount">08</strong><span>↗ 保持稳定节奏</span></section>
+<section class="ll-paper-card stat"><small>灵感收集</small><strong>12</strong><span>✳ 随时记录</span></section>
+<section class="ll-paper-card stat"><small>专注时间</small><strong>6.5h</strong><span>本周示例数据</span></section>
+</div>
+<div class="lower">
+<section class="ll-paper-card block"><h3>本周节奏 <span class="ll-sticker">轻量追踪</span></h3>
+<div class="barrow"><span>规划</span><div class="track"><i style="width:82%"></i></div><b>82%</b></div>
+<div class="barrow"><span>创作</span><div class="track"><i style="width:64%"></i></div><b>64%</b></div>
+<div class="barrow"><span>复盘</span><div class="track"><i style="width:48%"></i></div><b>48%</b></div>
+</section>
+<section class="ll-paper-card block"><h3>今日小清单</h3>
+<label class="task"><input type="checkbox" checked><span>整理本周灵感</span></label>
+<label class="task"><input type="checkbox"><span>完成页面草图</span></label>
+<label class="task"><input type="checkbox"><span>留出复盘时间</span></label>
+<div class="composer"><input id="quickInput" class="ll-ink-input" placeholder="添加一件小事…" aria-label="添加待办"><button id="addTask" class="ll-ink-button">添加</button></div>
+</section>
+</div>
+<div class="notice" id="interactionNotice" aria-live="polite">交互示例：切换左侧栏目、勾选任务，或添加一条待办。所有内容仅在本页面演示。</div>
+<div class="footer"><span>LOOSELEAF PAPER · STYLE PACK</span><span>暖纸之上，清晰表达。</span></div>
+</main>
+</div>
+</div>
+<script>
+const nav=[...document.querySelectorAll('[data-tab]')];
+const title=document.querySelector('#sectionTitle'),label=document.querySelector('#sectionLabel'),desc=document.querySelector('#sectionDesc');
+const views={overview:['今天的工作台','YOUR SPACE / OVERVIEW','把重要的事放在眼前，其他的慢慢来。'],notes:['灵感收集页','YOUR SPACE / NOTES','先记下来，不必急着把每个想法变成计划。'],tasks:['轻量待办清单','YOUR SPACE / TASKS','让下一步足够清楚，完成感自然会来。']};
+nav.forEach(button=>button.addEventListener('click',()=>{nav.forEach(item=>item.setAttribute('aria-current',String(item===button)));const view=views[button.dataset.tab];title.textContent=view[0];label.textContent=view[1];desc.textContent=view[2];document.querySelector('#interactionNotice').textContent='已切换到「'+view[0]+'」示例视图。'}));
+function refreshTasks(){const boxes=[...document.querySelectorAll('.task input')];document.querySelector('#doneCount').textContent=String(boxes.filter(box=>box.checked).length+6).padStart(2,'0');boxes.forEach(box=>box.closest('.task').classList.toggle('done',box.checked));}
+document.querySelectorAll('.task input').forEach(box=>box.addEventListener('change',refreshTasks));
+document.querySelector('#addTask').addEventListener('click',()=>{const input=document.querySelector('#quickInput'),value=input.value.trim();if(!value){input.focus();return;}const row=document.createElement('label');row.className='task';const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.addEventListener('change',refreshTasks);const text=document.createElement('span');text.textContent=value;row.append(checkbox,text);document.querySelector('.block:last-child').insertBefore(row,document.querySelector('.composer'));input.value='';refreshTasks();document.querySelector('#interactionNotice').textContent='已添加待办：'+value+'（仅本页演示，不会保存到服务器）。';});
+document.querySelector('#quickInput').addEventListener('keydown',event=>{if(event.key==='Enter')document.querySelector('#addTask').click();});
+refreshTasks();
+</script>
+</body>
+</html>
