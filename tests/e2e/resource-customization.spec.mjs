@@ -21,10 +21,12 @@ test('resource hub: customize theme, layout, navigation and motion; persist sett
   await expect(page.locator('body')).toHaveAttribute('data-layout', 'bento');
   await dialog.locator('#uiNav').selectOption('hidden');
   await expect(page.locator('body')).toHaveAttribute('data-nav', 'hidden');
+  await dialog.locator('#doneUiStudio').click();
   const restoreNav = page.locator('#restoreNavButton');
   await expect(restoreNav).toBeVisible();
   await restoreNav.click();
   await expect(page.locator('body')).toHaveAttribute('data-nav', 'left');
+  await page.locator('#openUiStudio').click();
 
   await dialog.locator('[data-motion="spring"]').click();
   await expect(page.locator('body')).toHaveAttribute('data-motion', 'spring');
