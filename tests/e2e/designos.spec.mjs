@@ -80,6 +80,8 @@ test('Looseleaf Paper: profile selection renders the paper-and-ink preview on de
   expect(paperStyle.borderWidth).toBe('2px');
   await expect(page.locator('#detail')).toContainText('手绘墨线');
   await expect(page.locator('#detail a[href="https://looseleaf-preview.davylab-designos.pages.dev/examples/looseleaf-showcase.html"]')).toBeVisible();
+  await expect(page.locator('#detail a[href*="looseleaf-components.html"]')).toBeVisible()
+  await expect(page.locator('#detail a[href*="looseleaf-workspace.html"]')).toBeVisible()
   await page.setViewportSize({ width: 1024, height: 900 });
   let widths = await page.evaluate(() => ({ body: document.body.scrollWidth, viewport: document.documentElement.clientWidth }));
   expect(widths.body).toBeLessThanOrEqual(widths.viewport + 1);
