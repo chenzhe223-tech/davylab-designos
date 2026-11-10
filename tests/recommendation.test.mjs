@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { runInNewContext } from 'node:vm';
 
-const html = await readFile(new URL('../dist/index.html', import.meta.url), 'utf8');
+const html = await readFile(new URL('../dist/classic/index.html', import.meta.url), 'utf8');
 const profileStart = html.indexOf('const profiles=');
 const agentsStart = html.indexOf('const agents=', profileStart);
 const searchStart = html.indexOf('const searchTaxonomy=', agentsStart);
