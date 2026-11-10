@@ -10,8 +10,8 @@
     "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {
-    "@astryxdesign/core": "0.7.12",
-    "@astryxdesign/theme-neutral": "latest",
+    "@astryxdesign/core": "0.7.11",
+    "@astryxdesign/theme-neutral": "0.7.11",
     "@stylexjs/stylex": "latest",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
