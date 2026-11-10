@@ -42,6 +42,7 @@ const stored = loadJson(STORAGE,{});
 const state = {
   projects:Array.isArray(stored.projects)?stored.projects.map(normalize).filter(Boolean).slice(0,50):[],
   snapshots:Array.isArray(stored.snapshots)?stored.snapshots.filter(x=>x&&typeof x==='object'&&x.project).slice(0,35):[],
+  deliveries:Array.isArray(stored.deliveries)?stored.deliveries.filter(d=>d&&typeof d.id==='string'&&typeof d.body==='string'&&d.body.length<=100000).slice(0,25):[],
   currentId:typeof stored.currentId==='string'?stored.currentId:null,
   view:Object.hasOwn(viewNames,location.hash.slice(1))?location.hash.slice(1):'home',
   mode:'preview',
@@ -57,7 +58,7 @@ function toast(message){
   clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>node.classList.remove('is-visible'),2800);
 }
 function persist(){
-  try {localStorage.setItem(STORAGE,JSON.stringify({schemaVersion:1,projects:state.projects,snapshots:state.snapshots,currentId:state.currentId}));}
+  try {localStorage.setItem(STORAGE,JSON.stringify({schemaVersion:1,projects:state.projects,snapshots:state.snapshots,deliveries:state.deliveries,currentId:state.currentId}));}
   catch {toast('本地存储不可用，请先导出备份');}
 }
 function persistSettings(){
@@ -232,16 +233,20 @@ function renderSkills(){
 }
 function renderArchive(){
   const cards=state.projects.map(p=>
-    '<article class="archive-card"><div class="archive-top"><span class="badge badge-green">LOCAL PROJECT</span><small>'+dateText(p.updatedAt)+'</small></div><div><h3>'+safe(p.name)+'</h3><p>'+safe(p.goal||'尚未添加设计意图。')+'</p></div><div class="archive-bottom"><small>'+safe(byId(p.profileId)?.name||'Design Profile')+' · '+(p.skills?.length||0)+' Skills</small><div class="project-actions"><button class="button button-plain button-small" data-action="duplicate" data-id="'+safe(p.id)+'">复制</button><button class="button button-dark button-small" data-action="open-project" data-id="'+safe(p.id)+'">打开 ↗</button></div></div></article>'
+    '<article class="archive-card"><div class="archive-top"><span class="badge badge-green">LOCAL PROJECT</span><small>'+dateText(p.updatedAt)+'</small></div><div><h3>'+safe(p.name)+'</h3><p>'+safe(p.goal||'尚未添加设计意图。')+'</p></div><div class="archive-bottom"><small>'+safe(byId(p.profileId)?.name||'Design Profile')+' · '+(p.skills?.length||0)+' Skills</small><div class="project-actions"><button class="button button-ghost button-small" data-action="delete-project" data-id="'+safe(p.id)+'">删除</button><button class="button button-plain button-small" data-action="duplicate" data-id="'+safe(p.id)+'">复制</button><button class="button button-dark button-small" data-action="open-project" data-id="'+safe(p.id)+'">打开 ↗</button></div></div></article>'
   ).join('');
   const snaps=state.snapshots.slice(0,10).map(s=>
     '<div class="project-row"><div><strong>'+safe(s.name||s.project.name)+'</strong><small>'+dateText(s.createdAt)+' · 设计快照</small></div><div class="project-actions"><button class="button button-plain button-small" data-action="restore-snapshot" data-id="'+safe(s.id)+'">恢复副本</button><button class="button button-ghost button-small" data-action="delete-snapshot" data-id="'+safe(s.id)+'">删除</button></div></div>'
+  ).join('');
+  const deliveries=state.deliveries.slice(0,15).map(d=>
+    '<div class="project-row"><div><strong>'+safe(d.filename)+'</strong><small>'+dateText(d.createdAt)+' · '+safe(state.projects.find(p=>p.id===d.projectId)?.name||'历史项目')+'</small></div><button class="button button-plain button-small" data-action="redownload" data-id="'+safe(d.id)+'">重新下载 ↗</button></div>'
   ).join('');
   return sectionHeader('每一次思考，都值得留档。','项目、关键设计快照和可导出文件保存在当前浏览器；需要跨设备时请使用备份文件。',
     '<button class="button button-dark" data-action="new">新建项目 +</button>')+
     '<div class="archive-grid">'+(cards||'<div style="grid-column:1/-1">'+empty('还没有归档的设计','开始创作后，项目将在这里自动出现。')+'</div>')+'</div>'+
     '<div class="section-heading"><div><h2>设计快照</h2><p>主动保存关键节点，以便回溯或从历史版本开始新方案。</p></div><button class="text-link" data-action="export-workspace">导出全部备份 ↗</button></div>'+
-    '<section class="panel-card">'+(snaps||empty('暂时没有快照','进入设计台，点击「保存快照」记录关键版本。'))+'</section>';
+    '<section class="panel-card">'+(snaps||empty('暂时没有快照','进入设计台，点击「保存快照」记录关键版本。'))+'</section>'+ 
+    '<div class="section-heading"><div><h2>交付文件</h2><p>导出的设计规范保留本地副本，便于回看和重新下载。</p></div></div><section class="panel-card">'+(deliveries||empty('还没有交付文件','在设计台导出 JSON、CSS 或 Agent 指令后，文件会列在这里。'))+'</section>';
 }
 function renderSettings(){
   const t=state.preferences;
@@ -260,10 +265,14 @@ function render(){
     state.view==='archive'?renderArchive():renderSettings();
   if(state.view==='skills')renderSkillDetail();
 }
-function blobDownload(filename,body,type){
+function blobDownload(filename,body,type,remember=true){
   const link=document.createElement('a'),url=URL.createObjectURL(new Blob([body],{type}));
   link.href=url;link.download=filename;document.body.append(link);link.click();link.remove();
   setTimeout(()=>URL.revokeObjectURL(url),1000);
+  if(remember && currentProject() && body.length<=100000){
+    state.deliveries.unshift({id:randomId(),projectId:state.currentId,filename,body,mimeType:type,createdAt:new Date().toISOString()});
+    state.deliveries=state.deliveries.slice(0,25);persist();
+  }
   toast('已生成文件：'+filename);
 }
 function projectOutput(){
@@ -306,8 +315,8 @@ function snapshot(){
   state.snapshots.unshift(snap);state.snapshots=state.snapshots.slice(0,35);persist();toast('设计快照已保存');
 }
 function exportWorkspace(){
-  const payload={schema:'davylab-designos-workspace',version:3,exportedAt:new Date().toISOString(),projects:state.projects,snapshots:state.snapshots};
-  blobDownload('davylab-designos-workspace.json',JSON.stringify(payload,null,2)+'\n','application/json');
+  const payload={schema:'davylab-designos-workspace',version:3,exportedAt:new Date().toISOString(),projects:state.projects,snapshots:state.snapshots,deliveries:state.deliveries};
+  blobDownload('davylab-designos-workspace.json',JSON.stringify(payload,null,2)+'\n','application/json',false);
 }
 function importWorkspace(file){
   if(!file || file.size>1024*1024*2){toast('备份文件无效或超过 2MB');return;}
@@ -319,6 +328,7 @@ function importWorkspace(file){
     if(!confirm('导入 '+imported.length+' 个项目？将替换当前浏览器工作区，请先导出现有备份。'))return;
     state.projects=imported;
     state.snapshots=Array.isArray(j.snapshots)?j.snapshots.filter(s=>s&&s.project&&normalize(s.project)).slice(0,35):[];
+    state.deliveries=Array.isArray(j.deliveries)?j.deliveries.filter(d=>d&&typeof d.id==='string'&&typeof d.filename==='string'&&typeof d.body==='string'&&d.body.length<=100000).slice(0,25):[];
     state.currentId=state.projects[0]?.id||null;persist();toast('工作区备份已导入');go('archive');
   }).catch(()=>toast('备份导入失败，请检查格式'));
 }
@@ -373,6 +383,12 @@ function bindApp(){
         p.updatedAt=new Date().toISOString();persist();if(state.view==='skills')renderSkillDetail();else render();toast('项目能力清单已更新');break;
       }
       case 'open-project':{if(state.projects.some(x=>x.id===id)){state.currentId=id;persist();go('studio');}break;}
+      case 'delete-project':
+        if(confirm('删除这个项目？已保存的快照及交付文件仍会保留。')){state.projects=state.projects.filter(p=>p.id!==id);if(state.currentId===id)state.currentId=state.projects[0]?.id||null;persist();render();}
+        break;
+      case 'redownload':{
+        const item=state.deliveries.find(d=>d.id===id);if(item)blobDownload(item.filename,item.body,item.mimeType||'application/octet-stream',false);break;
+      }
       case 'duplicate':{
         const original=state.projects.find(p=>p.id===id);if(!original)break;
         const p=makeProject(original.name+' · 副本',original.goal,original.profileId);
@@ -392,7 +408,7 @@ function bindApp(){
       case 'export-workspace':exportWorkspace();break;
       case 'import-workspace':$('#workspaceImportFile')?.click();break;
       case 'reset':
-        if(confirm('清空全部本地项目和快照？此操作不可撤销，请先导出备份。')){state.projects=[];state.snapshots=[];state.currentId=null;persist();go('home');toast('本地数据已清空');}
+        if(confirm('清空全部本地项目和快照？此操作不可撤销，请先导出备份。')){state.projects=[];state.snapshots=[];state.deliveries=[];state.currentId=null;persist();go('home');toast('本地数据已清空');}
         break;
       case 'theme':state.preferences.theme=target.dataset.theme==='dark'?'dark':'light';persistSettings();render();break;
     }
