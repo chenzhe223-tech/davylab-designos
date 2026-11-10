@@ -1,0 +1,70 @@
+name: DesignOS Verified Cloudflare Fallback Deploy
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/verified-pages-fallback.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: designos-cloudflare-verified-fallback
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify canonical rules, local tests and build
+        run: |
+          set -euo pipefail
+          npm run validate:rules
+          npm test
+          npm run build
+          test -f dist/index.html
+          test -f dist/studio/app.js
+          test -f dist/studio/style.css
+          grep -q 'function svgIcon' dist/studio/app.js
+          grep -q 'resource-trailing' dist/studio/style.css
+          echo "PASS: source and SVG assets verified"
+      - name: Confirm deployment authorization
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "::error::Missing Cloudflare Pages API secret"; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "::error::Missing Cloudflare Account ID variable"; exit 1; }
+      - name: Install Wrangler
+        run: npm install --global wrangler@4
+      - name: Deploy verified assets to original Cloudflare Pages project
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 pages deploy dist --project-name=davylab-designos --branch=main --commit-hash="$GITHUB_SHA" --commit-message="Verified iOS SVG icon repair: $GITHUB_SHA"
+      - name: Verify deployed homepage, SVG assets and Access gate
+        run: |
+          set -euo pipefail
+          SITE="https://davylab-designos.pages.dev"
+          curl --fail --silent --show-error --location --retry 8 --retry-all-errors --retry-delay 3 "$SITE/" -o /tmp/designos-home.html
+          curl --fail --silent --show-error --location --retry 8 --retry-all-errors --retry-delay 3 "$SITE/studio/app.js" -o /tmp/designos-app.js
+          curl --fail --silent --show-error --location --retry 8 --retry-all-errors --retry-delay 3 "$SITE/studio/style.css" -o /tmp/designos-style.css
+          grep -q 'DAVYLAB DesignOS' /tmp/designos-home.html
+          grep -q 'data-icon="books"' /tmp/designos-home.html
+          grep -q 'function svgIcon' /tmp/designos-app.js
+          grep -q 'resource-trailing' /tmp/designos-style.css
+          for PATH_TO_CHECK in "/resources/" "/resources/private-registry.json"; do
+            STATUS="$(curl --silent --output /dev/null --write-out "%{http_code}" "$SITE$PATH_TO_CHECK")"
+            case "$STATUS" in
+              302|401|403) echo "PASS: protected path $PATH_TO_CHECK (HTTP $STATUS)" ;;
+              *) echo "::error::Access gate unexpected HTTP $STATUS on $PATH_TO_CHECK"; exit 1 ;;
+            esac
+          done
+          echo "PASS: DesignOS iOS SVG repair live on $SITE"
