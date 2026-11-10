@@ -122,3 +122,23 @@ test('profile switching changes the actual canvas composition, not only accent c
   await expect(page.locator('#mockApp')).toContainText('Performance overview');
   await page.screenshot({path:'artifacts/designos3/analytics-canvas.png',fullPage:true});
 });
+
+
+test('studio uses a bounded keyboard-scrollable inspector instead of a long empty canvas column',async ({page})=>{
+  await page.setViewportSize({width:1440,height:900});
+  await page.goto(homepage);
+  await page.locator('#topNew').click();
+  await page.locator('#newProjectName').fill('工作台布局验收');
+  await page.locator('#projectForm [type=submit]').click();
+  await expect(page.locator('.inspector')).toBeVisible();
+  const measures=await page.locator('.inspector').evaluate(el=>({
+    height:el.getBoundingClientRect().height,viewport:window.innerHeight,
+    scrollHeight:el.scrollHeight,tabIndex:el.tabIndex
+  }));
+  expect(measures.height).toBeLessThanOrEqual(measures.viewport-100);
+  expect(measures.scrollHeight).toBeGreaterThan(measures.height);
+  expect(measures.tabIndex).toBe(0);
+  await expect(page.locator('#toast')).not.toHaveClass(/is-visible/);
+  await mkdir('artifacts/designos3',{recursive:true});
+  await page.screenshot({path:'artifacts/designos3/desktop-studio-balanced.png',fullPage:true});
+});
