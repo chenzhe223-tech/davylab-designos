@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const canonical = JSON.parse(await readFile(new URL('../profiles/index.json', import.meta.url), 'utf8'));
-const html = await readFile(new URL('../dist/index.html', import.meta.url), 'utf8');
+const html = await readFile(new URL('../dist/classic/index.html', import.meta.url), 'utf8');
 const match = html.match(/const profiles=(\[[\s\S]*?\]);\nconst agents=\[/);
 assert.ok(match, 'built page must contain generated profile registry');
 const runtime = JSON.parse(match[1]);
