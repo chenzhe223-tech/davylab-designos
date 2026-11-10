@@ -8,7 +8,7 @@ test('Astryx button increments and responsive layout does not overflow',async ({
   const filter=page.getByRole('textbox',{name:'Filter examples'});
   await filter.fill('navigation');
   await expect(page.locator('li').filter({hasText:'Navigation'})).toBeVisible();
-  await expect(page.getByRole('status')).toHaveText('1 results');
+  await expect(page.locator('p[role="status"]')).toHaveText('1 results');
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth+1);
   expect(overflow).toBe(false);
 });
