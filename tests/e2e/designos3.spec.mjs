@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { readFile } from 'node:fs/promises';
+import { readFile, mkdir } from 'node:fs/promises';
 
 const homepage = process.env.BASE_URL
   ? new URL('./', process.env.BASE_URL).href
@@ -10,6 +10,8 @@ test('DesignOS 3.0 opens as a calm visual-first homepage with six working destin
   await page.setViewportSize({width:1440,height:900});
   await page.goto(homepage);
   await expect(page.locator('.hero-title')).toContainText('好的设计');
+  await mkdir('artifacts/designos3',{recursive:true});
+  await page.screenshot({path:'artifacts/designos3/desktop-home.png',fullPage:true});
   await expect(page.locator('.concept-card')).toHaveCount(3);
   await expect(page.locator('.primary-nav [data-nav]')).toHaveCount(6);
   await page.locator('.primary-nav [data-nav=components]').click();
@@ -76,6 +78,7 @@ for (const width of [375,390,430]) {
     await page.setViewportSize({width,height:844});
     await page.goto(homepage);
     await expect(page.locator('.mobile-nav')).toBeVisible();
+    if (width===390) {await mkdir('artifacts/designos3',{recursive:true});await page.screenshot({path:'artifacts/designos3/mobile-home.png',fullPage:true});}
     const bodyWidth=await page.evaluate(()=>document.documentElement.scrollWidth);
     expect(bodyWidth).toBeLessThanOrEqual(width+1);
     await page.locator('.mobile-nav [data-nav=studio]').click();
