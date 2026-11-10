@@ -476,12 +476,12 @@ POST /api/skills/match</div><button class="btn small" id="copyApi">复制 API �
   });
   $id("exportUiJson").addEventListener("click",()=>{
    const payload={schemaVersion:"1.0.0",source:"DAVYLAB DesignOS Resource Hub",exportedAt:new Date().toISOString(),appearance:{...config}};
-   downloadDesignAsset("davylab-design-profile.json",JSON.stringify(payload,null,2)+"\\n","application/json");
+   downloadDesignAsset("davylab-design-profile.json",JSON.stringify(payload,null,2)+"\n","application/json");
   });
   $id("exportUiCss").addEventListener("click",()=>{
    const validColor=value=>/^#[0-9a-fA-F]{6}$/.test(value)?value:"#355a43";
    const vars={"--davy-accent":validColor(config.accent),"--davy-background":validColor(config.background),"--davy-surface":validColor(config.surface),"--davy-foreground":validColor(config.text),"--davy-border":validColor(config.border),"--davy-nav-surface":validColor(config.navSurface)};
-   const css="/* DAVYLAB DesignOS · exported design tokens */\\n:root {\\n"+Object.entries(vars).map(([k,v])=>"  "+k+": "+v+";").join("\\n")+"\\n}\\n";
+   const css="/* DAVYLAB DesignOS · exported design tokens */\n:root {\n"+Object.entries(vars).map(([k,v])=>"  "+k+": "+v+";").join("\n")+"\n}\n";
    downloadDesignAsset("davylab-design-tokens.css",css,"text/css");
   });
   $id("resetUiStudio").addEventListener("click",()=>{config={...defaults};update();preview();});$id("restoreNavButton").addEventListener("click",()=>{if(document.body.dataset.nav==="hidden"){document.body.dataset.nav="left";$id("restoreNavButton").textContent="收起导航";}else{document.body.dataset.nav="hidden";$id("restoreNavButton").textContent="☰ 导航";}});
