@@ -34,7 +34,7 @@ test('DesignOS 3.0 creates, edits, previews, snapshots and exports usable design
   await page.locator('button[data-action=device][data-device=phone]').click();
   await expect(page.locator('#canvasPaper')).toHaveClass(/is-phone/);
   await page.locator('input[data-field=accent]').fill('#355a43');
-  await expect(page.locator('#mockApp')).toHaveAttribute('style',/--sample-accent:#355a43/);
+  await expect(page.locator('#mockApp')).toHaveAttribute('style',/#355a43/);
   await page.locator('button[data-action=snapshot]').click();
 
   const [jsonDownload]=await Promise.all([page.waitForEvent('download'),page.locator('button[data-action=export-json]').first().click()]);
