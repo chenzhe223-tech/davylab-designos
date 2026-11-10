@@ -86,5 +86,5 @@ jobs:
       - name: Run browser regression against deployed production
         env:
           BASE_URL: https://davylab-designos.pages.dev/
-          RESOURCE_HUB_URL: file://${{ github.workspace }}/dist/resources/index.html
+          RESOURCE_HUB_URL: http://127.0.0.1:4175/resources/
         run: npx playwright test
