@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f5f4ef">
+  <meta name="description" content="DAVYLAB DesignOS 3.0 — 从灵感、设计系统到可复用交付的创作工作台。">
+  <title>DAVYLAB DesignOS · Design with intent</title>
+  <link rel="stylesheet" href="./studio/style.css">
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" aria-label="应用导航">
+    <a class="identity" href="./" aria-label="DAVYLAB DesignOS 首页">
+      <span class="identity-mark">D<span class="identity-dot">.</span></span>
+      <span class="identity-type"><strong>DesignOS</strong><small>BY DAVYLAB</small></span>
+    </a>
+    <div class="side-label">WORKSPACE</div>
+    <nav class="primary-nav" aria-label="主导航">
+      <button type="button" data-nav="home" class="nav-link is-active"><span class="nav-symbol">◫</span><span>总览</span></button>
+      <button type="button" data-nav="studio" class="nav-link"><span class="nav-symbol">◇</span><span>设计台</span></button>
+      <button type="button" data-nav="components" class="nav-link"><span class="nav-symbol">▦</span><span>组件</span></button>
+      <button type="button" data-nav="skills" class="nav-link"><span class="nav-symbol">✳</span><span>资源能力</span></button>
+      <button type="button" data-nav="archive" class="nav-link"><span class="nav-symbol">▤</span><span>作品档案</span></button>
+    </nav>
+    <div class="side-label side-label-secondary">SYSTEM</div>
+    <nav class="primary-nav" aria-label="系统导航">
+      <button type="button" data-nav="settings" class="nav-link"><span class="nav-symbol">⚙</span><span>设置</span></button>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="sidebar-note"><span class="soft-dot"></span><strong>Design in progress</strong><small>设计稿仅保存在当前浏览器</small></div>
+      <a class="classic-link" href="./classic/">切换经典工作台 <span aria-hidden="true">↗</span></a>
+      <div class="side-signature">DESIGN WITH INTENT<br>BUILD WITH EVIDENCE</div>
+    </div>
+  </aside>
+
+  <div class="main-shell">
+    <header class="topbar">
+      <div class="breadcrumbs"><span>DAVYLAB</span><span class="crumb-divider">/</span><strong id="breadcrumbCurrent">总览</strong></div>
+      <div class="topbar-actions"><span class="topbar-state"><i class="soft-dot"></i> 本地工作区</span><button type="button" id="topExport" class="button button-subtle">导出方案 <span aria-hidden="true">↗</span></button><button type="button" id="topNew" class="button button-dark">+ 新建设计</button></div>
+    </header>
+    <main id="view" class="main-view" tabindex="-1"></main>
+    <footer class="app-footer"><span>DesignOS 3.0 · By DAVYLAB</span><span>把想法，做成能用的工具。</span></footer>
+  </div>
+</div>
+
+<nav class="mobile-nav" aria-label="手机端主导航">
+  <button type="button" data-nav="home" class="is-active"><span>◫</span>总览</button>
+  <button type="button" data-nav="studio"><span>◇</span>设计</button>
+  <button type="button" data-nav="components"><span>▦</span>组件</button>
+  <button type="button" data-nav="skills"><span>✳</span>资源</button>
+  <button type="button" data-nav="archive"><span>▤</span>档案</button>
+  <button type="button" data-nav="settings"><span>⚙</span>设置</button>
+</nav>
+
+<dialog id="projectDialog" class="project-dialog" aria-labelledby="projectDialogTitle">
+  <form method="dialog" id="projectForm">
+    <div class="dialog-top"><span class="section-eyebrow">NEW DESIGN</span><button type="button" class="dialog-close" id="closeProjectDialog" aria-label="关闭新建项目">×</button></div>
+    <h2 id="projectDialogTitle">每一个好作品，<br>都始于一个清晰的想法。</h2>
+    <label class="form-label" for="newProjectName">项目名称</label>
+    <input id="newProjectName" name="name" maxlength="70" autocomplete="off" placeholder="例如：我的旅行探索 App" required>
+    <label class="form-label" for="newProjectGoal">希望解决什么问题？ <span class="optional">选填</span></label>
+    <textarea id="newProjectGoal" name="goal" rows="3" maxlength="900" placeholder="写下产品目标、受众或设计方向。之后还可以修改。"></textarea>
+    <div class="dialog-actions"><button type="button" id="cancelProjectDialog" class="button button-plain">取消</button><button type="submit" class="button button-dark">创建并打开设计台 →</button></div>
+  </form>
+</dialog>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script id="bootstrap" type="application/json">__DESIGNOS_BOOTSTRAP__</script>
+<script type="module" src="./studio/app.js"></script>
+</body>
+</html>
