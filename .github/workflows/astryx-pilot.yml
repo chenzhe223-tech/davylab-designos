@@ -30,3 +30,7 @@ jobs:
         run: npm run build
       - name: Check generated output
         run: test -f dist/index.html && test -d dist/assets
+      - name: Install Chromium browser
+        run: npx playwright install --with-deps chromium
+      - name: Desktop and mobile browser smoke tests
+        run: npm run test:e2e
