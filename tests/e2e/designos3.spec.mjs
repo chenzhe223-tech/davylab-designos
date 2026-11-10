@@ -105,3 +105,20 @@ test('DesignOS 3.0 workspace backups contain only local project data and restore
   expect(data.projects.length).toBe(1);
   expect(data.projects[0].name).toBe('备份测试');
 });
+
+
+test('profile switching changes the actual canvas composition, not only accent colors', async ({page})=>{
+  await page.goto(homepage);
+  await page.locator('#topNew').click();
+  await page.locator('#newProjectName').fill('多风格对比');
+  await page.locator('#projectForm [type=submit]').click();
+  await page.locator('[data-action=choose-profile][data-profile=warm-editorial]').click();
+  await expect(page.locator('#mockApp')).toHaveClass(/mock-editorial/);
+  await expect(page.locator('#mockApp')).toContainText('A quieter kind');
+  await mkdir('artifacts/designos3',{recursive:true});
+  await page.screenshot({path:'artifacts/designos3/editorial-canvas.png',fullPage:true});
+  await page.locator('[data-action=choose-profile][data-profile=analytics-dashboard]').click();
+  await expect(page.locator('#mockApp')).toHaveClass(/mock-analytics/);
+  await expect(page.locator('#mockApp')).toContainText('Performance overview');
+  await page.screenshot({path:'artifacts/designos3/analytics-canvas.png',fullPage:true});
+});
