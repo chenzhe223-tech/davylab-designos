@@ -148,13 +148,20 @@ function renderStudio(){
   const preview='<section class="canvas-panel"><div class="canvas-bar"><div><b>LIVE CANVAS <span class="badge badge-green">示例预览</span></b><small id="deviceStatus">'+(p.device==='phone'?'375px · Phone preview':'Responsive · Desktop preview')+'</small></div><div class="segmented"><button type="button" data-action="mode" data-mode="preview" class="'+(state.mode==='preview'?'is-active':'')+'">预览</button><button type="button" data-action="mode" data-mode="rules" class="'+(state.mode==='rules'?'is-active':'')+'">规范</button></div><div class="segmented"><button type="button" data-action="device" data-device="desktop" class="'+(p.device==='desktop'?'is-active':'')+'">桌面</button><button type="button" data-action="device" data-device="phone" class="'+(p.device==='phone'?'is-active':'')+'">手机</button></div></div>'+
     (state.mode==='preview'?'<div class="canvas-field"><div id="canvasPaper" class="canvas-paper '+(p.device==='phone'?'is-phone':'')+'">'+mockCanvas(p)+'</div></div>':'<div class="canvas-field">'+profileRules(p)+'</div>')+
     '<div class="canvas-foot"><span>规则驱动的演示页面 · 非目标应用实际截图</span><span>By DAVYLAB</span></div></section>';
+  const candidates=registry.filter(r=>r.type==='skill')
+    .map(r=>({resource:r,score:skillScore(r,p.goal+' '+p.name)}))
+    .sort((a,b)=>b.score-a.score).slice(0,3);
+  const skillControls='<section class="inspector-card"><h3>能力组合 <span>04 / SKILLS</span></h3><p class="inspector-note" style="margin:0 0 12px">基于项目意图的本地关键词推荐；勾选后纳入 Agent 交付指令，不会自动运行外部 Skill。</p>'+
+    candidates.map(({resource:r,score})=>'<button type="button" class="profile-option '+(p.skills.includes(r.id)?'is-active':'')+'" style="width:100%;margin-bottom:7px" data-action="toggle-skill" data-skill="'+safe(r.id)+'"><span><strong>'+safe(r.name)+'</strong><br><small>'+(score>0?'与项目描述相关':'公开能力资源')+'</small></span><span>'+(p.skills.includes(r.id)?'✓':'+')+'</span></button>').join('')+
+    '<p class="inspector-note">已关联 '+p.skills.length+' 项能力 · 仅引用经过登记的公开元数据</p></section>';
   const inspector='<aside class="inspector" aria-label="设计属性面板"><section class="inspector-card"><h3>当前项目 <span>01 / BRIEF</span></h3><label class="control-label" for="projectNameInput">项目名称</label><input class="control-input" data-field="name" id="projectNameInput" maxlength="70" value="'+safe(p.name)+'"><div class="control-group"><label class="control-label" for="projectGoalInput">设计意图</label><textarea class="control-textarea" data-field="goal" id="projectGoalInput" maxlength="900" placeholder="产品目标、受众或使用场景">'+safe(p.goal)+'</textarea></div></section>'+
     '<section class="inspector-card"><h3>设计方向 <span>02 / FOUNDATION</span></h3><div class="profile-select">'+profileButtons+'</div><p class="inspector-note">所有预设来自真实设计档案；受保护的 Dashboard Studio 仅供只读审计。</p></section>'+
     '<section class="inspector-card"><h3>视觉语言 <span>03 / STYLE</span></h3><span class="control-label">强调色</span><div class="swatch-row">'+colorChoices+'<input type="color" class="color-picker" data-field="accent" value="'+safe(p.accent)+'" aria-label="自定义强调色"></div>'+
     '<div class="control-group"><label class="control-label" for="canvasColor">画布底色</label><input id="canvasColor" class="color-picker" type="color" data-field="canvas" value="'+safe(p.canvas)+'"></div>'+
     '<div class="control-group"><label class="control-label" for="radiusRange">圆角 <span class="range-value">'+p.radius+'px</span></label><input id="radiusRange" class="control-range" type="range" data-field="radius" min="2" max="32" step="1" value="'+p.radius+'"></div>'+
     '<div class="control-group"><label class="control-label" for="densityRange">间距 <span class="range-value">'+p.density+'px</span></label><input id="densityRange" class="control-range" type="range" data-field="density" min="8" max="28" step="1" value="'+p.density+'"></div></section>'+
-    '<section class="inspector-card inspector-actions"><h3>下一步 <span>04 / DELIVER</span></h3><button class="button button-dark" data-action="export-json">导出设计方案 JSON ↗</button><button class="button button-plain" data-action="export-css">导出 CSS Tokens</button><button class="button button-plain" data-action="export-agent">生成 Agent 实施指令</button><button class="button button-ghost" data-action="skills">为项目添加 Skill</button><p class="inspector-note">导出的是设计数据与实施指令，不代表 Agent 已执行、代码已上线或设计已审核。</p></section></aside>';
+    skillControls+
+    '<section class="inspector-card inspector-actions"><h3>下一步 <span>05 / DELIVER</span></h3><button class="button button-dark" data-action="export-json">导出设计方案 JSON ↗</button><button class="button button-plain" data-action="export-css">导出 CSS Tokens</button><button class="button button-plain" data-action="export-agent">生成 Agent 实施指令</button><button class="button button-ghost" data-action="skills">为项目添加 Skill</button><p class="inspector-note">导出的是设计数据与实施指令，不代表 Agent 已执行、代码已上线或设计已审核。</p></section></aside>';
   return header+'<div class="studio-layout">'+preview+inspector+'</div>';
 }
 function renderComponents(){
@@ -345,7 +352,7 @@ function bindApp(){
       case 'toggle-skill':{
         const p=ensureProject(),skill=target.dataset.skill;if(!validResourceIds.has(skill))break;
         if(p.skills.includes(skill))p.skills=p.skills.filter(x=>x!==skill);else p.skills.push(skill);
-        p.updatedAt=new Date().toISOString();persist();renderSkillDetail();toast('项目能力清单已更新');break;
+        p.updatedAt=new Date().toISOString();persist();if(state.view==='skills')renderSkillDetail();else render();toast('项目能力清单已更新');break;
       }
       case 'open-project':{if(state.projects.some(x=>x.id===id)){state.currentId=id;persist();go('studio');}break;}
       case 'duplicate':{
@@ -391,6 +398,8 @@ function bindApp(){
     }
   });
   $('#view').addEventListener('change',event=>{
+    if(event.target.dataset.field==='goal'&&state.view==='studio')render();
+
     const setting=event.target.dataset.setting;
     if(setting==='reducedMotion'){state.preferences.reducedMotion=event.target.checked;persistSettings();}
     if(setting==='agent'){state.preferences.agent=event.target.value;persistSettings();}
