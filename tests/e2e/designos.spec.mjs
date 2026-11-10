@@ -3,7 +3,7 @@ import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
 import { readFile } from 'node:fs/promises';
 
-const appUrl = process.env.BASE_URL || pathToFileURL(resolve('dist/index.html')).href;
+const appUrl = process.env.BASE_URL ? new URL('./classic/', process.env.BASE_URL).href : pathToFileURL(resolve('dist/classic/index.html')).href;
 
 test('desktop: search, select, preview, compare and generate an agent prompt', async ({ page }) => {
   const errors = [];
