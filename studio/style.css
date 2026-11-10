@@ -5,7 +5,7 @@
   --panel: #ffffff;
   --panel-muted: #f8f8f5;
   --ink: #19221e;
-  --muted: #777f78;
+  --muted: #5b665d;
   --line: #e7e8e2;
   --line-dark: #d9ddd5;
   --green: #52745d;
@@ -34,7 +34,7 @@ a { color:inherit;text-decoration:none }
 .side-label { color:#a2a8a1;font-size:10px;letter-spacing:.16em;font-weight:800;padding:0 15px;margin-bottom:13px }
 .side-label-secondary { margin-top:29px }
 .primary-nav { display:grid;gap:5px }
-.nav-link { border:1px solid transparent;display:flex;align-items:center;gap:13px;text-align:left;background:transparent;border-radius:10px;min-height:41px;padding:9px 14px;color:#717973;font-weight:600;transition:background .2s,color .2s,border-color .2s }
+.nav-link { min-height:44px;border:1px solid transparent;display:flex;align-items:center;gap:13px;text-align:left;background:transparent;border-radius:10px;padding:9px 14px;color:#717973;font-weight:600;transition:background .2s,color .2s,border-color .2s }
 .nav-link:hover { color:var(--ink);background:#f1f3ee }
 .nav-link.is-active { background:#eaf0e9;color:#2f553d;border-color:#e4ece3;font-weight:800 }
 .nav-symbol { width:19px;text-align:center;font-size:19px;font-weight:400;line-height:1 }
@@ -88,7 +88,7 @@ a { color:inherit;text-decoration:none }
 .hero-copy .section-eyebrow { color:#597663 }
 .hero-title { font-size:clamp(39px,4.45vw,73px);font-family:'Manrope','PingFang SC',sans-serif;letter-spacing:-.085em;line-height:1.16;font-weight:800;margin:24px 0 18px }
 .hero-title em { font-style:normal;color:#62826d }
-.hero-description { font-size:13px;line-height:1.9;color:#606c61;max-width:390px;margin:0 }
+.hero-description { font-size:14px;line-height:1.8;color:#4f6053;max-width:390px;margin:0 }
 .hero-buttons { display:flex;flex-wrap:wrap;gap:10px;margin-top:31px }
 .hero-art { position:relative;min-width:0;overflow:hidden;background:#ced7cb;display:flex;align-items:center;justify-content:center;padding:35px 24px;isolation:isolate }
 .hero-art::before { content:'';position:absolute;inset:-40%;background:radial-gradient(circle at 45% 45%,#e7ebe2 0,transparent 48%),radial-gradient(circle at 75% 80%,#aabfae 0,transparent 48%);z-index:-1 }
@@ -186,7 +186,7 @@ a { color:inherit;text-decoration:none }
 .control-input:focus,.control-select:focus,.control-textarea:focus {border-color:#83a087;box-shadow:0 0 0 2px #e3f0e2}
 .control-group {margin-top:13px}.control-group:first-of-type{margin-top:0}
 .swatch-row { display:flex;align-items:center;gap:8px;flex-wrap:wrap }
-.swatch {width:25px;height:25px;border-radius:50%;border:2px solid white;outline:1px solid #dbe0d9;padding:0}
+.swatch {width:30px;height:30px;border-radius:50%;border:2px solid white;outline:1px solid #dbe0d9;padding:0}
 .swatch.is-active {outline:2px solid #263b2c;outline-offset:2px}
 .color-picker {width:34px;height:29px;border:1px solid var(--line);border-radius:8px;padding:2px;background:white}
 .range-value {font-weight:800;color:#3e5545;float:right}.control-range{width:100%;accent-color:#537b5f}
@@ -328,7 +328,7 @@ body[data-app-theme=dark] .settings-row{border-color:var(--line)}
   .page-heading h1{font-size:28px}
   .page-heading .button{font-size:10px;padding:8px 10px}
   .mobile-nav{position:fixed;bottom:0;left:0;right:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));background:#fafbf8f2;backdrop-filter:blur(20px);border-top:1px solid #e2e7df;padding:7px 6px calc(8px + env(safe-area-inset-bottom));z-index:9}
-  .mobile-nav button{border:0;background:transparent;color:#7d857e;font-size:9px;font-weight:750;display:grid;place-items:center;gap:1px;padding:3px 0;border-radius:7px;min-width:0}
+  .mobile-nav button{min-height:44px;border:0;background:transparent;color:#7d857e;font-size:9px;font-weight:750;display:grid;place-items:center;gap:1px;padding:3px 0;border-radius:7px;min-width:0}
   .mobile-nav button span{font-size:19px;line-height:1.3}
   .mobile-nav button.is-active{color:#315e3b;background:#e8f0e8}
   .main-shell{padding-bottom:64px}
@@ -401,3 +401,9 @@ body[data-reduced-motion=true] *,body[data-reduced-motion=true] *:before,body[da
   .mock-editorial-grid b{font-size:14px}
   .mock-analytics-top{flex-wrap:wrap}
 }
+
+/* Legibility pass: supporting copy meets a more useful reading scale. */
+.section-heading p,.concept-meta p,.panel-card .info-list div,.archive-card p,.page-heading p{font-size:12px}
+.topbar-state,.breadcrumbs{color:#637066}
+.inspector-note,.detail-card p,.component-caption p{font-size:11px}
+@media(max-width:700px){.hero-description{font-size:13px}.section-heading p{font-size:11px}}
