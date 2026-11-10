@@ -407,3 +407,23 @@ body[data-reduced-motion=true] *,body[data-reduced-motion=true] *:before,body[da
 .topbar-state,.breadcrumbs{color:#637066}
 .inspector-note,.detail-card p,.component-caption p{font-size:11px}
 @media(max-width:700px){.hero-description{font-size:13px}.section-heading p{font-size:11px}}
+
+
+/* Productiveness pass: keep the canvas and inspector visually balanced. */
+@media(min-width:921px){
+  .inspector{
+    position:sticky;
+    top:18px;
+    max-height:calc(100dvh - 118px);
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    padding-right:7px;
+    scrollbar-width:thin;
+    scrollbar-color:#cbd5c9 transparent;
+  }
+  .inspector::-webkit-scrollbar{width:6px}
+  .inspector::-webkit-scrollbar-thumb{background:#cbd5c9;border-radius:99px}
+}
+@media(max-width:920px){
+  .inspector{position:static;max-height:none;overflow:visible;padding-right:0}
+}
