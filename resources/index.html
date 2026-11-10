@@ -455,6 +455,25 @@ POST /api/skills/match</div><button class="btn small" id="copyApi">复制 API �
    setTimeout(()=>URL.revokeObjectURL(url),1000);
    $id("uiStudioStatus").textContent="已导出 "+filename;
   }
+  $id("importUiJson").addEventListener("click",()=>$id("importUiJsonFile").click());
+  $id("importUiJsonFile").addEventListener("change",async event=>{
+   const file=event.target.files?.[0];if(!file)return;
+   try{
+    if(file.size>1024*128)throw new Error("文件过大");
+    const data=JSON.parse(await file.text());
+    if(data.schemaVersion!=="1.0.0"||data.source!=="DAVYLAB DesignOS Resource Hub"||!data.appearance||typeof data.appearance!=="object")throw new Error("不是有效的 DAVYLAB 设计配置");
+    const next=data.appearance;
+    const allowed={theme:["editorial","graphite","ocean","midnight","terracotta","classic"],layout:["editorial","balanced","vertical","compact","bento","split"],nav:["left","top","right","bottom","floating","hidden"],motion:["fade-up","spring","slide","blur","stagger","orbit"],font:["system","inter","serif","mono"]};
+    const validated={...defaults};
+    for(const [key,values] of Object.entries(allowed)){if(!values.includes(next[key]))throw new Error("非法字段: "+key);validated[key]=next[key];}
+    for(const key of ["accent","background","surface","text","border","navSurface"]){if(typeof next[key]!=="string"||!/^#[0-9a-fA-F]{6}$/.test(next[key]))throw new Error("非法颜色: "+key);validated[key]=next[key];}
+    for(const [key,min,max] of [["intensity",1,10],["duration",150,1100]]){if(typeof next[key]!=="number"||!Number.isFinite(next[key])||next[key]<min||next[key]>max)throw new Error("非法数值: "+key);validated[key]=next[key];}
+    if(typeof next.reduced!=="boolean")throw new Error("非法动态偏好");
+    validated.reduced=next.reduced;config=validated;update();
+    $id("uiStudioStatus").textContent="设计配置已导入并保存";
+   }catch(error){$id("uiStudioStatus").textContent="导入失败："+error.message;}
+   finally{event.target.value="";}
+  });
   $id("exportUiJson").addEventListener("click",()=>{
    const payload={schemaVersion:"1.0.0",source:"DAVYLAB DesignOS Resource Hub",exportedAt:new Date().toISOString(),appearance:{...config}};
    downloadDesignAsset("davylab-design-profile.json",JSON.stringify(payload,null,2)+"\\n","application/json");
@@ -490,7 +509,7 @@ POST /api/skills/match</div><button class="btn small" id="copyApi">复制 API �
    </section>
    <section class="ui-studio-section"><h3>04 / 字体与体验</h3><label class="ui-field-label" for="uiFont">界面字体</label><select class="field" id="uiFont"><option value="system">系统默认</option><option value="inter">Inter / 清晰现代</option><option value="serif">编辑式衬线</option><option value="mono">等宽技术风</option></select><label class="ui-reduced"><input id="uiReducedMotion" type="checkbox"> 开启低动态模式（同时遵循系统偏好）</label><p class="ui-studio-hint">配置保存在当前浏览器。布局、主题、字体和动效分别生效；不会修改资源数据。</p></section>
   </div>
-  <footer class="ui-studio-foot"><button class="btn ghost" id="resetUiStudio" type="button">恢复默认</button><div class="ui-studio-export"><button class="btn small" id="exportUiJson" type="button">导出 JSON</button><button class="btn small" id="exportUiCss" type="button">导出 CSS</button></div><span id="uiStudioStatus" role="status">设置自动保存</span><button class="btn primary" id="doneUiStudio" type="button">完成</button></footer>
+  <footer class="ui-studio-foot"><button class="btn ghost" id="resetUiStudio" type="button">恢复默认</button><div class="ui-studio-export"><button class="btn small" id="importUiJson" type="button">导入 JSON</button><input id="importUiJsonFile" type="file" accept=".json,application/json" hidden><button class="btn small" id="exportUiJson" type="button">导出 JSON</button><button class="btn small" id="exportUiCss" type="button">导出 CSS</button></div><span id="uiStudioStatus" role="status">设置自动保存</span><button class="btn primary" id="doneUiStudio" type="button">完成</button></footer>
  </section>
 </div>
 <button id="restoreNavButton" type="button" aria-label="显示资源导航">☰ 导航</button>
