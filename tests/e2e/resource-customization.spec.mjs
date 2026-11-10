@@ -100,3 +100,28 @@ test('resource hub: custom accent tokens update and dialog traps keyboard focus'
   await expect(backdrop).toBeHidden();
   await expect(open).toBeFocused();
 });
+
+test('resource hub: export production-ready JSON preset and CSS tokens', async ({ page }) => {
+  await page.setViewportSize({width:390,height:844});
+  await page.goto(resourceUrl);
+  await page.locator('#openUiStudio').click();
+  await expect(page.locator('#uiStudioBackdrop')).toBeVisible();
+
+  const jsonDownloadPromise=page.waitForEvent('download');
+  await page.locator('#exportUiJson').click();
+  const jsonDownload=await jsonDownloadPromise;
+  expect(jsonDownload.suggestedFilename()).toBe('davylab-design-profile.json');
+  const json=JSON.parse(await (await import('node:fs/promises')).readFile(await jsonDownload.path(),'utf8'));
+  expect(json.source).toBe('DAVYLAB DesignOS Resource Hub');
+  expect(json.appearance).toHaveProperty('accent');
+
+  const cssDownloadPromise=page.waitForEvent('download');
+  await page.locator('#exportUiCss').click();
+  const cssDownload=await cssDownloadPromise;
+  expect(cssDownload.suggestedFilename()).toBe('davylab-design-tokens.css');
+  const css=await (await import('node:fs/promises')).readFile(await cssDownload.path(),'utf8');
+  expect(css).toContain('--davy-accent:');
+  expect(css).toContain(':root');
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth+1);
+  expect(overflow).toBe(false);
+});
