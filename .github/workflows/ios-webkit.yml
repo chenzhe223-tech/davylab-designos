@@ -1,0 +1,33 @@
+name: DesignOS iOS WebKit icon QA
+on:
+  pull_request:
+    paths:
+      - "studio/**"
+      - "tests/e2e/designos3-icons.spec.mjs"
+      - "playwright.webkit.config.mjs"
+      - ".github/workflows/ios-webkit.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ios-webkit-icons:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright
+        run: npm install --no-save @playwright/test
+      - name: Install iOS WebKit engine
+        run: npx playwright install --with-deps webkit
+      - name: Verify icons on iOS WebKit at multiple widths and themes
+        run: npx playwright test --config playwright.webkit.config.mjs
+      - name: Save light and dark iOS WebKit screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: designos-ios-webkit-icons
+          path: artifacts/designos3/mobile-resource-icons-*.png
+          if-no-files-found: warn
+          retention-days: 14

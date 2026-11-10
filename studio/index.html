@@ -17,19 +17,19 @@
     </a>
     <div class="side-label">WORKSPACE</div>
     <nav class="primary-nav" aria-label="主导航">
-      <button type="button" data-nav="home" class="nav-link is-active"><span class="nav-symbol">◫</span><span>总览</span></button>
-      <button type="button" data-nav="studio" class="nav-link"><span class="nav-symbol">◇</span><span>设计台</span></button>
-      <button type="button" data-nav="components" class="nav-link"><span class="nav-symbol">▦</span><span>组件</span></button>
-      <button type="button" data-nav="skills" class="nav-link"><span class="nav-symbol">✳</span><span>资源能力</span></button>
-      <button type="button" data-nav="archive" class="nav-link"><span class="nav-symbol">▤</span><span>作品档案</span></button>
+      <button type="button" data-nav="home" class="nav-link is-active"><span class="nav-symbol" data-icon="layout" aria-hidden="true"></span><span>总览</span></button>
+      <button type="button" data-nav="studio" class="nav-link"><span class="nav-symbol" data-icon="pen" aria-hidden="true"></span><span>设计台</span></button>
+      <button type="button" data-nav="components" class="nav-link"><span class="nav-symbol" data-icon="grid" aria-hidden="true"></span><span>组件</span></button>
+      <button type="button" data-nav="skills" class="nav-link"><span class="nav-symbol" data-icon="books" aria-hidden="true"></span><span>资源能力</span></button>
+      <button type="button" data-nav="archive" class="nav-link"><span class="nav-symbol" data-icon="archive" aria-hidden="true"></span><span>作品档案</span></button>
     </nav>
     <div class="side-label side-label-secondary">SYSTEM</div>
     <nav class="primary-nav" aria-label="系统导航">
-      <button type="button" data-nav="settings" class="nav-link"><span class="nav-symbol">⚙</span><span>设置</span></button>
+      <button type="button" data-nav="settings" class="nav-link"><span class="nav-symbol" data-icon="sliders" aria-hidden="true"></span><span>设置</span></button>
     </nav>
     <div class="sidebar-bottom">
       <div class="sidebar-note"><span class="soft-dot"></span><strong>Design in progress</strong><small>设计稿仅保存在当前浏览器</small></div>
-      <a class="classic-link" href="./classic/">切换经典工作台 <span aria-hidden="true">↗</span></a>
+      <a class="classic-link" href="./classic/">切换经典工作台 <span data-icon="arrow-up-right" aria-hidden="true"></span></a>
       <div class="side-signature">DESIGN WITH INTENT<br>BUILD WITH EVIDENCE</div>
     </div>
   </aside>
@@ -37,7 +37,7 @@
   <div class="main-shell">
     <header class="topbar">
       <div class="breadcrumbs"><span>DAVYLAB</span><span class="crumb-divider">/</span><strong id="breadcrumbCurrent">总览</strong></div>
-      <div class="topbar-actions"><span class="topbar-state"><i class="soft-dot"></i> 本地工作区</span><button type="button" id="topExport" class="button button-subtle">导出方案 <span aria-hidden="true">↗</span></button><button type="button" id="topNew" class="button button-dark">+ 新建设计</button></div>
+      <div class="topbar-actions"><span class="topbar-state"><i class="soft-dot"></i> 本地工作区</span><button type="button" id="topExport" class="button button-subtle">导出方案 <span data-icon="arrow-up-right" aria-hidden="true"></span></button><button type="button" id="topNew" class="button button-dark">+ 新建设计</button></div>
     </header>
     <main id="view" class="main-view" tabindex="-1"></main>
     <footer class="app-footer"><span>DesignOS 3.0 · By DAVYLAB</span><span>把想法，做成能用的工具。</span></footer>
@@ -45,12 +45,12 @@
 </div>
 
 <nav class="mobile-nav" aria-label="手机端主导航">
-  <button type="button" data-nav="home" class="is-active"><span>◫</span>总览</button>
-  <button type="button" data-nav="studio"><span>◇</span>设计</button>
-  <button type="button" data-nav="components"><span>▦</span>组件</button>
-  <button type="button" data-nav="skills"><span>✳</span>资源</button>
-  <button type="button" data-nav="archive"><span>▤</span>档案</button>
-  <button type="button" data-nav="settings"><span>⚙</span>设置</button>
+  <button type="button" data-nav="home" class="is-active"><span data-icon="layout" aria-hidden="true"></span>总览</button>
+  <button type="button" data-nav="studio"><span data-icon="pen" aria-hidden="true"></span>设计</button>
+  <button type="button" data-nav="components"><span data-icon="grid" aria-hidden="true"></span>组件</button>
+  <button type="button" data-nav="skills"><span data-icon="books" aria-hidden="true"></span>资源</button>
+  <button type="button" data-nav="archive"><span data-icon="archive" aria-hidden="true"></span>档案</button>
+  <button type="button" data-nav="settings"><span data-icon="sliders" aria-hidden="true"></span>设置</button>
 </nav>
 
 <dialog id="projectDialog" class="project-dialog" aria-labelledby="projectDialogTitle">

@@ -427,3 +427,52 @@ body[data-reduced-motion=true] *,body[data-reduced-motion=true] *:before,body[da
 @media(max-width:920px){
   .inspector{position:static;max-height:none;overflow:visible;padding-right:0}
 }
+
+
+/* iOS icon system — SVG only, no platform-dependent emoji glyphs */
+.ui-icon{
+  display:block;width:18px;height:18px;flex:none;
+  stroke:currentColor;fill:none;overflow:visible;
+}
+.nav-symbol{display:inline-flex;justify-content:center;align-items:center;width:21px;height:21px}
+.nav-symbol .ui-icon{width:19px;height:19px;stroke-width:1.8}
+.mobile-nav button>span[data-icon]{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:24px;height:24px;font-size:inherit;line-height:1;
+}
+.mobile-nav button .ui-icon{width:20px;height:20px;stroke-width:1.8}
+.inline-icon{display:inline-flex;vertical-align:middle;align-items:center;justify-content:center;flex:none;line-height:1;color:inherit}
+.inline-icon .ui-icon{width:14px;height:14px;stroke-width:1.9}
+.button .inline-icon .ui-icon,.text-link .inline-icon .ui-icon{width:15px;height:15px}
+.classic-link [data-icon],.topbar [data-icon]{display:inline-flex;align-items:center;justify-content:center}
+.classic-link .ui-icon,.topbar .ui-icon{width:14px;height:14px}
+.search-icon{display:inline-flex;align-items:center;justify-content:center;color:#748275}
+.search-icon .ui-icon{width:18px;height:18px}
+.resource-item{
+  appearance:none;-webkit-appearance:none;
+  color:var(--ink);-webkit-text-fill-color:currentColor;
+  gap:12px;padding:14px 16px;
+}
+.resource-item strong{color:var(--ink);font-weight:750;-webkit-text-fill-color:currentColor}
+.resource-icon{
+  width:38px;height:38px;border-radius:10px;
+  background:#ecf1e9;color:#52715c;
+  font-size:inherit;
+}
+.resource-icon .ui-icon{width:19px;height:19px;stroke-width:1.75}
+.resource-trailing{display:inline-flex;align-items:center;justify-content:center;flex:none;width:24px;height:24px;color:#809083;border-radius:7px}
+.resource-trailing .ui-icon{width:17px;height:17px}
+.resource-item:hover .resource-trailing,.resource-item.is-active .resource-trailing{color:#436c4d}
+body[data-app-theme=dark] .resource-icon{background:#34463a;color:#b5d0bb}
+body[data-app-theme=dark] .resource-trailing{color:#a7b8a9}
+body[data-app-theme=dark] .resource-item{color:var(--ink);border-color:var(--line)}
+body[data-app-theme=dark] .resource-item strong{color:var(--ink)}
+body[data-app-theme=dark] .search-icon{color:#adbfaf}
+body[data-app-theme=dark] .mobile-nav{background:#1f2922f2;border-top:1px solid var(--line)}
+body[data-app-theme=dark] .mobile-nav button{color:#a9b9ab}
+body[data-app-theme=dark] .mobile-nav button.is-active{background:#344c39;color:#d7ead9}
+@media(max-width:700px){
+  .resource-item{min-height:66px}
+  .resource-info strong{font-size:12px;line-height:1.4}
+  .resource-info p{font-size:10px;line-height:1.6}
+}
