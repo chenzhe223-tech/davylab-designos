@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
 
-const resourceUrl = process.env.RESOURCE_HUB_URL || pathToFileURL(resolve('dist/resources/index.html')).href;
+const resourceUrl = process.env.RESOURCE_HUB_URL || 'http://127.0.0.1:4175/resources/';
 
 test('resource hub: customize theme, layout, navigation and motion; persist settings', async ({ page }) => {
   const errors = [];
