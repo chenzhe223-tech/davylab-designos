@@ -120,8 +120,26 @@ function renderHome(){
   '<div class="recent-grid"><section class="panel-card"><h3>最近项目</h3>'+(recent||empty('还没有设计项目','从上方任选一款视觉方向，开始你的第一个作品。'))+'</section><section class="panel-card"><h3>你的设计工具箱</h3><div class="info-list"><div><b>01</b><span>实时画布：调整配色、布局密度和移动端视图</span></div><div><b>02</b><span>能力调用：从 '+registry.length+' 项公开设计资源中找到合适的方法</span></div><div><b>03</b><span>成果交付：输出 JSON、CSS Tokens 与 Agent 指令</span></div></div><button class="button button-plain button-small" style="margin-top:20px" data-action="skills">探索资源能力 ↗</button></section></div>';
 }
 function mockCanvas(p){
-  const visualName=safe(p.name.trim()||'你的产品');
-  return '<div id="mockApp" class="mock-app" style="--sample-accent:'+safe(p.accent)+';--sample-paper:'+safe(p.canvas)+';--sample-ink:'+safe(p.ink)+';--sample-radius:'+Number(p.radius)+'px;--sample-gap:'+Number(p.density)+'px"><div class="mock-header"><strong>north.</strong><nav><span>Overview</span><span>Discover</span><span>Journal</span></nav><button type="button" data-action="demo">Get started ↗</button></div><div class="mock-main"><div class="mock-overline">A CONSIDERED DIGITAL EXPERIENCE</div><div class="mock-hero"><div class="mock-hero-copy"><h2 class="mock-headline">Find your<br>next perspective.</h2><p class="mock-copy">为「'+visualName+'」创建的视觉规则示例。改变右侧参数，你将立即看到页面的排版与风格变化。</p><button class="mock-cta" type="button" data-action="demo">探索体验 ↗</button></div><div class="mock-visual"><div class="visual-caption">Design<br>moves us.</div></div></div><div class="mock-stats"><div class="mock-stat"><strong>01</strong><small>Discover what matters</small></div><div class="mock-stat"><strong>02</strong><small>Make meaningful choices</small></div><div class="mock-stat"><strong>03</strong><small>Build with confidence</small></div></div></div></div>';
+  const name=safe(p.name.trim()||'你的产品');
+  const profile=byId(p.profileId);
+  const isEditorial=profile?.id==='warm-editorial';
+  const isAnalytics=profile?.id==='analytics-dashboard';
+  const variant=isEditorial?'editorial':isAnalytics?'analytics':'product';
+  const shared='id="mockApp" class="mock-app mock-'+variant+'" style="--sample-accent:'+safe(p.accent)+';--sample-paper:'+safe(p.canvas)+';--sample-ink:'+safe(p.ink)+';--sample-radius:'+Number(p.radius)+'px;--sample-gap:'+Number(p.density)+'px"';
+  if(isEditorial)return '<div '+shared+'>'+
+    '<div class="mock-header"><strong>fieldnotes.</strong><nav><span>Stories</span><span>Journal</span><span>About</span></nav><button data-action="demo">Explore ↗</button></div>'+
+    '<div class="mock-main"><div class="mock-overline">INDEPENDENT IDEAS · VOL. 01 / 2026</div>'+
+    '<div class="mock-editorial-lead"><div><h2 class="mock-editorial-title">A quieter kind<br>of brilliant.</h2><p class="mock-copy">这是「'+name+'」的 Editorial 视觉方案，使用更温暖的留白、沉稳的字体与内容优先的布局。</p><button class="mock-cta" data-action="demo">Read the story ↗</button></div><div class="mock-editorial-art"><span>FORM<br>& FEELING</span><i></i></div></div>'+
+    '<div class="mock-editorial-grid"><div><span>01 / PERSPECTIVE</span><b>Objects of intention</b></div><div><span>02 / CULTURE</span><b>The spaces between</b></div><div><span>03 / DESIGN</span><b>Everyday rituals</b></div></div></div></div>';
+  if(isAnalytics)return '<div '+shared+'>'+
+    '<div class="mock-header"><strong>atlas<span style="color:var(--sample-accent)">.</span></strong><nav><span>Overview</span><span>Reports</span><span>Activity</span></nav><button data-action="demo">Export ↗</button></div>'+
+    '<div class="mock-main"><div class="mock-overline">ANALYTICS / PRODUCT INSIGHTS</div><div class="mock-analytics-top"><div><h2>Performance overview</h2><p class="mock-copy">「'+name+'」的信息架构与数据可视化示例：明确层级、图表节奏与状态反馈。</p></div><span class="mock-period">Last 30 days ▾</span></div>'+
+    '<div class="mock-analytics-kpis"><div><small>Visitors</small><strong>48,290</strong><span>↑ 12.4%</span></div><div><small>Conversion</small><strong>5.28%</strong><span>↑ 2.1%</span></div><div><small>Retention</small><strong>76.3%</strong><span>↑ 8.7%</span></div></div>'+
+    '<div class="mock-analytics-chart"><div class="mock-chart-top"><b>Audience growth</b><span>Weekly trend</span></div><div class="mock-chart-bars">'+[34,51,45,65,58,76,63,86,74,92,78,96].map(n=>'<i style="height:'+n+'%"></i>').join('')+'</div><div class="mock-chart-axis"><span>01 NOV</span><span>08 NOV</span><span>15 NOV</span><span>22 NOV</span></div></div></div></div>';
+  return '<div '+shared+'>'+
+    '<div class="mock-header"><strong>north.</strong><nav><span>Overview</span><span>Discover</span><span>Journal</span></nav><button type="button" data-action="demo">Get started ↗</button></div>'+
+    '<div class="mock-main"><div class="mock-overline">A CONSIDERED DIGITAL EXPERIENCE</div><div class="mock-hero"><div class="mock-hero-copy"><h2 class="mock-headline">Find your<br>next perspective.</h2><p class="mock-copy">为「'+name+'」创建的 Product 视觉规则示例。改变右侧参数，你将立即看到页面的排版与风格变化。</p><button class="mock-cta" type="button" data-action="demo">探索体验 ↗</button></div><div class="mock-visual"><div class="visual-caption">Design<br>moves us.</div></div></div>'+
+    '<div class="mock-stats"><div class="mock-stat"><strong>01</strong><small>Discover what matters</small></div><div class="mock-stat"><strong>02</strong><small>Make meaningful choices</small></div><div class="mock-stat"><strong>03</strong><small>Build with confidence</small></div></div></div></div>';
 }
 function renderCanvas(){
   const p=currentProject();if(!p)return;
