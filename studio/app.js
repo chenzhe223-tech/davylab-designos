@@ -9,6 +9,57 @@ const STORAGE = 'davylab-designos-v3:workspace';
 const SETTINGS = 'davylab-designos-v3:preferences';
 const viewNames = {home:'总览',studio:'设计台',components:'组件',skills:'资源能力',archive:'作品档案',settings:'设置'};
 const $ = selector => document.querySelector(selector);
+
+/* Use actual stroke SVGs; iOS WebKit turns ✳, ⚙ and ↗ into full-color emoji. */
+const iconPaths = Object.freeze({
+  layout: '<rect x="3" y="3" width="7" height="7" rx="1.1"/><rect x="14" y="3" width="7" height="7" rx="1.1"/><rect x="3" y="14" width="7" height="7" rx="1.1"/><rect x="14" y="14" width="7" height="7" rx="1.1"/>',
+  pen: '<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+  grid: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+  books: '<path d="M12 7v14"/><path d="M3 18V5.5A2.5 2.5 0 0 1 5.5 3H10a2 2 0 0 1 2 2v16a2 2 0 0 0-2-2H5.5A2.5 2.5 0 0 1 3 16.5"/><path d="M21 18V5.5A2.5 2.5 0 0 0 18.5 3H14a2 2 0 0 0-2 2v16a2 2 0 0 1 2-2h4.5A2.5 2.5 0 0 0 21 16.5"/>',
+  archive: '<rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v12h14V8"/><path d="M10 12h4"/>',
+  sliders: '<path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="2.5" fill="var(--icon-surface, #fff)"/><circle cx="16" cy="17" r="2.5" fill="var(--icon-surface, #fff)"/>',
+  'arrow-up-right': '<path d="M7 17 17 7M8 7h9v9"/>',
+  'chevron-right': '<path d="m9 18 6-6-6-6"/>',
+  search: '<circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 5 5"/>',
+  cpu: '<rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 9h6v6H9zM9 2v4m6-4v4M9 18v4m6-4v4M2 9h4m-4 6h4m12-6h4m-4 6h4"/>',
+  palette: '<path d="M12 3a9 9 0 1 0 0 18h2a2 2 0 0 0 1.5-3.3 1.5 1.5 0 0 1 1.1-2.5H19A3 3 0 0 0 22 12a9 9 0 0 0-10-9Z"/><circle cx="7.5" cy="11" r="1" fill="currentColor" stroke="none"/><circle cx="10" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="7.5" r="1" fill="currentColor" stroke="none"/>',
+  layers: '<path d="m12 2 9 5-9 5-9-5 9-5ZM3 12l9 5 9-5M3 17l9 5 9-5"/>',
+  check: '<path d="m4 12 5 5L20 6"/>'
+});
+function svgIcon(name) {
+  const paths=iconPaths[name]||iconPaths.layers;
+  return '<svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'+paths+'</svg>';
+}
+function mountStaticIcons(){
+  document.querySelectorAll('[data-icon]').forEach(el=>{
+    el.innerHTML=svgIcon(el.dataset.icon);
+  });
+}
+const glyphIcons=Object.freeze({'↗':'arrow-up-right','✳':'books','⚙':'sliders','◇':'layers','⌕':'search'});
+function replaceEmojiProneGlyphs(root){
+  if(!root)return;
+  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+  const pending=[];
+  while(walker.nextNode()){
+    const node=walker.currentNode;
+    if(/[↗✳⚙◇⌕]/.test(node.nodeValue)&&!node.parentElement?.closest('script,style,textarea,svg'))pending.push(node);
+  }
+  for(const node of pending){
+    const fragment=document.createDocumentFragment();
+    node.nodeValue.split(/([↗✳⚙◇⌕])/).forEach(segment=>{
+      if(!segment)return;
+      if(glyphIcons[segment]){
+        const container=document.createElement('span');
+        container.className='inline-icon';
+        container.setAttribute('aria-hidden','true');
+        container.innerHTML=svgIcon(glyphIcons[segment]);
+        fragment.append(container);
+      }else fragment.append(document.createTextNode(segment));
+    });
+    node.replaceWith(fragment);
+  }
+}
+
 const safe = value => String(value ?? '').replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
 const dateText = value => {try {return new Date(value).toLocaleDateString('zh-CN',{month:'short',day:'numeric'});}catch{return '—';}};
 const randomId = () => 'd-' + (globalThis.crypto?.randomUUID?.() || String(Date.now())+'-'+Math.random().toString(36).slice(2));
@@ -220,15 +271,16 @@ function renderSkillDetail(){
     '<div class="detail-subtitle">使用边界</div><ul>'+(r.guardrails||[]).slice(0,4).map(x=>'<li>'+safe(x)+'</li>').join('')+'</ul>'+
     '<div class="detail-note">仅关联能力元数据与规则引用，不在此自动执行外部 Skill。私有资源仍需要通过受保护的资源中心访问。</div>'+
     '<button class="button button-dark" data-action="toggle-skill" data-skill="'+safe(r.id)+'">'+(added?'从当前项目移除':'加入当前项目')+'</button><a href="./resources/" class="button button-plain" style="display:flex">打开完整资源中心 ↗</a>';
+  replaceEmojiProneGlyphs(el);
 }
 function renderSkills(){
   const filtered=filteredSkills();
   if(filtered.length && !filtered.some(x=>x.id===state.skillId))state.skillId=filtered[0].id;
   return sectionHeader('把合适的能力，放到对的项目里。','统一查找、筛选并关联公开 Skill、设计引擎及视觉资产；资源内容与执行权限保持原有边界。',
     '<a href="./resources/" class="button button-plain">打开能力资源库 ↗</a>')+
-    '<div class="toolbar"><div class="search-field"><span>⌕</span><input data-search="skills" type="search" placeholder="搜索 Skill、用途或设计方法" value="'+safe(state.filter)+'" aria-label="搜索设计资源"></div><div class="filter-row">'+[['all','全部'],['skill','Skill'],['engine','引擎'],['visual-pack','视觉包'],['profile-library','档案']].map(([value,label])=>'<button class="filter-chip '+(state.skillType===value?'is-active':'')+'" data-action="skill-type" data-type="'+value+'">'+label+'</button>').join('')+'</div></div>'+
+    '<div class="toolbar"><div class="search-field"><span class="search-icon" aria-hidden="true">'+svgIcon('search')+'</span><input data-search="skills" type="search" placeholder="搜索 Skill、用途或设计方法" value="'+safe(state.filter)+'" aria-label="搜索设计资源"></div><div class="filter-row">'+[['all','全部'],['skill','Skill'],['engine','引擎'],['visual-pack','视觉包'],['profile-library','档案']].map(([value,label])=>'<button class="filter-chip '+(state.skillType===value?'is-active':'')+'" data-action="skill-type" data-type="'+value+'">'+label+'</button>').join('')+'</div></div>'+
     '<div class="resource-grid"><div class="resource-list" id="resourceList">'+(filtered.length?filtered.map(r=>
-    '<button type="button" class="resource-item '+(r.id===state.skillId?'is-active':'')+'" data-action="select-skill" data-skill="'+safe(r.id)+'"><span class="resource-icon">'+(r.type==='engine'?'⚙':r.type==='visual-pack'?'◇':'✳')+'</span><span class="resource-info"><strong>'+safe(r.name)+'</strong><p>'+safe(r.summary)+'</p></span><span aria-hidden="true">↗</span></button>'
+    '<button type="button" class="resource-item '+(r.id===state.skillId?'is-active':'')+'" data-action="select-skill" data-skill="'+safe(r.id)+'"><span class="resource-icon" aria-hidden="true">'+svgIcon(r.type==='engine'?'cpu':r.type==='visual-pack'?'palette':r.type==='profile-library'?'layers':'books')+'</span><span class="resource-info"><strong>'+safe(r.name)+'</strong><p>'+safe(r.summary)+'</p></span><span class="resource-trailing" aria-hidden="true">'+svgIcon('chevron-right')+'</span></button>'
     ).join(''):empty('没有匹配的资源','换个关键词，或清空筛选条件。'))+'</div><aside class="detail-card" id="resourceDetail"></aside></div>';
 }
 function renderArchive(){
@@ -264,6 +316,7 @@ function render(){
     state.view==='skills'?renderSkills():
     state.view==='archive'?renderArchive():renderSettings();
   if(state.view==='skills')renderSkillDetail();
+  replaceEmojiProneGlyphs(v);
 }
 function blobDownload(filename,body,type,remember=true){
   const link=document.createElement('a'),url=URL.createObjectURL(new Blob([body],{type}));
@@ -445,5 +498,8 @@ function bindApp(){
     }
   });
 }
+mountStaticIcons();
+replaceEmojiProneGlyphs(document.querySelector('.sidebar'));
+replaceEmojiProneGlyphs(document.querySelector('.topbar'));
 bindApp();
 go(state.view);
