@@ -64,7 +64,9 @@ test('iPhone-style dark mode preserves readable resource names and icons',async 
 test('external actions render vector arrows, not blue-square emoji',async ({page})=>{
   await page.goto(home);
   await expect(page.locator('#topExport [data-icon=arrow-up-right] svg')).toHaveCount(1);
-  await page.locator('.primary-nav [data-nav=skills]').click();
+  const mobileSkills=page.locator('.mobile-nav [data-nav=skills]');
+  if(await mobileSkills.isVisible()) await mobileSkills.click();
+  else await page.locator('.primary-nav [data-nav=skills]').click();
   await expect(page.locator('.page-heading a .inline-icon svg')).toHaveCount(1);
   await expect(page.locator('.resource-item .resource-trailing svg')).toHaveCount(25);
   expect(broken.test(await page.locator('body').innerText())).toBe(false);
