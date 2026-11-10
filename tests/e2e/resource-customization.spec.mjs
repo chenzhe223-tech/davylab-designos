@@ -125,3 +125,21 @@ test('resource hub: export production-ready JSON preset and CSS tokens', async (
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth+1);
   expect(overflow).toBe(false);
 });
+
+test('resource hub: import validated design preset and reject invalid configuration', async ({page}) => {
+  await page.goto(resourceUrl);
+  await page.locator('#openUiStudio').click();
+  const valid={
+    schemaVersion:'1.0.0',source:'DAVYLAB DesignOS Resource Hub',
+    appearance:{theme:'midnight',accent:'#123456',background:'#101c2b',surface:'#17283a',text:'#eaf4ff',border:'#36516a',navSurface:'#1b3044',layout:'bento',nav:'top',motion:'spring',intensity:7,duration:600,font:'inter',reduced:false}
+  };
+  await page.locator('#importUiJsonFile').setInputFiles({name:'profile.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(valid))});
+  await expect(page.locator('body')).toHaveAttribute('data-theme','midnight');
+  await expect(page.locator('body')).toHaveAttribute('data-layout','bento');
+  await expect(page.locator('#uiStudioStatus')).toContainText('已导入');
+
+  const invalid={...valid,appearance:{...valid.appearance,accent:'red; background:url(test)'}};
+  await page.locator('#importUiJsonFile').setInputFiles({name:'invalid.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(invalid))});
+  await expect(page.locator('#uiStudioStatus')).toContainText('导入失败');
+  await expect(page.locator('#uiAccent')).toHaveValue('#123456');
+});
