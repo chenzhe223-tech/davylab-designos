@@ -33,8 +33,11 @@ test('DesignOS 3.0 creates, edits, previews, snapshots and exports usable design
   await page.locator('#projectForm [type=submit]').click();
   await expect(page.locator('#view')).toContainText('设计方向');
   await expect(page.locator('#mockApp')).toContainText('旅行探索工作台');
+  await mkdir('artifacts/designos3',{recursive:true});
+  await page.screenshot({path:'artifacts/designos3/desktop-studio.png',fullPage:true});
   await page.locator('button[data-action=device][data-device=phone]').click();
   await expect(page.locator('#canvasPaper')).toHaveClass(/is-phone/);
+  await page.screenshot({path:'artifacts/designos3/phone-preview-in-studio.png',fullPage:true});
   await page.locator('input[data-field=accent]').fill('#355a43');
   await expect(page.locator('#mockApp')).toHaveAttribute('style',/#355a43/);
   await page.locator('button[data-action=snapshot]').click();
