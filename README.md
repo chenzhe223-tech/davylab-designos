@@ -4,6 +4,22 @@
 
 DAVYLAB DesignOS is a visual design selection workspace. Users can preview rule-based UI examples, compare design profiles, describe project goals, and generate structured execution instructions for major AI coding agents.
 
+## DesignOS 3.0 — visual-first studio (current front door)
+
+The homepage is now a purpose-built design production workspace instead of an exposed collection of research, rules, and back-office controls.
+
+- **/**: curated visual directions, six clear destinations, live design canvas, local projects, components, Skill references, archives and preferences.
+- **/classic/**: preserved original, evidence-aware DesignOS research and Agent-brief workflow. Existing tests continue to validate this experience independently.
+- **/resources/**: protected Skill Resource Hub with public and private catalog handling; access controls remain unchanged.
+
+The new workspace can create and save local projects, choose canonical design profiles, preview rule-driven desktop/phone UI, adjust tokens, associate **public Skill references** and export JSON, CSS tokens, and a truthful Agent implementation brief. Version snapshots and portable backup are included. No new cloud sync is implied, no external Skill is invoked by adding its reference, and preview screens are illustrative, not implemented target applications.
+
+### 3.0 visual / product boundaries
+
+Design language: warm paper, quiet greens, deep ink, editorial typography, no fake AI hero dashboards. Designed for mobile widths 375/390/430px and accessible keyboard interaction. No protected Dashboard Studio audit profile can be applied to a project. Only canonical **public** metadata is bootstrapped into the root page. See [DesignOS 3.0 blueprint](docs/designos-3-product-blueprint.md).
+
+Build uses the existing canonical profile source and produces the new root plus classic compatibility route. Browser QA for the new workspace lives at `tests/e2e/designos3.spec.mjs`; GitHub Actions retains desktop and phone screenshots. For the phase-gated delivery roadmap and required verification evidence, consult the blueprint.
+
 ## DesignOS 2.0 experience
 
 - Profile-driven HTML/CSS visual previews with desktop/mobile viewport switching.

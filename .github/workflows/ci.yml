@@ -78,6 +78,14 @@ jobs:
           retention-days: 14
       - name: Run desktop and mobile end-to-end tests
         run: npx playwright test
+      - name: Preserve DesignOS 3.0 visual QA screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: designos3-visual-qa
+          path: artifacts/designos3
+          if-no-files-found: warn
+          retention-days: 14
       - run: npm run build
       - name: Install pinned real UI UX Pro Max engine
         run: npm run engine:setup

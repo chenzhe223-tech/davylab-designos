@@ -7,6 +7,7 @@ on:
       - "index.html"
       - "profiles/**"
       - "resources/**"
+      - "studio/**"
       - "docs/**"
       - "projects/**"
       - "schemas/**"
