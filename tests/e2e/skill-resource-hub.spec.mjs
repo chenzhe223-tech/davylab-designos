@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
 
-const hubUrl = process.env.RESOURCE_HUB_URL || (process.env.BASE_URL ? new URL('./resources/', process.env.BASE_URL).href : pathToFileURL(resolve('dist/resources/index.html')).href);
+const hubUrl = process.env.RESOURCE_HUB_URL || (process.env.BASE_URL ? new URL('./resources/', process.env.BASE_URL).href : 'http://127.0.0.1:4175/resources/');
 const privateFixture = {
   schemaVersion: '1.0.0',
   registryVersion: 'test-private-fixture',

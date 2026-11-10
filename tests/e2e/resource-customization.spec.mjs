@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
 
-const resourceUrl = process.env.RESOURCE_HUB_URL || pathToFileURL(resolve('dist/resources/index.html')).href;
+const resourceUrl = process.env.RESOURCE_HUB_URL || 'http://127.0.0.1:4175/resources/';
 
 test('resource hub: customize theme, layout, navigation and motion; persist settings', async ({ page }) => {
   const errors = [];
@@ -99,4 +99,47 @@ test('resource hub: custom accent tokens update and dialog traps keyboard focus'
   await page.keyboard.press('Escape');
   await expect(backdrop).toBeHidden();
   await expect(open).toBeFocused();
+});
+
+test('resource hub: export production-ready JSON preset and CSS tokens', async ({ page }) => {
+  await page.setViewportSize({width:390,height:844});
+  await page.goto(resourceUrl);
+  await page.locator('#openUiStudio').click();
+  await expect(page.locator('#uiStudioBackdrop')).toBeVisible();
+
+  const jsonDownloadPromise=page.waitForEvent('download');
+  await page.locator('#exportUiJson').click();
+  const jsonDownload=await jsonDownloadPromise;
+  expect(jsonDownload.suggestedFilename()).toBe('davylab-design-profile.json');
+  const json=JSON.parse(await (await import('node:fs/promises')).readFile(await jsonDownload.path(),'utf8'));
+  expect(json.source).toBe('DAVYLAB DesignOS Resource Hub');
+  expect(json.appearance).toHaveProperty('accent');
+
+  const cssDownloadPromise=page.waitForEvent('download');
+  await page.locator('#exportUiCss').click();
+  const cssDownload=await cssDownloadPromise;
+  expect(cssDownload.suggestedFilename()).toBe('davylab-design-tokens.css');
+  const css=await (await import('node:fs/promises')).readFile(await cssDownload.path(),'utf8');
+  expect(css).toContain('--davy-accent:');
+  expect(css).toContain(':root');
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth+1);
+  expect(overflow).toBe(false);
+});
+
+test('resource hub: import validated design preset and reject invalid configuration', async ({page}) => {
+  await page.goto(resourceUrl);
+  await page.locator('#openUiStudio').click();
+  const valid={
+    schemaVersion:'1.0.0',source:'DAVYLAB DesignOS Resource Hub',
+    appearance:{theme:'midnight',accent:'#123456',background:'#101c2b',surface:'#17283a',text:'#eaf4ff',border:'#36516a',navSurface:'#1b3044',layout:'bento',nav:'top',motion:'spring',intensity:7,duration:600,font:'inter',reduced:false}
+  };
+  await page.locator('#importUiJsonFile').setInputFiles({name:'profile.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(valid))});
+  await expect(page.locator('body')).toHaveAttribute('data-theme','midnight');
+  await expect(page.locator('body')).toHaveAttribute('data-layout','bento');
+  await expect(page.locator('#uiStudioStatus')).toContainText('已导入');
+
+  const invalid={...valid,appearance:{...valid.appearance,accent:'red; background:url(test)'}};
+  await page.locator('#importUiJsonFile').setInputFiles({name:'invalid.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(invalid))});
+  await expect(page.locator('#uiStudioStatus')).toContainText('导入失败');
+  await expect(page.locator('#uiAccent')).toHaveValue('#123456');
 });

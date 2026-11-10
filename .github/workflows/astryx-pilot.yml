@@ -1,0 +1,36 @@
+name: Astryx isolated pilot CI
+on:
+  pull_request:
+    paths:
+      - 'experiments/astryx-pilot/**'
+      - '.github/workflows/astryx-pilot.yml'
+  push:
+    branches:
+      - feature/astryx-compatibility-pilot
+    paths:
+      - 'experiments/astryx-pilot/**'
+      - '.github/workflows/astryx-pilot.yml'
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: experiments/astryx-pilot
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Structure tests
+        run: npm test
+      - name: Production build
+        run: npm run build
+      - name: Check generated output
+        run: test -f dist/index.html && test -d dist/assets
+      - name: Install Chromium browser
+        run: npx playwright install --with-deps chromium
+      - name: Desktop and mobile browser smoke tests
+        run: npm run test:e2e
