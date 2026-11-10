@@ -56,7 +56,10 @@ test('DesignOS 3.0 creates, edits, previews, snapshots and exports usable design
 
   await page.locator('.primary-nav [data-nav=archive]').click();
   await expect(page.locator('.archive-card')).toHaveCount(1);
-  await expect(page.locator('.panel-card')).toContainText('旅行探索工作台');
+  await expect(page.locator('.panel-card').first()).toContainText('旅行探索工作台');
+  await expect(page.locator('[data-action=redownload]')).toHaveCount(2);
+  const [archivedDownload]=await Promise.all([page.waitForEvent('download'),page.locator('[data-action=redownload]').first().click()]);
+  expect(archivedDownload.suggestedFilename()).toContain('tokens.css');
   expect(errors).toEqual([]);
 });
 
@@ -141,4 +144,20 @@ test('studio uses a bounded keyboard-scrollable inspector instead of a long empt
   await expect(page.locator('#toast')).not.toHaveClass(/is-visible/);
   await mkdir('artifacts/designos3',{recursive:true});
   await page.screenshot({path:'artifacts/designos3/desktop-studio-balanced.png',fullPage:true});
+});
+
+
+test('archive deletes a selected project without erasing existing delivery files',async ({page})=>{
+  await page.goto(homepage);
+  await page.locator('#topNew').click();
+  await page.locator('#newProjectName').fill('单独删除测试');
+  await page.locator('#projectForm [type=submit]').click();
+  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('[data-action=export-json]').first().click()]);
+  expect(download.suggestedFilename()).toContain('-design.json');
+  await page.locator('.primary-nav [data-nav=archive]').click();
+  await expect(page.locator('.archive-card')).toHaveCount(1);
+  page.once('dialog',d=>d.accept());
+  await page.locator('[data-action=delete-project]').click();
+  await expect(page.locator('.archive-card')).toHaveCount(0);
+  await expect(page.locator('[data-action=redownload]')).toHaveCount(1);
 });
