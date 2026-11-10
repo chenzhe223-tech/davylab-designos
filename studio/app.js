@@ -319,7 +319,7 @@ function exportWorkspace(){
   blobDownload('davylab-designos-workspace.json',JSON.stringify(payload,null,2)+'\n','application/json',false);
 }
 function importWorkspace(file){
-  if(!file || file.size>1024*1024*2){toast('备份文件无效或超过 2MB');return;}
+  if(!file || file.size>1024*1024*5){toast('备份文件无效或超过 5MB');return;}
   file.text().then(text=>{
     const j=JSON.parse(text);
     if(j.schema!=='davylab-designos-workspace'||j.version!==3||!Array.isArray(j.projects))throw Error('格式不受支持');
