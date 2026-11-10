@@ -351,3 +351,53 @@ body[data-app-theme=dark] .settings-row{border-color:var(--line)}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 body[data-reduced-motion=true] *,body[data-reduced-motion=true] *:before,body[data-reduced-motion=true] *:after{transition:none!important;animation:none!important}
+
+
+/* Distinct, purpose-built preview compositions. All are clearly marked illustrative. */
+.mock-editorial .mock-header {background:#f7f5ee}
+.mock-editorial .mock-header strong {font-size:20px;font-weight:400;font-style:italic}
+.mock-editorial-lead {display:grid;grid-template-columns:1fr .9fr;gap:24px;align-items:center;margin:24px 0 29px}
+.mock-editorial-title {font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:clamp(37px,4.6vw,72px);line-height:1;letter-spacing:-.07em;margin:12px 0 17px}
+.mock-editorial-art {min-height:240px;position:relative;overflow:hidden;background:var(--sample-accent);border-radius:2px 90px 3px 2px;display:flex;align-items:end;padding:22px}
+.mock-editorial-art:before {content:'';position:absolute;width:190px;height:190px;border-radius:50%;top:-43px;right:-37px;background:#ffffff6b}
+.mock-editorial-art:after {content:'';position:absolute;width:120px;height:120px;border:24px solid #ffffff58;border-radius:50%;bottom:-56px;right:25px}
+.mock-editorial-art span {font-family:Georgia,serif;color:#fff;font-size:27px;line-height:.98;letter-spacing:-.05em;z-index:1}
+.mock-editorial-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sample-gap);border-top:1px solid #00000020;padding-top:20px}
+.mock-editorial-grid div {min-width:0}.mock-editorial-grid span{display:block;font-size:8px;font-weight:750;letter-spacing:.07em;color:var(--sample-accent)}
+.mock-editorial-grid b {display:block;margin-top:7px;font:normal 17px/1.22 Georgia,serif;letter-spacing:-.02em}
+.mock-analytics .mock-header strong {font-family:Arial,'PingFang SC',sans-serif;letter-spacing:-.045em}
+.mock-analytics-top {display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin:18px 0}
+.mock-analytics-top h2 {font-size:24px;letter-spacing:-.05em;line-height:1.2;margin:0 0 8px}
+.mock-analytics-top .mock-copy {max-width:480px}
+.mock-period {font-size:9px;font-weight:750;padding:8px 9px;border-radius:6px;border:1px solid #00000018;white-space:nowrap;background:white}
+.mock-analytics-kpis {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sample-gap)}
+.mock-analytics-kpis div {background:#fff;border:1px solid #0000000f;border-radius:var(--sample-radius);padding:13px;min-width:0}
+.mock-analytics-kpis small {font-size:9px;color:#6d7f72;display:block}
+.mock-analytics-kpis strong {display:block;font-size:clamp(16px,2vw,23px);line-height:1.5;letter-spacing:-.04em;margin:7px 0}
+.mock-analytics-kpis span {color:var(--sample-accent);font-weight:750;font-size:9px}
+.mock-analytics-chart {margin-top:var(--sample-gap);padding:17px;background:white;border-radius:var(--sample-radius);border:1px solid #0000000e}
+.mock-chart-top {display:flex;align-items:center;justify-content:space-between;gap:9px;font-size:11px}
+.mock-chart-top span {font-size:9px;color:#819087}
+.mock-chart-bars {height:133px;display:flex;gap:8px;align-items:end;justify-content:space-between;border-bottom:1px solid #e0e7de;margin:18px 0 7px}
+.mock-chart-bars i {background:var(--sample-accent);border-radius:4px 4px 0 0;flex:1;max-width:28px;opacity:.78}
+.mock-chart-bars i:nth-child(3n+2){opacity:.42}
+.mock-chart-axis{display:flex;justify-content:space-between;gap:6px;font-size:8px;color:#8b988c}
+.canvas-paper.is-phone .mock-editorial-lead{grid-template-columns:1fr}
+.canvas-paper.is-phone .mock-editorial-title{font-size:42px}
+.canvas-paper.is-phone .mock-editorial-art{min-height:160px}
+.canvas-paper.is-phone .mock-editorial-grid{grid-template-columns:1fr}
+.canvas-paper.is-phone .mock-editorial-grid div{display:flex;justify-content:space-between;gap:10px}
+.canvas-paper.is-phone .mock-editorial-grid b{font-size:15px;margin-top:0;text-align:right}
+.canvas-paper.is-phone .mock-analytics-top{flex-wrap:wrap}
+.canvas-paper.is-phone .mock-analytics-top h2{font-size:22px}
+.canvas-paper.is-phone .mock-analytics-kpis{gap:6px}
+.canvas-paper.is-phone .mock-analytics-kpis div{padding:8px}
+.canvas-paper.is-phone .mock-analytics-kpis strong{font-size:15px}
+.canvas-paper.is-phone .mock-chart-bars{gap:4px;height:100px}
+@media(max-width:700px){
+  .mock-editorial-lead{grid-template-columns:1fr}
+  .mock-editorial-art{min-height:165px}
+  .mock-editorial-title{font-size:47px}
+  .mock-editorial-grid b{font-size:14px}
+  .mock-analytics-top{flex-wrap:wrap}
+}
