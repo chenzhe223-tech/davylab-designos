@@ -423,7 +423,7 @@ POST /api/skills/match</div><button class="btn small" id="copyApi">复制 API �
 
 
  // Visual DNA / Motion Lab — local, versioned, non-destructive UI preferences.
- (function initUiStudio(){
+ document.addEventListener("DOMContentLoaded", function initUiStudio(){
   const KEY="davylab-resourcehub-ui:v1";
   const defaults={theme:"editorial",accent:"#355a43",background:"#f4f0e6",surface:"#fffdf6",text:"#252b22",border:"#d7d4c8",navSurface:"#f9f6ed",layout:"editorial",nav:"left",motion:"fade-up",intensity:5,duration:500,font:"system",reduced:false};
   const themes={editorial:{accent:"#355a43",background:"#f4f0e6"},graphite:{accent:"#b7e34b",background:"#171c20",surface:"#222a2e",text:"#edf3e9",border:"#46534d",navSurface:"#202a2c"},ocean:{accent:"#167a72",background:"#e8f1ef",surface:"#f8fcfa",text:"#153b3a",border:"#c5d9d4",navSurface:"#edf6f3"},midnight:{accent:"#66d9df",background:"#101c2b",surface:"#17283a",text:"#eaf4ff",border:"#36516a",navSurface:"#1b3044"},terracotta:{accent:"#a64e37",background:"#f2e8dd",surface:"#fff9f1",text:"#402b27",border:"#ddc9b9",navSurface:"#f8eee4"},classic:{accent:"#4b5fc7",background:"#eef1f8",surface:"#ffffff",text:"#252b40",border:"#d4d9e8",navSurface:"#f5f6fc"},editorial:{accent:"#355a43",background:"#f4f0e6",surface:"#fffdf6",text:"#252b22",border:"#d7d4c8",navSurface:"#f9f6ed"}};
@@ -450,7 +450,7 @@ POST /api/skills/match</div><button class="btn small" id="copyApi">复制 API �
   $id("uiAccent").addEventListener("input",e=>{config.accent=e.target.value;update();});$id("uiBackground").addEventListener("input",e=>{config.background=e.target.value;update();});$id("uiSurface").addEventListener("input",e=>{config.surface=e.target.value;update();});$id("uiText").addEventListener("input",e=>{config.text=e.target.value;update();});$id("uiBorder").addEventListener("input",e=>{config.border=e.target.value;update();});$id("uiNavSurface").addEventListener("input",e=>{config.navSurface=e.target.value;update();});$id("uiLayout").addEventListener("change",e=>{config.layout=e.target.value;update();});$id("uiNav").addEventListener("change",e=>{config.nav=e.target.value;update();});$id("uiFont").addEventListener("change",e=>{config.font=e.target.value;update();});$id("uiMotionIntensity").addEventListener("input",e=>{config.intensity=Number(e.target.value);update();preview();});$id("uiMotionDuration").addEventListener("input",e=>{config.duration=Number(e.target.value);update();preview();});$id("uiReducedMotion").addEventListener("change",e=>{config.reduced=e.target.checked;update();});$id("replayUiMotion").addEventListener("click",preview);
   $id("resetUiStudio").addEventListener("click",()=>{config={...defaults};update();preview();});$id("restoreNavButton").addEventListener("click",()=>{if(document.body.dataset.nav==="hidden"){document.body.dataset.nav="left";$id("restoreNavButton").textContent="收起导航";}else{document.body.dataset.nav="hidden";$id("restoreNavButton").textContent="☰ 导航";}});
   apply();document.querySelectorAll("#resourceCards .resource-card").forEach((card,i)=>card.style.setProperty("--card-index",i));
- })();
+ });
  updateStats();updateFilterButtons();renderCards();
  if(state.chosen)renderDetail();else $("resourceDetail").hidden=true;
  $("connectionState").textContent="公开资源目录已载入";
