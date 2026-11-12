@@ -51,6 +51,8 @@ test('Logo Studio renders vetted model outputs; manual SVG editing and SVG expor
  await expect(page.locator('#aiStatus')).toContainText('已更新本地设计预览');
  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#downloadAI').click()]);
  const content=await readFile(await download.path(),'utf8');expect(content).toContain('DAVYLAB AI');expect(content).toContain('#aa22ff');
+ const [guideDownload]=await Promise.all([page.waitForEvent('download'),page.locator('#downloadBrandGuide').click()]);
+ const guide=await readFile(await guideDownload.path(),'utf8');expect(guide).toContain('#AA22FF');expect(guide).toContain('字体及素材授权');
  await page.locator('#saveAI').click();
  await expect(page.locator('#aiStatus')).toContainText('已保存在当前浏览器');
 });
