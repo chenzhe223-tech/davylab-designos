@@ -1,0 +1,62 @@
+name: Deploy DesignOS with Pages Functions
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'logo-studio/**'
+      - 'functions/api/logo/**'
+      - 'studio/**'
+      - 'scripts/build.mjs'
+      - '.github/workflows/deploy-logo-studio.yml'
+permissions:
+  contents: read
+jobs:
+  quality-and-deploy:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: davylab-designos-pages-production
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Validate static build and Logo Studio API tests
+        run: npm run check
+      - name: Install browser acceptance runner
+        run: npm install --no-save @playwright/test
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run real browser regression tests
+        run: npx playwright test
+      - name: Assert deployment secrets configured
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -z "$CF_TOKEN" ] || [ -z "$CF_ACCOUNT" ]; then
+            echo "::error::Cloudflare deployment not configured. Add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID secrets."
+            exit 1
+          fi
+      - name: Deploy entire Pages site together with root functions
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx --yes wrangler@4 pages deploy dist --project-name davylab-designos --branch main --commit-hash "$GITHUB_SHA" --commit-message "DesignOS Logo Studio validated deployment"
+      - name: Verify live Logo Studio and API route
+        run: |
+          set -e
+          curl --fail --silent --show-error --retry 3 https://davylab-designos.pages.dev/logo-studio/ | grep -q 'AI 原创设计工作台'
+          curl --fail --silent --show-error --retry 3 https://davylab-designos.pages.dev/logo-studio/ai-session.js | grep -q 'isSafeSvg'
+          STATUS=$(curl -s -o /tmp/logo-api.json -w "%{http_code}" -X POST https://davylab-designos.pages.dev/api/logo/generate -H 'content-type: application/json' --data '{"request":"Test DAVYLAB"}')
+          if [ "$STATUS" != "503" ] && [ "$STATUS" != "401" ] && [ "$STATUS" != "200" ]; then
+            echo "Unexpected Pages Function status $STATUS"
+            cat /tmp/logo-api.json
+            exit 1
+          fi
+          grep -q -E 'error|concepts' /tmp/logo-api.json
+          echo "Production route smoke: HTTP $STATUS (no live provider charge made)"
