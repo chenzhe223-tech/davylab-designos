@@ -31,7 +31,7 @@ export async function onRequestPost({request,env}){
   function validateSvg(svg){
     if(typeof svg!=='string'||svg.length>16000||!/^\s*<svg\b/i.test(svg)||!/</.test(svg))return false;
     const normalized=svg.replace(/xmlns=["']http:\/\/www\.w3\.org\/2000\/svg["']/g,'');
-    if(/<!DOCTYPE|<!ENTITY|<\/?(?:script|foreignObject|iframe|object|embed|image|use|animate|set|style|filter)\b|\bon[a-z]+\s*=|(?:href|src)\s*=|url\s*\(|javascript:|data:|https?:|@import/i.test(svg))return false;
+    if(/<!DOCTYPE|<!ENTITY|<\/?(?:script|foreignObject|iframe|object|embed|image|use|animate|set|style|filter)\b|\bon[a-z]+\s*=|(?:href|src)\s*=|url\s*\(|javascript:|data:|https?:|@import/i.test(normalized))return false;
     if(!/\bviewBox\s*=\s*["'][^"']+["']/.test(svg))return false;
     return true;
   }
