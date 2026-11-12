@@ -22,7 +22,7 @@
 <label><input type="checkbox" id="logoLegible" style="width:auto"> 24/32px 与深浅底可读性已人工检查</label>
 <label><input type="checkbox" id="logoOriginal" style="width:auto"> 图形原创差异性已人工审查</label>
 <label><input type="checkbox" id="logoVisual" style="width:auto"> SVG 与对外展示图片一致性已审核</label>
-</div><p id="qaSummary" aria-live="polite">尚未评分</p><button id="downloadReview">下载验收记录 JSON</button><p class="muted">自评通过不等同于商标注册或第三方法律意见；仅能证明审核人进行了相应检查。</p></section><section><h2>外部成果导入与验收</h2><p>将外部 Agent 输出的 SVG 文件导入 DesignOS。仅接受通过静态安全检查的 SVG，未完成商标和授权审查的文件不会标记为正式品牌资产。</p><label for="svgUpload">导入 SVG 文件</label><input id="svgUpload" type="file" accept=".svg,image/svg+xml"><div id="importStatus" role="status" aria-live="polite" class="muted">等待导入</div><div id="importPreview" class="preview" style="margin-top:14px;min-height:120px"></div><div class="actions"><button id="exportImported" disabled>下载已验证 SVG</button><button id="exportQA" disabled>下载 QA 报告</button></div></section></main><script>
+</div><p id="qaSummary" aria-live="polite">尚未评分</p><button id="downloadReview">下载验收记录 JSON</button><p class="muted">自评通过不等同于商标注册或第三方法律意见；仅能证明审核人进行了相应检查。</p></section><section><h2>外部成果导入与验收</h2><p>将外部 Agent 输出的 SVG 文件导入 DesignOS。仅接受通过静态安全检查的 SVG，未完成商标和授权审查的文件不会标记为正式品牌资产。</p><label for="svgUpload">导入 SVG 文件</label><input id="svgUpload" type="file" accept=".svg,image/svg+xml"><div id="importStatus" role="status" aria-live="polite" class="muted">等待导入</div><div id="importPreview" class="preview" style="margin-top:14px;min-height:120px"></div><div class="actions"><button id="exportImported" disabled>下载已验证 SVG</button><button id="editImported" disabled>转入站内精修</button><button id="exportQA" disabled>下载 QA 报告</button></div></section></main><script>
 const $=id=>document.getElementById(id);let current=[];let imported=null,qa=null,previewUrl=null;
 function text(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function brief(){return {request:$('brief').value.trim(),brand:$('brand').value.trim()||'DAVYLAB',tagline:$('tagline').value.trim(),type:$('type').value,style:$('style').value,color:$('color').value,usage:$('usage').value,mode:$('advanced').hidden?'quick':'advanced'}}
@@ -59,11 +59,12 @@ function validateSVG(source){
 $('svgUpload').addEventListener('change',async e=>{
  const f=e.target.files?.[0];if(!f)return;const source=await f.text();qa=validateSVG(source);imported=qa.pass?source:null;
  $('importStatus').textContent=qa.pass?'静态结构检查通过；人工品牌审查仍待完成':'文件未通过检查：'+qa.findings.join('；');
- $('exportImported').disabled=!qa.pass;$('exportQA').disabled=false;
+ $('exportImported').disabled=!qa.pass;$('editImported').disabled=!qa.pass;$('exportQA').disabled=false;
  if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=null}
  $('importPreview').replaceChildren();
  if(qa.pass){previewUrl=URL.createObjectURL(new Blob([source],{type:'image/svg+xml'}));const img=document.createElement('img');img.src=previewUrl;img.alt='导入的 SVG 预览';img.style.maxWidth='100%';img.style.maxHeight='250px';$('importPreview').append(img)}
 });
+$('editImported').onclick=()=>{if(imported)try{window.DAVYLAB_LOGO_SESSION.loadImported(imported,'外部 Agent Logo')}catch(err){$('importStatus').textContent=err.message}};
 $('exportImported').onclick=()=>{if(imported)file('davylab-reviewed-structure.svg',imported,'image/svg+xml')};
 $('exportQA').onclick=()=>{if(qa)file('logo-import-qa.json',JSON.stringify({...qa,productionReady:false},null,2),'application/json')};
 </script><script type="module" src="./ai-session.js"></script><script type="module" src="./quality-gate.js"></script><script type="module" src="./visual-editor.js"></script></body></html>
