@@ -5,7 +5,7 @@ const note=(message)=>{$('aiStatus').textContent=message};
 function getBrief(){const advanced=!$('advanced').hidden;return {request:$('brief').value.trim(),brand:$('brand').value.trim(),tagline:$('tagline').value.trim(),type:advanced?$('type').value:'auto',style:advanced?$('style').value:'auto',color:advanced?$('color').value:'auto',usage:advanced?$('usage').value:'all'}}
 function isSafeSvg(svg){
   const normalized=typeof svg==='string'?svg.replace(/xmlns=["']http:\/\/www\.w3\.org\/2000\/svg["']/g,''):svg;
-  if(typeof svg!=='string'||svg.length>16000||/<!DOCTYPE|<!ENTITY|<\/?(?:script|foreignObject|iframe|object|embed|image|use|animate|set|style|filter)\b|\bon[a-z]+\s*=|(?:href|src)\s*=|url\s*\(|javascript:|data:|https?:|@import/i.test(svg))return false;
+  if(typeof svg!=='string'||svg.length>16000||/<!DOCTYPE|<!ENTITY|<\/?(?:script|foreignObject|iframe|object|embed|image|use|animate|set|style|filter)\b|\bon[a-z]+\s*=|(?:href|src)\s*=|url\s*\(|javascript:|data:|https?:|@import/i.test(normalized))return false;
   const doc=new DOMParser().parseFromString(svg,'image/svg+xml');
   if(doc.querySelector('parsererror')||doc.documentElement.localName!=='svg'||!doc.documentElement.getAttribute('viewBox'))return false;
   for(const el of doc.querySelectorAll('*'))for(const attr of el.attributes){if(attr.name.toLowerCase().startsWith('on')||(/url\s*\(|javascript:|data:|https?:|@import/i.test(attr.value)&&attr.name!=='xmlns'))return false}
