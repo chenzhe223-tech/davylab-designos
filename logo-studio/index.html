@@ -4,7 +4,7 @@
 <section><div class="tabs"><button id="quickBtn" aria-pressed="true">一句话生成</button><button id="advancedBtn" aria-pressed="false">高级自定义</button></div>
 <label for="brief">品牌需求</label><textarea id="brief">为 DAVYLAB 设计一个极简、现代、具有创造力的科技品牌 Logo</textarea>
 <div id="advanced" hidden><div class="grid"><div><label for="brand">品牌名称</label><input id="brand" value="DAVYLAB"></div><div><label for="tagline">品牌口号</label><input id="tagline" value="把想法，做成能用的工具"></div><div><label for="type">标志类型</label><select id="type"><option value="combination">组合标志</option><option value="wordmark">纯文字</option><option value="lettermark">字母标志</option><option value="pictorial">具象图形</option><option value="abstract">抽象几何</option><option value="mascot">吉祥物</option><option value="emblem">徽章</option></select></div><div><label for="style">风格</label><select id="style"><option>极简现代</option><option>几何理性</option><option>精致高级</option><option>创意活力</option><option>经典复古</option></select></div><div><label for="color">品牌主色</label><input id="color" type="color" value="#2563ff"></div><div><label for="usage">主要用途</label><select id="usage"><option>全场景</option><option>App / 网站</option><option>实体印刷</option><option>品牌系统</option></select></div></div></div>
-<div class="actions"><button class="primary" id="generate">生成三套概念</button><button id="save">保存当前配置</button></div><p class="muted">概念生成采用确定性 SVG 模板，不冒充 AI 原创生成；可导出完整任务给外部 Agent 进行真正的品牌创作。</p></section>
+<div class="actions"><button class="primary" id="generate">生成三套概念</button><button id="save">保存当前配置</button></div><p id="conceptStatus" class="muted" role="status" aria-live="polite"></p><p class="muted">概念生成采用确定性 SVG 模板，不冒充 AI 原创生成；可导出完整任务给外部 Agent 进行真正的品牌创作。</p></section>
 <section><h2>AI 原创设计工作台</h2><p>这里使用真实模型响应，和上方离线 SVG 概念模板不同。可在同一页面生成、精修、编辑和导出。生产环境必须配置授权模型或使用临时个人密钥。</p>
 <div class="grid"><div><label for="accessToken">工作台访问令牌（如管理员已设置）</label><input id="accessToken" type="password" autocomplete="off" placeholder="可选；不保存"></div><div><label for="providerKey">临时 OpenAI API Key（可选）</label><input id="providerKey" type="password" autocomplete="off" placeholder="仅用于本次请求，不保存"></div></div>
 <div class="actions"><button id="aiGenerate" class="primary">调用真实 AI 生成三套方案</button><button id="saveAI">保存本地作品</button><button id="restoreAI">恢复本地作品</button></div>
@@ -26,9 +26,43 @@
 const $=id=>document.getElementById(id);let current=[];let imported=null,qa=null,previewUrl=null;
 function text(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function brief(){return {request:$('brief').value.trim(),brand:$('brand').value.trim()||'DAVYLAB',tagline:$('tagline').value.trim(),type:$('type').value,style:$('style').value,color:$('color').value,usage:$('usage').value,mode:$('advanced').hidden?'quick':'advanced'}}
-function svg(i){const b=brief(),name=text(b.brand.slice(0,40)),c=b.color;const marks=[`<path d="M25 20h50a40 40 0 0 1 0 80H25V20zm25 20v40h23a20 20 0 0 0 0-40z" fill="${c}" fill-rule="evenodd"/>`,`<path d="M60 12 108 60 60 108 12 60Z" fill="none" stroke="${c}" stroke-width="16"/><circle cx="60" cy="60" r="12" fill="${c}"/>`,`<circle cx="60" cy="60" r="43" fill="none" stroke="${c}" stroke-width="15"/><path d="M38 75 60 34 82 75" fill="none" stroke="${c}" stroke-width="12" stroke-linecap="round"/>`];return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 160" role="img" aria-label="${name} logo concept"><g transform="translate(14 15)">${marks[i]}</g><text x="145" y="91" font-family="Arial,sans-serif" font-weight="700" font-size="27" fill="#19221e">${name}</text></svg>`}
+
+/* Deterministic prompt-responsive SVG sketches. No remote inference or AI claim. */
+function promptSeed(value){let h=2166136261;for(const c of value){h^=c.codePointAt(0);h=Math.imul(h,16777619)}return h>>>0}
+function conceptBrief(){
+ const b=brief(),s=b.request||'',brandMatch=s.match(/(?:品牌(?:名称|名)?|brand\s*name)\s*[：:]\s*([^，,。；;\n]{2,28})/i)||s.match(/(?:为|给)\s*["“「]?([^"”」\s，,。]{2,24})["”」]?\s*(?:设计|制作|打造)/);
+ const brand=(b.mode==='quick'&&brandMatch?brandMatch[1]:b.brand).trim().slice(0,28)||'DAVYLAB';
+ const palette=/咖啡|coffee|烘焙|面包|餐饮|茶/.test(s)?['#765343','#C58C59','#355948']:/环保|自然|森林|生态|绿色|green/i.test(s)?['#275E4F','#6B9275','#204338']:/儿童|亲子|童趣|kids|play/i.test(s)?['#EC765E','#E4A63A','#467BBE']:/奢华|高端|珠宝|精品|luxury/i.test(s)?['#A97B40','#212B32','#8B6377']:/科技|软件|ai|智能|数字|tech/i.test(s)?['#286DFF','#5563C1','#1A878C']:[b.color,'#64739C','#B16B85'];
+ return {...b,brand,palette,seed:promptSeed([s,brand,b.style,b.type,b.color].join('|')),topic:s||'未填写需求'};
+}
+function svg(i){
+ const b=conceptBrief(),c=b.mode==='advanced'?b.color:b.palette[i],name=text(b.brand),angle=(b.seed%55)+i*26;
+ const shapeType=(b.seed+i*7)%5,rotate=(b.seed%40-20)+(i===1?22:0);
+ const ornament=[
+   '<path d="M19 19H61a37 37 0 0 1 0 74H19Z M39 39V73H60a17 17 0 0 0 0-34Z" fill-rule="evenodd"/>',
+   '<path d="M50 10 90 50 50 90 10 50Z" fill="none" stroke="currentColor" stroke-width="11"/><circle cx="50" cy="50" r="12"/>',
+   '<path d="M50 8A42 42 0 1 1 8 50" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/><path d="M26 72 50 23 74 72" fill="none" stroke="currentColor" stroke-width="11" stroke-linejoin="round"/>',
+   '<path d="M50 7 63 35 94 37 70 57 78 88 50 72 22 88 30 57 6 37 37 35Z"/>',
+   '<path d="M8 70Q50 -12 92 70Q50 112 8 70Z" fill="none" stroke="currentColor" stroke-width="12"/><circle cx="50" cy="57" r="13"/>'
+ ];
+ const variant=i===0?shapeType:i===1?(shapeType+2)%5:(shapeType+4)%5;
+ const radial=i===1?'<circle cx="50" cy="50" r="47" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".3"/>':'';
+ const minor=i===2?'<circle cx="81" cy="14" r="5" fill="currentColor" opacity=".66"/>':'';
+ const motif='<g transform="translate(14 25)" style="color:'+c+'" fill="'+c+'"><g transform="rotate('+rotate+' 50 50)">'+ornament[variant]+radial+minor+'</g></g>';
+ const wordColor='#202938';
+ return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 160" role="img" aria-label="'+name+' concept '+(i+1)+'"><title>'+name+' / concept '+(i+1)+'</title>'+motif+'<text x="140" y="83" font-family="Arial,sans-serif" font-size="'+(b.brand.length>15?19:26)+'" font-weight="'+(i===1?500:700)+'" letter-spacing="'+(i===2?2:0)+'" fill="'+wordColor+'">'+name+'</text><text x="141" y="107" font-family="Arial,sans-serif" font-size="9" letter-spacing="3" fill="#657188">IDENTITY STUDY '+(i+1)+'</text></svg>';
+}
+
 function file(name,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
-function render(){current=[0,1,2].map(svg);$('results').innerHTML=current.map((s,i)=>`<article><div class="preview">${s}</div><h3>${['01 · Forward','02 · Geometry','03 · Orbit'][i]}</h3><p class="muted">可编辑 SVG 概念模板 · 未经商标核查</p><button data-export="${i}">导出 SVG</button></article>`).join('');$('results').querySelectorAll('[data-export]').forEach(btn=>btn.addEventListener('click',()=>file('davylab-logo-concept-'+(Number(btn.dataset.export)+1)+'.svg',current[Number(btn.dataset.export)],'image/svg+xml')))}
+function render(){
+ const b=conceptBrief();
+ if(!b.topic||b.topic==='未填写需求'){const status=$('conceptStatus');if(status){status.textContent='请先输入品牌设计需求。';status.dataset.state='error'}return}
+ current=[0,1,2].map(svg);
+ $('results').innerHTML=current.map((s,i)=>'<article><div class="preview">'+s+'</div><h3>'+['01 · Signature','02 · Geometry','03 · Symbol'][i]+'</h3><p class="muted">根据当前需求生成的离线 SVG 概念 · 非 AI 原创 · 未经商标核查</p><button data-export="'+i+'">导出 SVG</button></article>').join('');
+ $('results').querySelectorAll('[data-export]').forEach(btn=>btn.addEventListener('click',()=>file('davylab-logo-concept-'+(Number(btn.dataset.export)+1)+'.svg',current[Number(btn.dataset.export)],'image/svg+xml')));
+ const status=$('conceptStatus');if(status){status.dataset.state='success';status.textContent='已根据「'+b.topic.slice(0,38)+(b.topic.length>38?'…':'')+'」更新 3 套离线 SVG 概念（非 AI）。';}
+ $('results').dispatchEvent(new CustomEvent('logo-concepts-updated',{bubbles:true,detail:{brand:b.brand,seed:b.seed}}));
+}
 const agentGuidance={
  'ChatGPT':'优先使用平台可用的图像生成工具完成高保真方案；SVG 必须来自可编辑矢量制作流程；若工具不能输出矢量文件，明确提供可执行的 SVG 重建任务。',
  'Claude':'按结构化文档和实际支持的产物格式组织工作；不假设具有图像生成或文件写入权限，若受限则提交清晰的矢量设计规范供下一工具执行。',
