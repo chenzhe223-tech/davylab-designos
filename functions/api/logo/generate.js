@@ -70,14 +70,14 @@ export async function onRequestPost({request,env}){
   const revise=data.mode==='refine';
   if(revise&&(!data.sourceSvg||rejectSvg(data.sourceSvg)||!clean(data.revision,500)))return reply({error:'valid source SVG and revision instruction required'},400);
   const serverKey=provider==='deepseek'?env.DEEPSEEK_API_KEY:env.OPENAI_API_KEY;
-  if(serverKey){
+  const temporaryKey=request.headers.get('X-Provider-Key')||'';
+  // A user-provided key must remain usable even when the platform also has a managed key.
+  // Never spend platform funds without an explicitly configured access token.
+  if(!temporaryKey&&serverKey){
     if(!env.LOGO_STUDIO_ACCESS_TOKEN)return reply({error:'server-funded generation disabled without access token'},503);
     if(request.headers.get('X-Logo-Access-Token')!==env.LOGO_STUDIO_ACCESS_TOKEN)return reply({error:'studio access token required'},401);
-  }else if(env.LOGO_STUDIO_ACCESS_TOKEN&&request.headers.get('X-Logo-Access-Token')!==env.LOGO_STUDIO_ACCESS_TOKEN){
-    return reply({error:'studio access token required'},401);
   }
-  const temporaryKey=request.headers.get('X-Provider-Key')||'';
-  const apiKey=serverKey||temporaryKey;
+  const apiKey=temporaryKey||serverKey;
   if(!apiKey||apiKey.length>300)return reply({error:'configure '+(provider==='deepseek'?'DEEPSEEK_API_KEY':'OPENAI_API_KEY')+' secret or supply a temporary provider key'},503);
   const input={
     request:clean(data.request,1500),brand:clean(data.brand,80),tagline:clean(data.tagline,120),
@@ -89,7 +89,7 @@ export async function onRequestPost({request,env}){
   const user=JSON.stringify({task:revise?'Refine the single SVG.':'Create three distinct original production-grade vector directions and a coherent brand strategy.',brief:input});
   const options={model,messages:[{role:'system',content:system},{role:'user',content:user}],
     response_format:{type:'json_object'},temperature:0.65,stream:false};
-  if(provider==='deepseek')options.max_tokens=10500;
+  if(provider==='deepseek'){options.max_tokens=10500;options.thinking={type:'disabled'};}
   else options.max_completion_tokens=10500;
   let upstream;
   try{

@@ -19,6 +19,16 @@ test('server funded provider cannot run without an access gate',async()=>{
  const r=await onRequestPost({request:makeReq(base),env:{OPENAI_API_KEY:'test'}});
  assert.equal(r.status,503);assert.match((await r.json()).error,/access token/);
 });
+
+test('user BYOK overrides configured platform key without consuming its quota',async()=>{
+ await withFetch(async(url,options)=>{
+  assert.equal(options.headers.authorization,'Bearer user-own-key');
+  return new Response(JSON.stringify({choices:[{finish_reason:'stop',message:{content:JSON.stringify({strategy:{},concepts:concepts()})}}]}),{status:200});
+ },async()=>{
+  const r=await onRequestPost({request:makeReq(base,{'X-Provider-Key':'user-own-key'}),env:{OPENAI_API_KEY:'platform-paid-key',LOGO_STUDIO_ACCESS_TOKEN:'admin'}});
+  assert.equal(r.status,200);
+ });
+});
 test('browser cross-origin request is rejected',async()=>{
  const r=await onRequestPost({request:makeReq(base,{origin:'https://attacker.example'}),env:{OPENAI_API_KEY:'test'}});
  assert.equal(r.status,403);

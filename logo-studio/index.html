@@ -101,4 +101,23 @@ $('svgUpload').addEventListener('change',async e=>{
 $('editImported').onclick=()=>{if(imported)try{window.DAVYLAB_LOGO_SESSION.loadImported(imported,'外部 Agent Logo')}catch(err){$('importStatus').textContent=err.message}};
 $('exportImported').onclick=()=>{if(imported)file('davylab-reviewed-structure.svg',imported,'image/svg+xml')};
 $('exportQA').onclick=()=>{if(qa)file('logo-import-qa.json',JSON.stringify({...qa,productionReady:false},null,2),'application/json')};
-</script><script type="module" src="./ai-session.js"></script><script type="module" src="./quality-gate.js"></script><script type="module" src="./visual-editor.js"></script><script type="module" src="./brand-guide.js"></script><script type="module" src="./package.js"></script><script type="module" src="./qa-loop.js"></script><script type="module" src="./qa-ai-review.js"></script><script type="module" src="./editorial-ui.js"></script><script type="module" src="./production-upgrade.js"></script></body></html>
+</script><script type="module" src="./ai-session.js"></script><script type="module" src="./quality-gate.js"></script><script type="module" src="./visual-editor.js"></script><script type="module" src="./brand-guide.js"></script><script type="module" src="./package.js"></script><script type="module" src="./qa-loop.js"></script><script type="module" src="./qa-ai-review.js"></script><script type="module" src="./editorial-ui.js"></script><script type="module" src="./production-upgrade.js"></script><script>
+/* Design Agent 4.0 P0: receive a user-confirmed brief from the same-origin project workspace. */
+window.addEventListener('load',function(){
+  if(new URLSearchParams(location.search).get('source')!=='design-agent4')return;
+  let handoff;try{handoff=JSON.parse(localStorage.getItem('davylab-design-agent-handoff-v1')||'null')}catch{return}
+  if(!handoff||!handoff.direction||!handoff.strategy)return;
+  const s=handoff.strategy,d=handoff.direction,brief=document.getElementById('brief');
+  if(brief)brief.value=['为 '+(s.brand_name||'该品牌')+' 继续设计正式 Logo。','已确认方向：'+d.name+'。',d.rationale,d.symbol,'定位：'+s.positioning,'目标受众：'+s.audience,'品牌气质：'+s.personality].filter(Boolean).join('；').slice(0,1500);
+  for(const [id,val] of [['brand',s.brand_name],['tagline',s.tagline]]){const el=document.getElementById(id);if(el)el.value=String(val||'')}
+  let imported=false;
+  if(typeof d.svg==='string'&&d.svg.startsWith('<svg')&&window.DAVYLAB_LOGO_SESSION?.loadImported){
+    try{window.DAVYLAB_LOGO_SESSION.loadImported(d.svg,'Design Agent 方案 '+d.id+' · '+d.name);imported=true}catch{}
+  }
+  const notice=document.createElement('p');notice.setAttribute('role','status');notice.style.cssText='margin:12px auto;padding:12px 18px;max-width:1200px;border:1px solid #accdb9;border-radius:12px;color:#205b43;background:#eff7ef;font-size:13px;';
+  notice.textContent='已接收 Design Agent 4.0 的品牌策略与 '+d.name+' 方向'+(imported?'，并将矢量稿导入精修台。':'。请连接真实模型以开始正式 Logo 生产。');
+  document.querySelector('main')?.prepend(notice);
+  localStorage.removeItem('davylab-design-agent-handoff-v1');
+});
+</script>
+</body></html>

@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'logo-studio/**'
+      - 'design-agent/**'
+      - 'functions/api/brand/**'
       - 'functions/api/logo/**'
       - 'studio/index.html'
       - '.github/workflows/deploy-logo-studio.yml'
