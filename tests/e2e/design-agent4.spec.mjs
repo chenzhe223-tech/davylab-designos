@@ -44,7 +44,7 @@ test('Provider error is shown without simulated results',async({page})=>{
   await page.goto('/design-agent/');
   await page.locator('#brief').fill('为一家面向家庭的海岛度假酒店设计品牌');
   await page.locator('#runPlan').click();
-  await expect(page.locator('#planFeedback')).toContainText('Key');
+  await expect(page.locator('#planFeedback')).toContainText('设计暂未完成');
   await expect(page.locator('#conceptGrid .concept')).toHaveCount(0);
 });
 for(const width of [375,390,430,1440]){
@@ -68,6 +68,6 @@ test('Mobile starts with a single obvious action and hides premature workflow',a
  await page.locator('#brief').fill('我想设计一个面向家庭的高品质海岛度假品牌');
  await page.route('**/api/brand/plan',route=>route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:'请先配置 DeepSeek API Key'})}));
  await page.locator('#runPlan').click();
- await expect(page.locator('.advanced-settings')).toHaveAttribute('open','');
- await expect(page.locator('#planFeedback')).toContainText('填写 DeepSeek API Key');
+ await expect(page.locator('.advanced-settings')).not.toHaveAttribute('open','');
+ await expect(page.locator('#planFeedback')).toContainText('设计暂未完成');
 });
