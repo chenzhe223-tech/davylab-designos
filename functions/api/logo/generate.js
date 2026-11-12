@@ -29,9 +29,9 @@ export async function onRequestPost({request,env}){
   const concepts=parsed.concepts;
   if(!Array.isArray(concepts)||concepts.length!==(revise?1:3))return respond({error:'AI did not return the required number of concepts'},422);
   function validateSvg(svg){
-    if(typeof svg!=='string'||svg.length>16000||!/^\\s*<svg\\b/i.test(svg)||!/</.test(svg))return false;
-    if(/<!DOCTYPE|<!ENTITY|<\\/?(?:script|foreignObject|iframe|object|embed|image|use|animate|set|style|filter)\\b|\\bon[a-z]+\\s*=|(?:href|src)\\s*=|url\\s*\\(|javascript:|data:|https?:|@import/i.test(svg))return false;
-    if(!/\\bviewBox\\s*=\\s*["'][^"']+["']/.test(svg))return false;
+    if(typeof svg!=='string'||svg.length>16000||!/^\s*<svg\b/i.test(svg)||!/</.test(svg))return false;
+    if(/<!DOCTYPE|<!ENTITY|<\/?(?:script|foreignObject|iframe|object|embed|image|use|animate|set|style|filter)\b|\bon[a-z]+\s*=|(?:href|src)\s*=|url\s*\(|javascript:|data:|https?:|@import/i.test(svg))return false;
+    if(!/\bviewBox\s*=\s*["'][^"']+["']/.test(svg))return false;
     return true;
   }
   if(!concepts.every(x=>x&&validateSvg(x.svg)))return respond({error:'AI result rejected by SVG safety gate; retry with a different brief'},422);
