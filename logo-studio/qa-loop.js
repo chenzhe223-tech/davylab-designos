@@ -13,7 +13,6 @@ const dimensions=[
 let baseline=null;
 let approvedAsset=null;
 const history=[];
-const ESC=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;':'&quot;'}[c]));
 const svgNow=()=>el('svgEditor').value.trim();
 async function hash(s){if(!s)return null;const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return Array.from(new Uint8Array(d),x=>x.toString(16).padStart(2,'0')).join('')}
 function score(){return window.DAVYLAB_LOGO_QA()}
