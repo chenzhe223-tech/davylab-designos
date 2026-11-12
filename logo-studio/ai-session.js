@@ -69,3 +69,5 @@ $('downloadPNG').addEventListener('click',async()=>{
 });
 $('saveAI').addEventListener('click',()=>{if(!state.concepts.length){note('尚无 AI 设计可保存');return}try{localStorage.setItem('davylab-logo-ai-archive-v1',JSON.stringify({concepts:state.concepts,selected:state.selected,updatedAt:new Date().toISOString()}));note('已保存在当前浏览器（不是云端同步）')}catch{note('浏览器存储空间不足，建议导出 SVG 备份')}});
 $('restoreAI').addEventListener('click',()=>{try{const record=JSON.parse(localStorage.getItem('davylab-logo-ai-archive-v1')||'null');if(!record||!record.concepts?.length||!record.concepts.every(c=>isSafeSvg(c.svg)))throw new Error('没有有效归档');state.concepts=record.concepts;state.selected=Math.max(0,Math.min(record.selected||0,state.concepts.length-1));render();note('已恢复本地方案')}catch(err){note('无法恢复：'+err.message)}});
+
+window.DAVYLAB_LOGO_SESSION={loadImported(svg,name='外部 Agent 设计'){if(!isSafeSvg(svg))throw new Error('SVG 安全校验失败');state.concepts=[{name,rationale:'已导入的外部 Agent 交付成果，非当前站内模型生成。',svg}];state.selected=0;render();note('外部 SVG 已进入在线精修工作台，商标和许可审查仍待完成。')}};
