@@ -4,10 +4,11 @@ const respond=(obj,status=200)=>new Response(JSON.stringify(obj),{status,headers
 const safeText=(v,n=600)=>String(v||'').slice(0,n);
 export async function onRequestPost({request,env}){
   const origin=request.headers.get('origin');
-  if(origin && new URL(origin).origin!==new URL(request.url).origin)return respond({error:'cross-origin forbidden'},403);
+  if(origin){let valid=false;try{valid=new URL(origin).origin===new URL(request.url).origin}catch{}if(!valid)return respond({error:'cross-origin forbidden'},403)}
   const length=Number(request.headers.get('content-length')||0);
   if(length>12000)return respond({error:'request too large'},413);
   const token=request.headers.get('X-Logo-Access-Token')||'';
+  if(env.OPENAI_API_KEY && !env.LOGO_STUDIO_ACCESS_TOKEN)return respond({error:'Server model is disabled until LOGO_STUDIO_ACCESS_TOKEN is configured'},503);
   if(env.LOGO_STUDIO_ACCESS_TOKEN && token!==env.LOGO_STUDIO_ACCESS_TOKEN)return respond({error:'access token required'},401);
   // If platform key is absent, user can provide a temporary per-request key; it is never persisted here.
   const key=env.OPENAI_API_KEY||request.headers.get('X-Provider-Key');
