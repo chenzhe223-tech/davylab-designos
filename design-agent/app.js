@@ -63,9 +63,10 @@ function renderConcepts(){
     card.className='concept'+(selected?' chosen':'');
     const real=validSVG(d.svg);
     const logo=real?'<img class="vectorLogo" alt="AI 生成的可编辑 SVG Logo" />':'<div class="monogram" aria-hidden="true">'+escapeHtml(brand.slice(0,1).toUpperCase())+'</div><div class="wordmark">'+brand+'</div>';
-    card.innerHTML='<div class="art" style="'+style+'"><div class="artlogo">'+logo+'</div><div class="mockup"><div class="mock-nav"><span>'+brand+'</span><span>DISCOVER&nbsp;&nbsp; JOURNAL&nbsp;&nbsp; CONTACT</span></div><div class="mock-body"><div><strong>'+headline+'</strong><small>'+escapeHtml(d.positioning||'品牌视觉应用意向')+'</small><br><span class="mock-pill">EXPLORE</span></div><div class="mock-photo"></div></div></div></div><div class="concept-info"><div class="kicker">DIRECTION '+escapeHtml(d.id||'ABC'[i])+'</div><h3>方案 '+escapeHtml(d.id||'ABC'[i])+' · '+title+'</h3><p>'+rationale+'</p><div class="swatches">'+colors.map(c=>'<i style="background:'+c+'"></i>').join('')+'</div><div class="labelnotice">'+(real?'真实模型矢量图 · 场景模拟':'排版/场景模拟 · 非正式 Logo')+'</div><button type="button" class="btn '+(selected?'primary':'')+'" data-select="'+i+'">'+(selected?'✓ 已选定':'选择此方向')+'</button></div>';
+    card.innerHTML='<div class="art" style="'+style+'"><div class="artlogo">'+logo+'</div><div class="mockup"><div class="mock-nav"><span>'+brand+'</span><span>DISCOVER&nbsp;&nbsp; JOURNAL&nbsp;&nbsp; CONTACT</span></div><div class="mock-body"><div><strong>'+headline+'</strong><small>'+escapeHtml(d.positioning||'品牌视觉应用意向')+'</small><br><span class="mock-pill">EXPLORE</span></div><div class="mock-photo"></div></div></div></div><div class="concept-info"><div class="kicker">DIRECTION '+escapeHtml(d.id||'ABC'[i])+'</div><h3>方案 '+escapeHtml(d.id||'ABC'[i])+' · '+title+'</h3><p>'+rationale+'</p><div class="swatches">'+colors.map(c=>'<i style="background:'+c+'"></i>').join('')+'</div><div class="labelnotice">'+(real?'真实模型矢量图 · 场景模拟':'排版/场景模拟 · 非正式 Logo')+'</div><button type="button" class="btn '+(selected?'primary':'')+'" data-select="'+i+'">'+(selected?'✓ 已选定':'选择此方向')+'</button><button type="button" class="btn edit-direction" data-edit="'+i+'">编辑此方向</button></div>';
     if(real){const url=URL.createObjectURL(new Blob([d.svg],{type:'image/svg+xml'}));imageURLs.push(url);card.querySelector('.vectorLogo').src=url;}
     card.querySelector('[data-select]').addEventListener('click',()=>{p.selected=i;save(true);render();feedback('vectorFeedback','已选择方案 '+d.id+' · '+d.name+'；可进入双轨生产。');});
+    card.querySelector('[data-edit]').addEventListener('click',()=>openDirectionEditor(i));
     host.append(card);
   });
 }
@@ -171,6 +172,35 @@ function exportProject(){
   const blob=new Blob([JSON.stringify({schema:'davylab-design-agent-4-p0',exported_at:new Date().toISOString(),project:copyOfProject},null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='DAVYLAB-brand-'+(p.strategy?.brand_name||'project').replace(/[^a-zA-Z0-9_-]/g,'-')+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),4000);
 }
+
+let editingIndex=-1;
+function openDirectionEditor(index){
+  if(!p.directions[index])return;
+  editingIndex=index;const d=p.directions[index];
+  for(const k of ['name','rationale','symbol','typography','headline'])$('d_'+k).value=d[k]||'';
+  $('d_palette').value=(d.palette||[]).join(', ');
+  $('directionError').textContent='';
+  $('directionDialog').showModal();
+}
+$('cancelDirection').addEventListener('click',()=>$('directionDialog').close());
+$('directionForm').addEventListener('submit',event=>{
+  event.preventDefault();
+  if(editingIndex<0||!p.directions[editingIndex])return;
+  const colors=$('d_palette').value.split(',').map(v=>v.trim());
+  if(colors.length!==4||colors.some(v=>!/^#[0-9a-fA-F]{6}$/.test(v))){
+    $('directionError').textContent='请填写四个合法的 HEX 色值，例如 #F4F1E9, #234536, #BDA882, #D5DCD2';return;
+  }
+  const name=$('d_name').value.trim(),rationale=$('d_rationale').value.trim();
+  if(!name||!rationale){$('directionError').textContent='方向名称与设计理由不能为空';return}
+  if(p.directions.some((d,i)=>i!==editingIndex&&d.name===name)){$('directionError').textContent='三套方向不能使用相同名称';return}
+  const d=p.directions[editingIndex];
+  for(const k of ['name','rationale','symbol','typography','headline'])d[k]=cap($('d_'+k).value,450);
+  d.palette=colors.map(v=>v.toUpperCase());
+  if(p.vectors){for(const x of p.directions)delete x.svg;p.vectors=false;}
+  save(true);render();$('directionDialog').close();
+  feedback('vectorFeedback','已保存方向修改；如曾生成 SVG，需重新生成以确保素材与方案一致。');
+});
+
 $('runPlan').addEventListener('click',plan);
 $('loadDemo').addEventListener('click',demo);
 $('saveProject').addEventListener('click',()=>{p.brief=$('brief').value.trim();applyPendingInputs();save()});
