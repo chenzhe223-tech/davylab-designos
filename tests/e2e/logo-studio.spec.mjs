@@ -44,11 +44,13 @@ test('Logo Studio renders vetted model outputs; manual SVG editing and SVG expor
  await expect(page.locator('#aiResults article')).toHaveCount(3);
  await page.locator('#aiResults article').nth(1).getByRole('button').click();
  await expect(page.locator('#selectedName')).toContainText('Concept 2');
- await page.locator('#svgEditor').fill(svg.replace('DAVYLAB','DAVYLAB AI'));
+ await page.locator('#wordmarkEdit').fill('DAVYLAB AI');
+ await page.locator('#colorEdit').fill('#aa22ff');
+ await page.locator('#applyVisual').click();
  await page.locator('#applySvg').click();
  await expect(page.locator('#aiStatus')).toContainText('已更新本地设计预览');
  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#downloadAI').click()]);
- const content=await readFile(await download.path(),'utf8');expect(content).toContain('DAVYLAB AI');
+ const content=await readFile(await download.path(),'utf8');expect(content).toContain('DAVYLAB AI');expect(content).toContain('#aa22ff');
  await page.locator('#saveAI').click();
  await expect(page.locator('#aiStatus')).toContainText('已保存在当前浏览器');
 });
