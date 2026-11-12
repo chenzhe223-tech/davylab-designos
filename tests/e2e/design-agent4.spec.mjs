@@ -57,3 +57,17 @@ for(const width of [375,390,430,1440]){
     await expect(page.locator('#conceptGrid .concept')).toHaveCount(3);
   });
 }
+test('Mobile starts with a single obvious action and hides premature workflow',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('/design-agent/');
+ await expect(page.getByRole('button',{name:'开始设计 →'})).toBeVisible();
+ await expect(page.getByText('你只需要做三件事')).toBeVisible();
+ await expect(page.locator('#concepts')).toBeHidden();
+ await expect(page.locator('#production')).toBeHidden();
+ await expect(page.locator('#strategy')).toBeHidden();
+ await page.locator('#brief').fill('我想设计一个面向家庭的高品质海岛度假品牌');
+ await page.route('**/api/brand/plan',route=>route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:'请先配置 DeepSeek API Key'})}));
+ await page.locator('#runPlan').click();
+ await expect(page.locator('.advanced-settings')).toHaveAttribute('open','');
+ await expect(page.locator('#planFeedback')).toContainText('填写 DeepSeek API Key');
+});
