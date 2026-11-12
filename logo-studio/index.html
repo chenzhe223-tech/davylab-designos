@@ -32,7 +32,7 @@ function validateSVG(source){
    if(prohibited.has(el.localName))findings.push('禁止元素: '+el.localName);
    for(const attr of [...el.attributes]){
      const k=attr.name.toLowerCase(),v=attr.value;
-     if(k.startsWith('on')||k==='href'||k.endsWith(':href')||k==='style'||/url\s*\(|javascript:|data:|https?:|@import/i.test(v))findings.push('不安全属性: '+attr.name);
+     if(k.startsWith('on')||k==='href'||k.endsWith(':href')||k==='style'||(/url\s*\(|javascript:|data:|https?:|@import/i.test(v)&&k!=='xmlns'))findings.push('不安全属性: '+attr.name);
    }
  }
  if(!doc.documentElement.getAttribute('viewBox'))findings.push('缺少 viewBox');
