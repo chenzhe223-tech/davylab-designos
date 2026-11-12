@@ -46,6 +46,13 @@ A Looseleaf Paper-inspired resource center is available at `/resources/`. It cat
 
 Agent discovery protocol: see [resources/agent-discovery.md](resources/agent-discovery.md). The DesignOS Render API provides read-only `GET /api/skills`, `GET /api/skills/{id}`, and `POST /api/skills/match` endpoints. Matching is deterministic keyword ranking and does not grant access to private source files or authorize external actions.
 
+
+## Logo Studio · live AI-assisted brand identity (release candidate)
+
+The new `/logo-studio/` route offers a one-sentence quick brief, advanced brand controls, three clearly marked **offline SVG templates**, and an independently triggered **real AI generation** workflow at `POST /api/logo/generate` (Cloudflare Pages Function). Model-generated concepts can be refined by instruction or no-code SVG wordmark/color/font-size edits, exported to SVG/PNG and saved locally. Full agent-targeted handoffs support ChatGPT, Claude, WorkBuddy, Qwen, Kimi, GLM, Gemini and Cursor. External agents are not executed by exporting instructions.
+
+The API needs either a temporary user-supplied provider key or a server `OPENAI_API_KEY` **with** `LOGO_STUDIO_ACCESS_TOKEN`. Live provider integration is not considered tested merely because a mocked provider UI test succeeds. Independent originality, trademark, font-license, small-size readability and final vector-image parity remain mandatory before commercial release. See [Logo Studio release runbook](docs/logo-studio-release-runbook.md). The static server used by the test suite cannot execute Pages Functions.
+
 ## Local development
 
 Requires Node.js 20+ and Python 3. Run:
