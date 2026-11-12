@@ -6,7 +6,7 @@ function report(){
  const score=Object.values(scores).reduce((a,b)=>a+b,0);
  const gates=['logoTrademark','logoFont','logoLegible','logoOriginal','logoVisual'].map(id=>({id,checked:$(id).checked}));
  const complete=gates.every(x=>x.checked);
- return {schema:'davylab-logo-qa-v1',assetSource: $('svgEditor').value.trim()?'AI editor SVG':'no linked final SVG',generatedAt:new Date().toISOString(),scores,total:score,threshold:90,manualSelfAttestation:complete,gates,internalReviewPassed:score>=90&&complete,legalTrademarkRegistrationVerified:false,automatedSvgReviewNotReplaced:true,reviewer: $('reviewer').value.trim()||null,notes:$('reviewNotes').value.trim(),disclaimer:'User-entered scores and attestations; NOT independent originality verification, legal clearance or trademark registration.'};
+ return {schema:'davylab-logo-qa-v1',assetSource: $('svgEditor').value.trim()?'AI editor SVG':'no linked final SVG',generatedAt:new Date().toISOString(),scores,total:score,threshold:90,manualSelfAttestation:complete,gates,internalReviewPassed:score>=90&&complete&&Boolean($('svgEditor').value.trim()),legalTrademarkRegistrationVerified:false,automatedSvgReviewNotReplaced:true,reviewer: $('reviewer').value.trim()||null,notes:$('reviewNotes').value.trim(),disclaimer:'User-entered scores and attestations; NOT independent originality verification, legal clearance or trademark registration.'};
 }
 function refresh(){const r=report();$('qaSummary').textContent=r.total+'/100 · '+(r.internalReviewPassed?'内部质量门禁通过（非法律认证）':'未通过发布门禁');$('downloadReview').disabled=false}
 area.addEventListener('input',refresh);for(const id of ['logoTrademark','logoFont','logoLegible','logoOriginal','logoVisual'])$(id).addEventListener('change',refresh);
