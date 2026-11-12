@@ -5,7 +5,14 @@
 <label for="brief">品牌需求</label><textarea id="brief">为 DAVYLAB 设计一个极简、现代、具有创造力的科技品牌 Logo</textarea>
 <div id="advanced" hidden><div class="grid"><div><label for="brand">品牌名称</label><input id="brand" value="DAVYLAB"></div><div><label for="tagline">品牌口号</label><input id="tagline" value="把想法，做成能用的工具"></div><div><label for="type">标志类型</label><select id="type"><option value="combination">组合标志</option><option value="wordmark">纯文字</option><option value="lettermark">字母标志</option><option value="pictorial">具象图形</option><option value="abstract">抽象几何</option><option value="mascot">吉祥物</option><option value="emblem">徽章</option></select></div><div><label for="style">风格</label><select id="style"><option>极简现代</option><option>几何理性</option><option>精致高级</option><option>创意活力</option><option>经典复古</option></select></div><div><label for="color">品牌主色</label><input id="color" type="color" value="#2563ff"></div><div><label for="usage">主要用途</label><select id="usage"><option>全场景</option><option>App / 网站</option><option>实体印刷</option><option>品牌系统</option></select></div></div></div>
 <div class="actions"><button class="primary" id="generate">生成三套概念</button><button id="save">保存当前配置</button></div><p class="muted">概念生成采用确定性 SVG 模板，不冒充 AI 原创生成；可导出完整任务给外部 Agent 进行真正的品牌创作。</p></section>
-<section><h2>设计预览</h2><div class="grid" id="results" aria-live="polite"></div></section>
+<section><h2>AI 原创设计工作台</h2><p>这里使用真实模型响应，和上方离线 SVG 概念模板不同。可在同一页面生成、精修、编辑和导出。生产环境必须配置授权模型或使用临时个人密钥。</p>
+<div class="grid"><div><label for="accessToken">工作台访问令牌（如管理员已设置）</label><input id="accessToken" type="password" autocomplete="off" placeholder="可选；不保存"></div><div><label for="providerKey">临时 OpenAI API Key（可选）</label><input id="providerKey" type="password" autocomplete="off" placeholder="仅用于本次请求，不保存"></div></div>
+<div class="actions"><button id="aiGenerate" class="primary">调用真实 AI 生成三套方案</button><button id="saveAI">保存本地作品</button><button id="restoreAI">恢复本地作品</button></div>
+<p id="aiStatus" class="muted" role="status" aria-live="polite">尚未向模型发出请求。</p><div id="aiResults" class="grid"></div>
+<h3 id="selectedName">请选择 AI 生成方案</h3><label for="revision">精修意见</label><textarea id="revision" placeholder="例如：保持字母 D 的识别度，简化星光细节，增加留白并优化 24px 识别性"></textarea><button id="aiRefine">让 AI 精修当前方案</button>
+<label for="svgEditor">SVG 矢量源代码编辑</label><textarea id="svgEditor" spellcheck="false" style="min-height:160px;font-family:monospace" placeholder="在这里检查、修改生成的 SVG 矢量代码"></textarea>
+<div class="actions"><button id="applySvg">应用手动修改</button><button id="downloadAI">下载 SVG</button><button id="downloadPNG">下载 PNG</button></div>
+<p class="muted">AI 生成、手动修改、结构验证不等于商标审核通过；字体转曲和品牌正式发布仍需专项验收。</p></section><section><h2>离线草图参考（非 AI）</h2><div class="grid" id="results" aria-live="polite"></div></section>
 <section><h2>交付外部 AI Agent</h2><label for="agent">选择平台</label><select id="agent"><option>ChatGPT</option><option>Claude</option><option>WorkBuddy</option><option>通义千问</option><option>Kimi</option><option>GLM</option><option>Gemini</option><option>Cursor</option><option>其他 Agent</option></select><div class="actions"><button class="primary" id="makePrompt">生成完整指令</button><button id="copy">复制指令</button><button id="downloadPrompt">下载 Markdown</button></div><pre id="instruction" aria-live="polite">点击“生成完整指令”获取可复制的执行任务。</pre></section>
 <section><h2>外部成果导入与验收</h2><p>将外部 Agent 输出的 SVG 文件导入 DesignOS。仅接受通过静态安全检查的 SVG，未完成商标和授权审查的文件不会标记为正式品牌资产。</p><label for="svgUpload">导入 SVG 文件</label><input id="svgUpload" type="file" accept=".svg,image/svg+xml"><div id="importStatus" role="status" aria-live="polite" class="muted">等待导入</div><div id="importPreview" class="preview" style="margin-top:14px;min-height:120px"></div><div class="actions"><button id="exportImported" disabled>下载已验证 SVG</button><button id="exportQA" disabled>下载 QA 报告</button></div></section></main><script>
 const $=id=>document.getElementById(id);let current=[];let imported=null,qa=null,previewUrl=null;
@@ -41,4 +48,4 @@ $('svgUpload').addEventListener('change',async e=>{
 });
 $('exportImported').onclick=()=>{if(imported)file('davylab-reviewed-structure.svg',imported,'image/svg+xml')};
 $('exportQA').onclick=()=>{if(qa)file('logo-import-qa.json',JSON.stringify({...qa,productionReady:false},null,2),'application/json')};
-</script></body></html>
+</script><script type="module" src="./ai-session.js"></script></body></html>
