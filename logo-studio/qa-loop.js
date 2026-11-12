@@ -112,6 +112,7 @@ function attach(){
   el('qaGeneratedPrompt').value=prompt;el('revision').value=prompt;
   el('qaLoopStatus').textContent='已生成基于人工评分的精修指令，已同步至 AI 精修意见框。未调用模型。';
  };
+ el('makePrompt').addEventListener('click',()=>{const qa=el('qaGeneratedPrompt').value.trim();if(qa)el('instruction').textContent+='\n\n## Logo QA 迭代与改进要求\n'+qa});
  el('qaCopyPrompt').onclick=async()=>{const text=el('qaGeneratedPrompt').value;if(!text){el('qaLoopStatus').textContent='请先生成精修指令';return}
   try{await navigator.clipboard.writeText(text);el('qaLoopStatus').textContent='精修指令已复制，可用于外部 Agent。'}catch{el('qaLoopStatus').textContent='复制受浏览器限制，请手动复制指令。'}
  };
