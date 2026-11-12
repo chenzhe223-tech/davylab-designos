@@ -14,7 +14,15 @@
 <div class="actions"><button id="applySvg">应用手动修改</button><button id="downloadAI">下载 SVG</button><button id="downloadPNG">下载 PNG</button></div>
 <p class="muted">AI 生成、手动修改、结构验证不等于商标审核通过；字体转曲和品牌正式发布仍需专项验收。</p></section><section><h2>离线草图参考（非 AI）</h2><div class="grid" id="results" aria-live="polite"></div></section>
 <section><h2>交付外部 AI Agent</h2><label for="agent">选择平台</label><select id="agent"><option>ChatGPT</option><option>Claude</option><option>WorkBuddy</option><option>通义千问</option><option>Kimi</option><option>GLM</option><option>Gemini</option><option>Cursor</option><option>其他 Agent</option></select><div class="actions"><button class="primary" id="makePrompt">生成完整指令</button><button id="copy">复制指令</button><button id="downloadPrompt">下载 Markdown</button></div><pre id="instruction" aria-live="polite">点击“生成完整指令”获取可复制的执行任务。</pre></section>
-<section><h2>外部成果导入与验收</h2><p>将外部 Agent 输出的 SVG 文件导入 DesignOS。仅接受通过静态安全检查的 SVG，未完成商标和授权审查的文件不会标记为正式品牌资产。</p><label for="svgUpload">导入 SVG 文件</label><input id="svgUpload" type="file" accept=".svg,image/svg+xml"><div id="importStatus" role="status" aria-live="polite" class="muted">等待导入</div><div id="importPreview" class="preview" style="margin-top:14px;min-height:120px"></div><div class="actions"><button id="exportImported" disabled>下载已验证 SVG</button><button id="exportQA" disabled>下载 QA 报告</button></div></section></main><script>
+<section><h2>品牌质量验收 · 100 分</h2><p>此处由审核人填写真实评分和核验情况，不会虚构自动通过结果。未达到 90 分或强制门禁未全部确认，不允许标记内部验收通过。</p><div class="grid" id="rubric"></div>
+<div class="grid"><div><label for="reviewer">审核人</label><input id="reviewer" autocomplete="off" placeholder="填写审核人"></div><div><label for="reviewNotes">审核依据及备注</label><textarea id="reviewNotes" placeholder="商标检索国家/类别、字体许可证来源、实物印刷和小尺寸验证记录"></textarea></div></div>
+<div style="display:grid;gap:9px;margin-top:16px">
+<label><input type="checkbox" id="logoTrademark" style="width:auto"> 已开展适用市场的商标冲突检索并记录证据</label>
+<label><input type="checkbox" id="logoFont" style="width:auto"> 字体及素材许可已核实</label>
+<label><input type="checkbox" id="logoLegible" style="width:auto"> 24/32px 与深浅底可读性已人工检查</label>
+<label><input type="checkbox" id="logoOriginal" style="width:auto"> 图形原创差异性已人工审查</label>
+<label><input type="checkbox" id="logoVisual" style="width:auto"> SVG 与对外展示图片一致性已审核</label>
+</div><p id="qaSummary" aria-live="polite">尚未评分</p><button id="downloadReview">下载验收记录 JSON</button><p class="muted">自评通过不等同于商标注册或第三方法律意见；仅能证明审核人进行了相应检查。</p></section><section><h2>外部成果导入与验收</h2><p>将外部 Agent 输出的 SVG 文件导入 DesignOS。仅接受通过静态安全检查的 SVG，未完成商标和授权审查的文件不会标记为正式品牌资产。</p><label for="svgUpload">导入 SVG 文件</label><input id="svgUpload" type="file" accept=".svg,image/svg+xml"><div id="importStatus" role="status" aria-live="polite" class="muted">等待导入</div><div id="importPreview" class="preview" style="margin-top:14px;min-height:120px"></div><div class="actions"><button id="exportImported" disabled>下载已验证 SVG</button><button id="exportQA" disabled>下载 QA 报告</button></div></section></main><script>
 const $=id=>document.getElementById(id);let current=[];let imported=null,qa=null,previewUrl=null;
 function text(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function brief(){return {request:$('brief').value.trim(),brand:$('brand').value.trim()||'DAVYLAB',tagline:$('tagline').value.trim(),type:$('type').value,style:$('style').value,color:$('color').value,usage:$('usage').value,mode:$('advanced').hidden?'quick':'advanced'}}
@@ -48,4 +56,4 @@ $('svgUpload').addEventListener('change',async e=>{
 });
 $('exportImported').onclick=()=>{if(imported)file('davylab-reviewed-structure.svg',imported,'image/svg+xml')};
 $('exportQA').onclick=()=>{if(qa)file('logo-import-qa.json',JSON.stringify({...qa,productionReady:false},null,2),'application/json')};
-</script><script type="module" src="./ai-session.js"></script></body></html>
+</script><script type="module" src="./ai-session.js"></script><script type="module" src="./quality-gate.js"></script></body></html>
