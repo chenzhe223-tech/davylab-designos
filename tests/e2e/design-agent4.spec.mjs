@@ -10,8 +10,8 @@ const sample={
 };
 test('Demo directions are clearly labelled, selectable and saved',async({page})=>{
   await page.goto('/design-agent/');
-  await expect(page.getByRole('heading',{name:'让品牌，从想法走向完整表达。'})).toBeVisible();
-  await page.getByRole('button',{name:'查看示例预览'}).click();
+  await expect(page.getByRole('heading',{name:'一句话，开始设计你的品牌。'})).toBeVisible();
+  await page.getByRole('button',{name:'先看看效果'}).click();
   await expect(page.locator('#conceptGrid .concept')).toHaveCount(3);
   await page.locator('[data-edit="0"]').click();
   await page.locator('#d_name').fill('自然奢华 · 定制版');
@@ -44,7 +44,7 @@ test('Provider error is shown without simulated results',async({page})=>{
   await page.goto('/design-agent/');
   await page.locator('#brief').fill('为一家面向家庭的海岛度假酒店设计品牌');
   await page.locator('#runPlan').click();
-  await expect(page.locator('#planFeedback')).toContainText('Key');
+  await expect(page.locator('#planFeedback')).toContainText('设计暂未完成');
   await expect(page.locator('#conceptGrid .concept')).toHaveCount(0);
 });
 for(const width of [375,390,430,1440]){
@@ -57,3 +57,17 @@ for(const width of [375,390,430,1440]){
     await expect(page.locator('#conceptGrid .concept')).toHaveCount(3);
   });
 }
+test('Mobile starts with a single obvious action and hides premature workflow',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('/design-agent/');
+ await expect(page.getByRole('button',{name:'开始设计 →'})).toBeVisible();
+ await expect(page.getByText('你只需要做三件事')).toBeVisible();
+ await expect(page.locator('#concepts')).toBeHidden();
+ await expect(page.locator('#production')).toBeHidden();
+ await expect(page.locator('#strategy')).toBeHidden();
+ await page.locator('#brief').fill('我想设计一个面向家庭的高品质海岛度假品牌');
+ await page.route('**/api/brand/plan',route=>route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:'请先配置 DeepSeek API Key'})}));
+ await page.locator('#runPlan').click();
+ await expect(page.locator('.advanced-settings')).not.toHaveAttribute('open','');
+ await expect(page.locator('#planFeedback')).toContainText('设计暂未完成');
+});
