@@ -111,9 +111,9 @@ test('Motion Lab dynamic preview presets, controls, pause and reusable export',a
  await expect(mark).toHaveAttribute('data-motion','float');
  await page.locator('[data-preset="reveal"]').click();
  await expect(mark).toHaveAttribute('data-motion','reveal');
- await page.locator('#motionDuration').fill('5');
+ await page.locator('#motionDuration').evaluate(el=>{el.value='5';el.dispatchEvent(new Event('input',{bubbles:true}))});
  await expect(page.locator('#durationValue')).toContainText('5');
- await page.locator('#motionIntensity').fill('70');
+ await page.locator('#motionIntensity').evaluate(el=>{el.value='70';el.dispatchEvent(new Event('input',{bubbles:true}))});
  await expect(page.locator('#intensityValue')).toContainText('70%');
  await page.locator('#playMotion').click();
  await expect(page.locator('#stageScreen')).toHaveClass(/stage-paused/);
