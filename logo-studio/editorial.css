@@ -101,3 +101,17 @@ body[data-theme="dark"] .hero-stage-label,body[data-theme="dark"] .hero-stage-in
 @media(max-width:730px){.hero-editorial{grid-template-columns:1fr;gap:8px}.hero-copy{padding:16px 6px 12px;gap:13px}.hero-copy h1{font-size:clamp(36px,9vw,48px)}.hero-cover{min-height:300px;border-radius:22px}.hero-meta{display:none}}
 @media(max-width:480px){.hero-cover{min-height:260px}.hero-stage-index{right:16px;top:16px}.hero-stage-label{left:16px;bottom:16px}.hero-glass{width:80px;height:100px}.hero-brand-object{width:69%}}
 @media(prefers-reduced-motion:reduce){.hero-glass,.hero-halo,.hero-brand-object{animation:none!important;transition:none!important}}
+
+
+/* Desktop composition refinement after live review: give the tools visual priority. */
+@media(min-width:991px){
+ .hero-editorial{min-height:340px;grid-template-columns:minmax(285px,.72fr) minmax(0,1.28fr)}
+ .hero-cover{min-height:340px}
+ .hero-copy{padding:24px 38px;gap:16px}
+ .hero-copy h1{font-size:clamp(40px,4vw,61px)}
+ .workspace-grid{grid-template-columns:minmax(315px,370px) minmax(0,1fr)}
+ .stage-screen{min-height:300px}
+}
+#conceptStatus{min-height:20px;font-size:12px;line-height:1.5}
+#conceptStatus[data-state="success"]{color:#28785f}
+#conceptStatus[data-state="error"]{color:#a13e36}
