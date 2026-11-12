@@ -106,3 +106,61 @@ const observer=new MutationObserver(()=>{clearTimeout(observer._timer);observer.
 observer.observe($('aiResults'),{childList:true});
 $('generate').addEventListener('click',()=>setTimeout(()=>setOffline(0),0));
 applyMotion();setOffline(0);
+
+
+/* Hero optical showcase: reads the EXISTING SVG preview, never substitutes a fake AI result.
+   Low-cost canvas particle layer; static/reduced-motion/mobile-safe. */
+(function initLogoHeroShowcase(){
+const heroCopy=document.querySelector('.hero-copy'),cover=document.querySelector('.hero-cover');
+if(!heroCopy||!cover)return;
+heroCopy.innerHTML='<div class="eyebrow">DAVYLAB / DESIGNOS / BRAND IDENTITY</div><h1>Logo<br>Studio<span aria-hidden="true">.</span></h1><p>Brand identity, crafted with intent. 构思、精修与交付，在同一工作台完成。</p><div class="hero-cta"><button type="button" class="primary" id="heroStart">开始设计</button><button type="button" id="heroExplore">浏览动态演示</button></div><div class="hero-meta">VECTOR FIRST &nbsp; / &nbsp; INTERACTIVE SHOWCASE</div>';
+cover.setAttribute('aria-label','当前 SVG 标志的动态视觉展示');
+cover.innerHTML='<div class="hero-halo" aria-hidden="true"></div><div class="hero-orbit" aria-hidden="true"></div><div class="hero-orbit orbit-inner" aria-hidden="true"></div><canvas class="hero-particle-canvas" aria-hidden="true"></canvas><div class="hero-glass" aria-hidden="true"></div><div class="hero-glass layer-back" aria-hidden="true"></div><div class="hero-brand-object" role="img" aria-label="Logo 矢量展示"></div><span class="hero-stage-index">SHOWCASE / 001</span><span class="hero-stage-label">LOCAL MOTION PREVIEW · NOT AI GENERATED</span>';
+document.getElementById('heroStart')?.addEventListener('click',()=>document.getElementById('workspace')?.scrollIntoView({behavior:reduced?'auto':'smooth'}));
+document.getElementById('heroExplore')?.addEventListener('click',()=>document.getElementById('motion-lab')?.scrollIntoView({behavior:reduced?'auto':'smooth'}));
+const stage=document.getElementById('stageContent'),display=cover.querySelector('.hero-brand-object'),canvas=cover.querySelector('canvas'),ctx=canvas.getContext('2d',{alpha:true});
+const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let running=true,raf=0,width=0,height=0,particles=[],pointer={x:0,y:0,active:false},last=0;
+function syncBrand(){
+const image=stage?.querySelector('img');
+display.replaceChildren();
+if(image){const img=document.createElement('img');img.src=image.src;img.alt=image.alt||'Logo preview';display.append(img)}
+else{const svg=stage?.querySelector('svg');if(svg)display.append(svg.cloneNode(true))}
+const source=document.getElementById('stageOrigin')?.textContent||'OFFLINE VECTOR SKETCH';
+cover.querySelector('.hero-stage-label').textContent=source+' · LOCAL MOTION';
+}
+const svgObserver=new MutationObserver(syncBrand);
+if(stage)svgObserver.observe(stage,{childList:true,subtree:false});
+syncBrand();
+const clamp=(v,min,max)=>Math.min(max,Math.max(min,v));
+function resize(){
+const r=cover.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,1.5);
+width=r.width;height=r.height;if(!ctx)return;
+canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);
+ctx.setTransform(dpr,0,0,dpr,0,0);
+const count=reduced?38:Math.min(85,Math.max(24,Math.floor(width*height/7500)));
+particles=Array.from({length:count},(_,i)=>{const a=i*2.399963229728653,r=.14+.34*Math.sqrt((i+.5)/count);return{angle:a,r,phase:i*1.74,speed:.00005+(i%7)*.000012,size:i%11===0?1.7:.75}});
+draw(0);
+}
+function draw(t){
+if(!ctx)return;ctx.clearRect(0,0,width,height);
+const cx=width*.5,cy=height*.48,rad=Math.min(width,height),strength=Number(document.getElementById('motionIntensity')?.value||35)/100;
+for(const p of particles){
+const a=p.angle+(running&&!reduced?t*p.speed*(.3+strength):0);
+const x=cx+Math.cos(a)*rad*p.r*1.15+Math.sin(t*.00035+p.phase)*3*strength;
+const y=cy+Math.sin(a)*rad*p.r*.86+Math.cos(t*.00031+p.phase)*3*strength;
+const alpha=clamp(.2+Math.sin(p.phase+t*.0007)*.15,.1,.48);
+ctx.beginPath();ctx.arc(x,y,p.size,0,Math.PI*2);ctx.fillStyle='rgba(108,128,188,'+alpha+')';ctx.fill();
+}
+}
+function frame(t){raf=0;if(!running||reduced)return;if(t-last>=32){draw(t);last=t}raf=requestAnimationFrame(frame)}
+function resume(){if(running&&!reduced&&document.visibilityState==='visible'&&!raf)raf=requestAnimationFrame(frame)}
+function stop(){if(raf)cancelAnimationFrame(raf);raf=0}
+const resizeObserver=new ResizeObserver(resize);resizeObserver.observe(cover);
+cover.addEventListener('pointermove',e=>{if(reduced||e.pointerType==='touch')return;const r=cover.getBoundingClientRect();const x=clamp((e.clientX-r.left)/r.width-.5,-.5,.5),y=clamp((e.clientY-r.top)/r.height-.5,-.5,.5);display.style.setProperty('--magnet-x',(x*13)+'px');display.style.setProperty('--magnet-y',(y*13)+'px')},{passive:true});
+cover.addEventListener('pointerleave',()=>{display.style.setProperty('--magnet-x','0px');display.style.setProperty('--magnet-y','0px')});
+document.getElementById('playMotion')?.addEventListener('click',()=>{running=document.getElementById('playMotion')?.getAttribute('aria-pressed')==='true';cover.dataset.running=String(running);if(running)resume();else stop()});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();else resume()});
+window.addEventListener('pagehide',()=>{stop();svgObserver.disconnect();resizeObserver.disconnect()},{once:true});
+cover.dataset.running='true';resize();resume();
+})();
