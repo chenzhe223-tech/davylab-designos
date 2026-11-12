@@ -51,7 +51,7 @@ export async function onRequestPost({request,env}){
   try{
     upstream=await fetch('https://api.deepseek.com/chat/completions',{
       method:'POST',headers:{authorization:'Bearer '+key,'content-type':'application/json'},
-      body:JSON.stringify({model,messages:[{role:'system',content:system},{role:'user',content:JSON.stringify({client_brief:brief})}],response_format:{type:'json_object'},max_tokens:3400,stream:false}),
+      body:JSON.stringify({model,messages:[{role:'system',content:system},{role:'user',content:JSON.stringify({client_brief:brief})}],response_format:{type:'json_object'},thinking:{type:'disabled'},max_tokens:4500,stream:false}),
       signal:AbortSignal.timeout(65000)
     });
   }catch{return json({error:'DeepSeek 连接失败或请求超时，请检查网络和额度'},502)}
