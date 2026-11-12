@@ -262,3 +262,35 @@ test('Desktop hero, creator, preview and control panels share geometric alignmen
  await mkdir('artifacts/logo-studio',{recursive:true});
  await page.screenshot({path:'artifacts/logo-studio/desktop-symmetric-grid.png',fullPage:true});
 });
+
+
+test('One-sentence DeepSeek production creates real editable SVG directions and complete ZIP with mock provider',async({page})=>{
+ let body=null;
+ const svgFor=i=>'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 240"><path d="M'+(10*i)+' 10L100 30L40 120Z" fill="#223344"/><text x="140" y="110" font-size="38">晨光咖啡</text></svg>';
+ await page.route('**/api/logo/generate',async route=>{
+  body=route.request().postDataJSON();
+  await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({
+   source:'live-model',provider:'deepseek',model:'deepseek-flash',
+   strategy:{positioning:'让日常咖啡成为城市的小仪式',audience:'年轻都市消费者',personality:'温暖、沉稳'},
+   concepts:[1,2,3].map(i=>({name:'方向 '+i,rationale:'基于品牌故事的图形',construction:'专属几何',svg:svgFor(i)}))
+  })});
+ });
+ await page.goto(base+'logo-studio/');
+ await expect(page.locator('#oneSentenceAi')).toBeVisible();
+ await page.locator('#brief').fill('为晨光咖啡设计一个简约现代的咖啡品牌logo');
+ await page.locator('#oneSentenceAi').click();
+ await expect(page.locator('#aiResults article')).toHaveCount(3);
+ expect(body.provider).toBe('deepseek');
+ expect(body.model).toBe('deepseek-flash');
+ expect(body.brand).toBe('晨光咖啡');
+ await expect(page.locator('#brandStrategy')).toContainText('城市的小仪式');
+ await expect(page.locator('#svgInspectorStatus')).toContainText('可编辑文字');
+ await expect(page.locator('#logoMiniPreviews img')).toHaveCount(4);
+ await expect(page.locator('#stageOrigin')).toContainText('AI VECTOR');
+ const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#downloadPackage').click()]);
+ const zip=await readFile(await download.path());
+ for(const name of ['logo.svg','logo.png','concepts/01.svg','concepts/02.svg','concepts/03.svg','preview/24px.png','preview/32px.png','brand-strategy.json','qa-report.json','manifest.json']){
+   expect(zip.includes(Buffer.from(name)),name).toBe(true);
+ }
+ await expect(page.locator('#aiStatus')).toContainText('SHA256');
+});
