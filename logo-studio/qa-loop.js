@@ -99,10 +99,15 @@ async function invalidateChangedAsset(){
  el('qaLoopStatus').textContent='检测到新 SVG 版本：已清空旧版评分与审核确认，请重新评分并保存新版本。';
  emit();
 }
+async function markReviewAsset(){
+ if(approvedAsset||!svgNow())return;
+ const r=score();if(r.total===0&&!r.gates.some(g=>g.checked))return;
+ approvedAsset=await hash(svgNow());
+}
 function attach(){
  restoreHistory();renderHistory();
- el('rubric').addEventListener('input',emit);
- ['logoTrademark','logoFont','logoLegible','logoOriginal','logoVisual'].forEach(id=>el(id).addEventListener('change',emit));
+ el('rubric').addEventListener('input',()=>{emit();markReviewAsset()});
+ ['logoTrademark','logoFont','logoLegible','logoOriginal','logoVisual'].forEach(id=>el(id).addEventListener('change',()=>{emit();markReviewAsset()}));
  el('svgEditor').addEventListener('input',()=>{emit();invalidateChangedAsset()});
  el('svgEditor').addEventListener('change',()=>{emit();invalidateChangedAsset()});
  ['applySvg','applyVisual','aiGenerate','aiRefine','restoreAI','editImported'].forEach(id=>el(id)?.addEventListener('click',()=>setTimeout(invalidateChangedAsset,180)));
