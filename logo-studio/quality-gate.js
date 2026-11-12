@@ -13,3 +13,5 @@ area.addEventListener('input',refresh);for(const id of ['logoTrademark','logoFon
 $('reviewer').addEventListener('input',refresh);$('reviewNotes').addEventListener('input',refresh);
 $('downloadReview').onclick=async()=>{const record=report();const svg=$('svgEditor').value.trim();if(svg){const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(svg));record.svgSha256=Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join('')}const blob=new Blob([JSON.stringify(record,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='DAVYLAB-logo-review.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1500)};
 refresh();
+
+window.DAVYLAB_LOGO_QA=report;
