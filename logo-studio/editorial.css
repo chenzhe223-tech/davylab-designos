@@ -57,3 +57,11 @@ pre{background:var(--page);color:var(--ink)}.actions{gap:8px}
 @media(max-width:480px){.hero-copy h1{font-size:39px}.hero-cover{min-height:195px}.editorial-controls{grid-template-columns:1fr}.stage-panel{padding:10px}.stage-screen{min-height:225px}.concept-card{padding:6px}.concept-card strong{font-size:11px}.concept-thumb{height:47px}.stage-content{width:89%}.header-tools .theme-switch{font-size:11px;padding:7px 9px}}
 .mobile-workflow{display:none;position:fixed;bottom:0;left:0;right:0;z-index:40;justify-content:space-around;gap:4px;padding:9px 12px max(12px,env(safe-area-inset-bottom));background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(16px);border-top:1px solid var(--edge)}.mobile-workflow button{border:0;background:none;color:var(--ink);font-weight:650}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+/* QA review loop: native DesignOS editorial styling */
+.qa-loop{border:1px solid var(--edge);border-radius:21px;background:linear-gradient(155deg,color-mix(in srgb,var(--surface) 93%,#a4d4ff),var(--surface));padding:clamp(16px,2vw,25px);margin-top:18px}
+.qa-loop h3{font-size:clamp(20px,2vw,26px);letter-spacing:-.045em;margin:8px 0 10px}
+.qa-insight-list{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:9px;margin:12px 0}
+.qa-insight-list li{font-size:12px;line-height:1.65;background:var(--surface);border:1px solid var(--edge);border-radius:13px;padding:12px 14px;color:var(--ink)}
+.qa-version-list{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.qa-version{border:1px solid var(--edge);border-radius:13px;padding:7px 9px;background:var(--surface)}.qa-version span{display:block;font-size:10px;color:var(--sub);padding:4px}
+.qa-loop textarea{min-height:155px;line-height:1.65}.qa-loop .actions button{min-height:40px}#qaLoopStatus,#qaComparison{font-size:12px;line-height:1.6}
