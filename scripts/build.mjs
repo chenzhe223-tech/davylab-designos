@@ -53,6 +53,7 @@ html = html.replaceAll('href="./resources/"', 'href="../resources/"')
 await writeFile(resolve(out, 'classic/index.html'), html, 'utf8')
 await cp(resolve(root, 'studio'), resolve(out, 'studio'), { recursive: true })
 await cp(resolve(root, 'logo-studio'), resolve(out, 'logo-studio'), { recursive: true })
+await cp(resolve(root, 'design-agent'), resolve(out, 'design-agent'), { recursive: true })
 // DesignOS 3.0 is the new front door. Only public canonical resources are bootstrapped.
 let studio = await readFile(resolve(root, 'studio/index.html'), 'utf8')
 const studioMarker = '__DESIGNOS_BOOTSTRAP__'
