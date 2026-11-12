@@ -24,7 +24,7 @@ test('exactly three distinct directions with valid colors',()=>{
 test('unconfigured provider never fabricates response',async()=>{
   const response=await onRequestPost({request:request('打造一个新的海岛度假品牌'),env:{}});
   assert.equal(response.status,503);
-  assert.match((await response.json()).error,/Key/);
+  assert.match((await response.json()).error,/DeepSeek/);
 });
 test('reject cross origin before upstream call',async()=>{
   const response=await onRequestPost({request:request('打造一个新的海岛度假品牌',{origin:'https://evil.example'}),env:{}});
@@ -33,6 +33,23 @@ test('reject cross origin before upstream call',async()=>{
 test('platform-funded request requires authorization',async()=>{
   const response=await onRequestPost({request:request('打造一个新的海岛度假品牌'),env:{DEEPSEEK_API_KEY:'SECRET',LOGO_STUDIO_ACCESS_TOKEN:'ACCESS'}});
   assert.equal(response.status,401);
+});
+test('managed calls fail closed when quota database is unavailable',async()=>{
+ const response=await onRequestPost({request:request('打造一个新的海岛度假品牌',{'Cf-Access-Jwt-Assertion':'edge-authenticated'}),env:{DEEPSEEK_API_KEY:'SECRET'}});
+ assert.equal(response.status,503);
+ assert.match((await response.json()).error,/额度/);
+});
+test('atomic quota refuses request once daily budget is exhausted',async()=>{
+ const response=await onRequestPost({request:request('打造一个新的海岛度假品牌',{'Cf-Access-Jwt-Assertion':'edge-authenticated'}),env:{DEEPSEEK_API_KEY:'SECRET',DESIGN_QUOTA:{prepare:()=>({bind:()=>({first:async()=>null})})}}});
+ assert.equal(response.status,429);
+});
+test('managed calls consume one quota reservation and use platform key',async()=>{
+ const former=globalThis.fetch;let calls=0,sql='';
+ globalThis.fetch=async(url,opts)=>{calls++;assert.equal(opts.headers.authorization,'Bearer platform-secret');return new Response(JSON.stringify({choices:[{message:{content:JSON.stringify(payload)},finish_reason:'stop'}]}),{status:200})};
+ try{
+  const response=await onRequestPost({request:request('打造一个新的海岛度假品牌',{'Cf-Access-Jwt-Assertion':'edge-authenticated'}),env:{DEEPSEEK_API_KEY:'platform-secret',DESIGN_QUOTA:{prepare:(statement)=>{sql=statement;return {bind:()=>({first:async()=>({used:1})})}}}}});
+  assert.equal(response.status,200);assert.equal(calls,1);assert.match(sql,/WHERE used < 10/);
+ }finally{globalThis.fetch=former}
 });
 test('GET reports supported models without exposing secrets',async()=>{
   const response=await onRequestGet();const data=await response.json();
