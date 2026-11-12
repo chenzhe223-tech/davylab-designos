@@ -76,6 +76,8 @@ test('Logo Studio rejects unsafe SVG imports',async({page})=>{
 
 test('Logo Studio quality gate cannot be bypassed below 90 or with missing legal attestations',async({page})=>{
  await page.goto(base+'logo-studio/');
+ await page.locator('#svgUpload').setInputFiles({name:'logo.svg',mimeType:'image/svg+xml',buffer:Buffer.from(svg)});
+ await page.locator('#editImported').click();
  await expect(page.locator('#qaSummary')).toContainText('0/100');
  const scores={brand:18,original:18,legibility:14,geometry:14,versatility:13,typography:9,production:4};
  for(const [key,value] of Object.entries(scores))await page.locator('#score-'+key).fill(String(value));
@@ -147,3 +149,70 @@ for(const width of [375,390,430,1440]){
   if(width===1440){await mkdir('artifacts/logo-studio',{recursive:true});await page.screenshot({path:'artifacts/logo-studio/editorial-desktop.png',fullPage:true})}
  });
 }
+
+test('QA feedback loop converts low scores into targeted revision instructions without fictional AI grading',async({page})=>{
+ await page.goto(base+'logo-studio/');
+ await page.locator('#svgUpload').setInputFiles({name:'logo.svg',mimeType:'image/svg+xml',buffer:Buffer.from(svg)});
+ await page.locator('#editImported').click();
+ await expect(page.locator('#selectedName')).toContainText('外部 Agent');
+ await page.locator('#score-original').fill('8');
+ await page.locator('#score-legibility').fill('6');
+ await expect(page.locator('#qaInsight')).toContainText('原创差异性');
+ await expect(page.locator('#qaInsight')).toContainText('可读性');
+ await page.locator('#qaGenerateInstruction').click();
+ await expect(page.locator('#qaGeneratedPrompt')).toHaveValue(/独特的负空间/);
+ await expect(page.locator('#revision')).toHaveValue(/独特的负空间/);
+ await page.locator('#makePrompt').click();
+ await expect(page.locator('#instruction')).toContainText('Logo QA 迭代与改进要求');
+ await expect(page.locator('#qaLoopStatus')).toContainText('未调用模型');
+ await page.locator('#qaSaveReview').click();
+ await expect(page.locator('#qaVersionHistory')).toContainText('V1');
+ await page.locator('#wordmarkEdit').fill('NEXT LAB');
+ await page.locator('#applyVisual').click();
+ await expect(page.locator('#qaLoopStatus')).toContainText('已清空旧版评分');
+ await expect(page.locator('#qaSummary')).toContainText('0/100');
+ await page.locator('#score-original').fill('18');
+ await page.locator('#qaCompare').click();
+ await expect(page.locator('#qaComparison')).toContainText('SVG 已更改');
+ const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#qaDownloadHistory').click()]);
+ const hist=JSON.parse(await readFile(await download.path(),'utf8'));
+ expect(hist.records).toHaveLength(1);expect(hist.records[0].sha256).toMatch(/^[0-9a-f]{64}$/);
+ expect(hist.records[0].origin).toBe('human-review');
+ expect(hist.records[0].legalApproval).toBe(false);
+ await page.reload();
+ await expect(page.locator('#qaVersionHistory')).toContainText('V1');
+});
+test('QA cannot approve blank asset even with perfect human scores and checked gates',async({page})=>{
+ await page.goto(base+'logo-studio/');
+ for(const [k,v] of Object.entries({brand:20,original:20,legibility:15,geometry:15,versatility:15,typography:10,production:5}))await page.locator('#score-'+k).fill(String(v));
+ for(const id of ['logoTrademark','logoFont','logoLegible','logoOriginal','logoVisual'])await page.locator('#'+id).check();
+ await expect(page.locator('#qaSummary')).toContainText('100/100');
+ await expect(page.locator('#qaSummary')).toContainText('未通过发布门禁');
+ await expect(page.locator('#qaSaveReview')).toBeDisabled();
+});
+
+test('Optional AI source review is advisory and cannot auto-certify a brand',async({page})=>{
+ await page.route('**/api/logo/review',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({source:'live-model',reviewType:'advisory-source-only',scores:{brand:18,original:12,legibility:12,geometry:12,versatility:12,typography:8,production:4},total:78,strengths:['clear mark'],risks:['small-size legibility'],recommendations:['simplify negative space'],limitations:['SVG source only'],autoApproved:false,manualGatesUnchanged:true})}));
+ await page.goto(base+'logo-studio/');
+ await page.locator('#svgUpload').setInputFiles({name:'logo.svg',mimeType:'image/svg+xml',buffer:Buffer.from(svg)});
+ await page.locator('#editImported').click();
+ await page.locator('#qaAIReview').click();
+ await expect(page.locator('#qaAdvisoryResult')).toContainText('78/100');
+ await expect(page.locator('#qaSummary')).toContainText('0/100');
+ await page.locator('#qaAdoptAIScores').click();
+ await expect(page.locator('#qaSummary')).toContainText('78/100');
+ await expect(page.locator('#qaSummary')).toContainText('未通过发布门禁');
+ for(const id of ['logoTrademark','logoFont','logoLegible','logoOriginal','logoVisual'])await expect(page.locator('#'+id)).not.toBeChecked();
+});
+
+test('Unsaved quality approval also becomes invalid after SVG change',async({page})=>{
+ await page.goto(base+'logo-studio/');
+ await page.locator('#svgUpload').setInputFiles({name:'logo.svg',mimeType:'image/svg+xml',buffer:Buffer.from(svg)});
+ await page.locator('#editImported').click();
+ await page.locator('#score-brand').fill('18');
+ await page.locator('#logoFont').check();
+ await page.locator('#wordmarkEdit').fill('REVISED DAVYLAB');
+ await page.locator('#applyVisual').click();
+ await expect(page.locator('#qaSummary')).toContainText('0/100');
+ await expect(page.locator('#logoFont')).not.toBeChecked();
+});
