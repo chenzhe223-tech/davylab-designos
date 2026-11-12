@@ -19,7 +19,7 @@ function save(silent=false){
   catch{feedback('planFeedback','本地空间不足，建议导出项目 JSON','error')}
 }
 function feedback(id,message,type='info'){$(id).textContent=message;$(id).classList.toggle('error',type==='error')}
-function setBusy(value){busy=value;['runPlan','generateVectors'].forEach(id=>$(id).disabled=value||(id==='generateVectors'&&!p.directions.length));$('runPlan').textContent=value?'正在调用模型…':'✧ DeepSeek 分析品牌需求';$('generateVectors').textContent=value?'正在制作真实 SVG…':'生成三套真实 AI Logo 矢量稿'}
+function setBusy(value){busy=value;['runPlan','generateVectors'].forEach(id=>$(id).disabled=value||(id==='generateVectors'&&!p.directions.length));$('runPlan').textContent=value?'正在构思品牌方案…':'开始设计 →';$('generateVectors').textContent=value?'正在制作 Logo…':'继续制作 Logo →'}
 function validSVG(s){
   if(typeof s!=='string'||s.length>16000||s.length<140||/<!DOCTYPE|<!ENTITY|<\s*\/?\s*(?:script|style|foreignObject|iframe|object|embed|image|use|animate|set|filter|pattern)\b|\bon[a-z-]+\s*=|(?:href|src)\s*=|url\s*\(|javascript:|data:|@import/i.test(s.replace(/xmlns\s*=\s*["']http:\/\/www\.w3\.org\/2000\/svg["']/gi,'')))return false;
   const d=new DOMParser().parseFromString(s,'image/svg+xml');
@@ -95,13 +95,13 @@ async function plan(){
   if(busy)return;
   const brief=$('brief').value.trim();
   if(brief.length<8){feedback('planFeedback','请先填写至少 8 个字的品牌需求','error');return}
-  p.brief=brief;p.model=$('model').value;setBusy(true);feedback('planFeedback','正在调用 DeepSeek 品牌策略师…');
+  p.brief=brief;p.model=$('model').value;setBusy(true);feedback('planFeedback','正在构思三个品牌方向…');
   try{
     const r=await call('/api/brand/plan',{brief,model:p.model});
     if(r.source!=='live-deepseek'||r.directions?.length!==3||!r.strategy?.brand_name)throw Error('策划结果不完整');
     p.strategy=r.strategy;p.directions=r.directions.map(x=>({...x,svg:''}));p.selected=null;p.source=r.source;p.vectors=false;
     save(true);render();feedback('planFeedback','DeepSeek 已返回真实品牌策划和三套差异化方向。可修改右侧策略，再生成矢量稿。');location.hash='#concepts';
-  }catch(err){feedback('planFeedback','分析未完成：'+err.message,'error')}finally{setBusy(false)}
+  }catch(err){const msg=String(err.message||'');if(/Key|密钥|授权|401|503/i.test(msg)){document.querySelector('.advanced-settings').open=true;feedback('planFeedback','还差一步：在「高级设置」填写 DeepSeek API Key，然后重新点击开始设计。','error')}else feedback('planFeedback','设计暂未完成：'+msg,'error')}finally{setBusy(false)}
 }
 function applyStrategy(){
   if(!p.strategy)return;
