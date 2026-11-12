@@ -42,7 +42,7 @@ function instruction(r){
  return lines.join('\n');
 }
 function emit(){const r=score(),d=diagnosis(r),out=el('qaInsight');if(!out)return;
- const toplow=d.low.slice(0,4);
+ const toplow=d.low;
  out.replaceChildren();
  const title=document.createElement('p');title.className='muted';title.textContent=r.total+'/100 · '+(r.internalReviewPassed?'人工门禁已确认，仍非商标注册认证':'需改进并重新审核');
  out.append(title);
