@@ -62,6 +62,11 @@ test('Logo Studio rejects unsafe SVG imports',async({page})=>{
  await page.locator('#svgUpload').setInputFiles({name:'good.svg',mimeType:'image/svg+xml',buffer:Buffer.from(svg)});
  await expect(page.locator('#importStatus')).toContainText('静态结构检查通过');
  await expect(page.locator('#exportImported')).toBeEnabled();
+ await page.locator('#editImported').click();
+ await expect(page.locator('#selectedName')).toContainText('外部 Agent Logo');
+ await page.locator('#wordmarkEdit').fill('NEW LAB');
+ await page.locator('#applyVisual').click();
+ await expect(page.locator('#svgEditor')).toHaveValue(/NEW LAB/);
 });
 
 test('Logo Studio quality gate cannot be bypassed below 90 or with missing legal attestations',async({page})=>{
