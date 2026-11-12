@@ -10,3 +10,5 @@ function makeGuide(){
 }
 function saveFile(filename,content,type){const blob=new Blob([content],{type});const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(u),2000)}
 el('downloadBrandGuide').addEventListener('click',()=>{try{saveFile('DAVYLAB-brand-guide.md',makeGuide(),'text/markdown');el('aiStatus').textContent='已根据当前 SVG 生成品牌规范草案，需人工补充授权和商标审查。'}catch(err){el('aiStatus').textContent=err.message}});
+
+window.DAVYLAB_BRAND_GUIDE=makeGuide;
