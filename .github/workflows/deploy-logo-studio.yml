@@ -25,6 +25,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
+      - name: Install existing project QA dependencies
+        run: python3 -m pip install -r requirements-layout-qa.txt
       - name: Validate static build and Logo Studio API tests
         run: npm run check
       - name: Install browser acceptance runner
