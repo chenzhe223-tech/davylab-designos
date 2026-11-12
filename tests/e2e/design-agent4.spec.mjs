@@ -10,8 +10,8 @@ const sample={
 };
 test('Demo directions are clearly labelled, selectable and saved',async({page})=>{
   await page.goto('/design-agent/');
-  await expect(page.getByRole('heading',{name:'让品牌，从想法走向完整表达。'})).toBeVisible();
-  await page.getByRole('button',{name:'查看示例预览'}).click();
+  await expect(page.getByRole('heading',{name:'一句话，开始设计你的品牌。'})).toBeVisible();
+  await page.getByRole('button',{name:'先看看效果'}).click();
   await expect(page.locator('#conceptGrid .concept')).toHaveCount(3);
   await page.locator('[data-edit="0"]').click();
   await page.locator('#d_name').fill('自然奢华 · 定制版');
