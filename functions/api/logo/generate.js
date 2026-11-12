@@ -70,14 +70,14 @@ export async function onRequestPost({request,env}){
   const revise=data.mode==='refine';
   if(revise&&(!data.sourceSvg||rejectSvg(data.sourceSvg)||!clean(data.revision,500)))return reply({error:'valid source SVG and revision instruction required'},400);
   const serverKey=provider==='deepseek'?env.DEEPSEEK_API_KEY:env.OPENAI_API_KEY;
-  if(serverKey){
+  const temporaryKey=request.headers.get('X-Provider-Key')||'';
+  // A user-provided key must remain usable even when the platform also has a managed key.
+  // Never spend platform funds without an explicitly configured access token.
+  if(!temporaryKey&&serverKey){
     if(!env.LOGO_STUDIO_ACCESS_TOKEN)return reply({error:'server-funded generation disabled without access token'},503);
     if(request.headers.get('X-Logo-Access-Token')!==env.LOGO_STUDIO_ACCESS_TOKEN)return reply({error:'studio access token required'},401);
-  }else if(env.LOGO_STUDIO_ACCESS_TOKEN&&request.headers.get('X-Logo-Access-Token')!==env.LOGO_STUDIO_ACCESS_TOKEN){
-    return reply({error:'studio access token required'},401);
   }
-  const temporaryKey=request.headers.get('X-Provider-Key')||'';
-  const apiKey=serverKey||temporaryKey;
+  const apiKey=temporaryKey||serverKey;
   if(!apiKey||apiKey.length>300)return reply({error:'configure '+(provider==='deepseek'?'DEEPSEEK_API_KEY':'OPENAI_API_KEY')+' secret or supply a temporary provider key'},503);
   const input={
     request:clean(data.request,1500),brand:clean(data.brand,80),tagline:clean(data.tagline,120),
