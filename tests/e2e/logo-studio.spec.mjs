@@ -63,3 +63,21 @@ test('Logo Studio rejects unsafe SVG imports',async({page})=>{
  await expect(page.locator('#importStatus')).toContainText('静态结构检查通过');
  await expect(page.locator('#exportImported')).toBeEnabled();
 });
+
+test('Logo Studio quality gate cannot be bypassed below 90 or with missing legal attestations',async({page})=>{
+ await page.goto(base+'logo-studio/');
+ await expect(page.locator('#qaSummary')).toContainText('0/100');
+ const scores={brand:18,original:18,legibility:14,geometry:14,versatility:13,typography:9,production:4};
+ for(const [key,value] of Object.entries(scores))await page.locator('#score-'+key).fill(String(value));
+ await expect(page.locator('#qaSummary')).toContainText('90/100');
+ await expect(page.locator('#qaSummary')).toContainText('未通过发布门禁');
+ for(const id of ['logoTrademark','logoFont','logoLegible','logoOriginal','logoVisual'])await page.locator('#'+id).check();
+ await expect(page.locator('#qaSummary')).toContainText('内部质量门禁通过');
+ await page.locator('#score-brand').fill('17');
+ await expect(page.locator('#qaSummary')).toContainText('89/100');
+ await expect(page.locator('#qaSummary')).toContainText('未通过发布门禁');
+ const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#downloadReview').click()]);
+ const review=JSON.parse(await readFile(await download.path(),'utf8'));
+ expect(review.internalReviewPassed).toBe(false);
+ expect(review.legalTrademarkRegistrationVerified).toBe(false);
+});
