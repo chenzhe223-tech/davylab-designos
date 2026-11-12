@@ -179,6 +179,8 @@ test('QA feedback loop converts low scores into targeted revision instructions w
  expect(hist.records).toHaveLength(1);expect(hist.records[0].sha256).toMatch(/^[0-9a-f]{64}$/);
  expect(hist.records[0].origin).toBe('human-review');
  expect(hist.records[0].legalApproval).toBe(false);
+ await page.reload();
+ await expect(page.locator('#qaVersionHistory')).toContainText('V1');
 });
 test('QA cannot approve blank asset even with perfect human scores and checked gates',async({page})=>{
  await page.goto(base+'logo-studio/');
@@ -201,4 +203,16 @@ test('Optional AI source review is advisory and cannot auto-certify a brand',asy
  await expect(page.locator('#qaSummary')).toContainText('78/100');
  await expect(page.locator('#qaSummary')).toContainText('未通过发布门禁');
  for(const id of ['logoTrademark','logoFont','logoLegible','logoOriginal','logoVisual'])await expect(page.locator('#'+id)).not.toBeChecked();
+});
+
+test('Unsaved quality approval also becomes invalid after SVG change',async({page})=>{
+ await page.goto(base+'logo-studio/');
+ await page.locator('#svgUpload').setInputFiles({name:'logo.svg',mimeType:'image/svg+xml',buffer:Buffer.from(svg)});
+ await page.locator('#editImported').click();
+ await page.locator('#score-brand').fill('18');
+ await page.locator('#logoFont').check();
+ await page.locator('#wordmarkEdit').fill('REVISED DAVYLAB');
+ await page.locator('#applyVisual').click();
+ await expect(page.locator('#qaSummary')).toContainText('0/100');
+ await expect(page.locator('#logoFont')).not.toBeChecked();
 });
