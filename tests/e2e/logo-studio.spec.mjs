@@ -216,3 +216,30 @@ test('Unsaved quality approval also becomes invalid after SVG change',async({pag
  await expect(page.locator('#qaSummary')).toContainText('0/100');
  await expect(page.locator('#logoFont')).not.toBeChecked();
 });
+
+
+test('One sentence brief creates visibly updated, prompt-specific offline concepts',async({page})=>{
+ await page.goto(base+'logo-studio/');
+ const first=await page.locator('#results .preview svg').first().evaluate(el=>el.outerHTML);
+ await page.locator('#brief').fill('为晨光咖啡设计一个温暖自然的咖啡品牌标志');
+ await page.locator('#generate').click();
+ await expect(page.locator('#conceptStatus')).toContainText('已根据');
+ await expect(page.locator('#conceptStatus')).toContainText('晨光咖啡');
+ await expect(page.locator('#results .preview svg')).toHaveCount(3);
+ const coffee=await page.locator('#results .preview svg').first().evaluate(el=>el.outerHTML);
+ expect(coffee).not.toEqual(first);
+ expect(coffee).toContain('晨光咖啡');
+ await expect(page.locator('.hero-brand-object img')).toBeVisible();
+ await page.locator('#brief').fill('品牌名：星河科技。设计创新智能应用标志');
+ await page.locator('#generate').click();
+ const tech=await page.locator('#results .preview svg').first().evaluate(el=>el.outerHTML);
+ expect(tech).toContain('星河科技');
+ expect(tech).not.toEqual(coffee);
+ await expect(page.locator('#conceptStatus')).toContainText('星河科技');
+});
+test('Blank brand requirement gives an accessible error instead of a silent click',async({page})=>{
+ await page.goto(base+'logo-studio/');
+ await page.locator('#brief').fill('');
+ await page.locator('#generate').click();
+ await expect(page.locator('#conceptStatus')).toContainText('请先输入');
+});
