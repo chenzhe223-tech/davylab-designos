@@ -32,6 +32,9 @@ actions.prepend(oneSentence);
 byId('generate').textContent='离线草图参考（非 AI）';
 oneSentence.addEventListener('click',()=>{
   if(!byId('brief').value.trim()){byId('conceptStatus').textContent='请先输入一句品牌需求';byId('brief').focus();return}
+  const prompt=byId('brief').value.trim();
+  const named=prompt.match(/(?:品牌(?:名称|名)?|brand\\s*name)\\s*[：:]\\s*([^，,。；;\\n]{2,28})/i)||prompt.match(/(?:为|给)\\s*["“「]?([^"”」\\s，,。]{2,24})["”」]?\\s*(?:设计|制作|打造)/);
+  if(named)byId('brand').value=named[1].trim();
   byId('aiGenerate').click();
   production.scrollIntoView({behavior:'smooth',block:'start'});
 });
