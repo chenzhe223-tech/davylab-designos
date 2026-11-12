@@ -24,7 +24,7 @@ const REFINE=[
   'You are DAVYLAB Logo System, refining exactly one existing editable logo SVG.',
   'Preserve the recognizable design identity unless instruction explicitly requests change.',
   'Return JSON ONLY with concepts array containing exactly one object {name,rationale,construction,color,svg}.',
-  GUIDANCE
+  GUIDANCE.split('\n').filter(line=>!line.startsWith('Provide exactly three')&&!line.startsWith('Return VALID JSON ONLY')).join('\n')
 ].join('\n');
 const rejectSvg=(svg)=>{
   if(typeof svg!=='string'||svg.length>16000||svg.length<140||!/^<svg\b/i.test(svg.trim()))return 'SVG format/length';
