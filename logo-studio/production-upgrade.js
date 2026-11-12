@@ -25,6 +25,9 @@ oneSentence.type='button';oneSentence.id='oneSentenceAi';
 oneSentence.className='primary';
 oneSentence.textContent='✦ 一句话 AI 生成 Logo';
 const actions=byId('generate').parentElement;
+// Preserve the established two-button creator height and desktop alignment.
+// Quick mode offers AI and offline sketch; save remains available in Advanced.
+byId('advanced').append(byId('save'));
 actions.prepend(oneSentence);
 byId('generate').textContent='离线草图参考（非 AI）';
 oneSentence.addEventListener('click',()=>{
