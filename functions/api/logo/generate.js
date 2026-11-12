@@ -89,7 +89,7 @@ export async function onRequestPost({request,env}){
   const user=JSON.stringify({task:revise?'Refine the single SVG.':'Create three distinct original production-grade vector directions and a coherent brand strategy.',brief:input});
   const options={model,messages:[{role:'system',content:system},{role:'user',content:user}],
     response_format:{type:'json_object'},temperature:0.65,stream:false};
-  if(provider==='deepseek')options.max_tokens=10500;
+  if(provider==='deepseek'){options.max_tokens=10500;options.thinking={type:'disabled'};}
   else options.max_completion_tokens=10500;
   let upstream;
   try{
