@@ -5,15 +5,66 @@
 <label for="brief">品牌需求</label><textarea id="brief">为 DAVYLAB 设计一个极简、现代、具有创造力的科技品牌 Logo</textarea>
 <div id="advanced" hidden><div class="grid"><div><label for="brand">品牌名称</label><input id="brand" value="DAVYLAB"></div><div><label for="tagline">品牌口号</label><input id="tagline" value="把想法，做成能用的工具"></div><div><label for="type">标志类型</label><select id="type"><option value="combination">组合标志</option><option value="wordmark">纯文字</option><option value="lettermark">字母标志</option><option value="pictorial">具象图形</option><option value="abstract">抽象几何</option><option value="mascot">吉祥物</option><option value="emblem">徽章</option></select></div><div><label for="style">风格</label><select id="style"><option>极简现代</option><option>几何理性</option><option>精致高级</option><option>创意活力</option><option>经典复古</option></select></div><div><label for="color">品牌主色</label><input id="color" type="color" value="#2563ff"></div><div><label for="usage">主要用途</label><select id="usage"><option>全场景</option><option>App / 网站</option><option>实体印刷</option><option>品牌系统</option></select></div></div></div>
 <div class="actions"><button class="primary" id="generate">生成三套概念</button><button id="save">保存当前配置</button></div><p class="muted">概念生成采用确定性 SVG 模板，不冒充 AI 原创生成；可导出完整任务给外部 Agent 进行真正的品牌创作。</p></section>
-<section><h2>设计预览</h2><div class="grid" id="results" aria-live="polite"></div></section>
+<section><h2>AI 原创设计工作台</h2><p>这里使用真实模型响应，和上方离线 SVG 概念模板不同。可在同一页面生成、精修、编辑和导出。生产环境必须配置授权模型或使用临时个人密钥。</p>
+<div class="grid"><div><label for="accessToken">工作台访问令牌（如管理员已设置）</label><input id="accessToken" type="password" autocomplete="off" placeholder="可选；不保存"></div><div><label for="providerKey">临时 OpenAI API Key（可选）</label><input id="providerKey" type="password" autocomplete="off" placeholder="仅用于本次请求，不保存"></div></div>
+<div class="actions"><button id="aiGenerate" class="primary">调用真实 AI 生成三套方案</button><button id="saveAI">保存本地作品</button><button id="restoreAI">恢复本地作品</button></div>
+<p id="aiStatus" class="muted" role="status" aria-live="polite">尚未向模型发出请求。</p><div id="aiResults" class="grid"></div>
+<h3 id="selectedName">请选择 AI 生成方案</h3><label for="revision">精修意见</label><textarea id="revision" placeholder="例如：保持字母 D 的识别度，简化星光细节，增加留白并优化 24px 识别性"></textarea><button id="aiRefine">让 AI 精修当前方案</button>
+<h3>可视化快速精修</h3><div class="grid"><div><label for="wordmarkEdit">修改字标文字</label><input id="wordmarkEdit" placeholder="DAVYLAB" maxlength="60"></div><div><label for="colorEdit">修改图形主色</label><input type="color" id="colorEdit" value="#2563ff"></div><div><label for="fontSizeEdit">字标字号</label><input id="fontSizeEdit" type="range" min="8" max="120" value="40"></div></div><button id="applyVisual">应用可视化精修</button><p class="muted">适用于包含矢量形状和文字元素的 SVG；复杂标识仍可通过 AI 精修或源代码编辑完成。</p><label for="svgEditor">SVG 矢量源代码编辑</label><textarea id="svgEditor" spellcheck="false" style="min-height:160px;font-family:monospace" placeholder="在这里检查、修改生成的 SVG 矢量代码"></textarea>
+<div class="actions"><button id="applySvg">应用手动修改</button><button id="downloadAI">下载 SVG</button><button id="downloadPNG">下载 PNG</button><button id="downloadBrandGuide">下载品牌规范</button><button id="downloadPackage" class="primary">一键下载完整交付包</button></div>
+<p class="muted">AI 生成、手动修改、结构验证不等于商标审核通过；字体转曲和品牌正式发布仍需专项验收。</p></section><section><h2>离线草图参考（非 AI）</h2><div class="grid" id="results" aria-live="polite"></div></section>
 <section><h2>交付外部 AI Agent</h2><label for="agent">选择平台</label><select id="agent"><option>ChatGPT</option><option>Claude</option><option>WorkBuddy</option><option>通义千问</option><option>Kimi</option><option>GLM</option><option>Gemini</option><option>Cursor</option><option>其他 Agent</option></select><div class="actions"><button class="primary" id="makePrompt">生成完整指令</button><button id="copy">复制指令</button><button id="downloadPrompt">下载 Markdown</button></div><pre id="instruction" aria-live="polite">点击“生成完整指令”获取可复制的执行任务。</pre></section>
-</main><script>
-const $=id=>document.getElementById(id);let current=[];
+<section><h2>品牌质量验收 · 100 分</h2><p>此处由审核人填写真实评分和核验情况，不会虚构自动通过结果。未达到 90 分或强制门禁未全部确认，不允许标记内部验收通过。</p><div class="grid" id="rubric"></div>
+<div class="grid"><div><label for="reviewer">审核人</label><input id="reviewer" autocomplete="off" placeholder="填写审核人"></div><div><label for="reviewNotes">审核依据及备注</label><textarea id="reviewNotes" placeholder="商标检索国家/类别、字体许可证来源、实物印刷和小尺寸验证记录"></textarea></div></div>
+<div style="display:grid;gap:9px;margin-top:16px">
+<label><input type="checkbox" id="logoTrademark" style="width:auto"> 已开展适用市场的商标冲突检索并记录证据</label>
+<label><input type="checkbox" id="logoFont" style="width:auto"> 字体及素材许可已核实</label>
+<label><input type="checkbox" id="logoLegible" style="width:auto"> 24/32px 与深浅底可读性已人工检查</label>
+<label><input type="checkbox" id="logoOriginal" style="width:auto"> 图形原创差异性已人工审查</label>
+<label><input type="checkbox" id="logoVisual" style="width:auto"> SVG 与对外展示图片一致性已审核</label>
+</div><p id="qaSummary" aria-live="polite">尚未评分</p><button id="downloadReview">下载验收记录 JSON</button><p class="muted">自评通过不等同于商标注册或第三方法律意见；仅能证明审核人进行了相应检查。</p></section><section><h2>外部成果导入与验收</h2><p>将外部 Agent 输出的 SVG 文件导入 DesignOS。仅接受通过静态安全检查的 SVG，未完成商标和授权审查的文件不会标记为正式品牌资产。</p><label for="svgUpload">导入 SVG 文件</label><input id="svgUpload" type="file" accept=".svg,image/svg+xml"><div id="importStatus" role="status" aria-live="polite" class="muted">等待导入</div><div id="importPreview" class="preview" style="margin-top:14px;min-height:120px"></div><div class="actions"><button id="exportImported" disabled>下载已验证 SVG</button><button id="editImported" disabled>转入站内精修</button><button id="exportQA" disabled>下载 QA 报告</button></div></section></main><script>
+const $=id=>document.getElementById(id);let current=[];let imported=null,qa=null,previewUrl=null;
 function text(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function brief(){return {request:$('brief').value.trim(),brand:$('brand').value.trim()||'DAVYLAB',tagline:$('tagline').value.trim(),type:$('type').value,style:$('style').value,color:$('color').value,usage:$('usage').value,mode:$('advanced').hidden?'quick':'advanced'}}
 function svg(i){const b=brief(),name=text(b.brand.slice(0,40)),c=b.color;const marks=[`<path d="M25 20h50a40 40 0 0 1 0 80H25V20zm25 20v40h23a20 20 0 0 0 0-40z" fill="${c}" fill-rule="evenodd"/>`,`<path d="M60 12 108 60 60 108 12 60Z" fill="none" stroke="${c}" stroke-width="16"/><circle cx="60" cy="60" r="12" fill="${c}"/>`,`<circle cx="60" cy="60" r="43" fill="none" stroke="${c}" stroke-width="15"/><path d="M38 75 60 34 82 75" fill="none" stroke="${c}" stroke-width="12" stroke-linecap="round"/>`];return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 160" role="img" aria-label="${name} logo concept"><g transform="translate(14 15)">${marks[i]}</g><text x="145" y="91" font-family="Arial,sans-serif" font-weight="700" font-size="27" fill="#19221e">${name}</text></svg>`}
 function file(name,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 function render(){current=[0,1,2].map(svg);$('results').innerHTML=current.map((s,i)=>`<article><div class="preview">${s}</div><h3>${['01 · Forward','02 · Geometry','03 · Orbit'][i]}</h3><p class="muted">可编辑 SVG 概念模板 · 未经商标核查</p><button data-export="${i}">导出 SVG</button></article>`).join('');$('results').querySelectorAll('[data-export]').forEach(btn=>btn.addEventListener('click',()=>file('davylab-logo-concept-'+(Number(btn.dataset.export)+1)+'.svg',current[Number(btn.dataset.export)],'image/svg+xml')))}
-function prompt(){const b=brief(),a=$('agent').value;return `# DAVYLAB Logo System · ${a} 执行任务\n\n## 品牌需求\n${b.request}\n品牌：${b.brand}\n口号：${b.tagline}\n类型：${b.mode==='quick'?'智能推荐':b.type}\n风格：${b.mode==='quick'?'智能推荐':b.style}\n色彩：${b.mode==='quick'?'智能推荐':b.color}\n用途：${b.mode==='quick'?'全场景':b.usage}\n\n## 任务\n1. 梳理品牌定位、受众、品牌个性和竞争差异；缺失信息标记假设。\n2. 提供三套真正差异化的原创 Logo 方向，说明象征意义、几何结构、字体、配色和取舍。\n3. 生成真实高保真可视化设计及可编辑 SVG，不得以仅有提示词、低保真占位图或图片描摹冒充成品。\n4. 提供横排、竖排、图标、单色、深浅背景、24/32/64px 缩放预览及 PNG 导出。\n5. 提供色值、字体来源和授权状态、留白、安全区、最小尺寸及品牌使用规范。\n6. 执行 SVG 安全和结构校验、视觉一致性、可读性、原创性人工审查；商标检索和字体授权未完成必须标记为待审核。\n7. 评分：品牌契合20、原创20、可读15、几何15、适配15、字体色彩10、生产准备5；总分≥90 且全部强制门禁通过才可声明正式交付。\n\n## 交付\n三方向概念对比、最终 SVG/PNG、品牌指南、QA 报告、可下载资产包。明确区分设计完成、构建通过、运行验证、功能测试与生产发布。\n\n## 禁止\n禁止复制第三方现有商标、虚构商标检索、伪造测试结果、将演示预览称为已上线。\n`}
+const agentGuidance={
+ 'ChatGPT':'优先使用平台可用的图像生成工具完成高保真方案；SVG 必须来自可编辑矢量制作流程；若工具不能输出矢量文件，明确提供可执行的 SVG 重建任务。',
+ 'Claude':'按结构化文档和实际支持的产物格式组织工作；不假设具有图像生成或文件写入权限，若受限则提交清晰的矢量设计规范供下一工具执行。',
+ 'WorkBuddy':'以仓库为工作目录，先确认技能路径、现有文件与分支；真实修改、构建、浏览器 QA、导出资产和提交证据。不得直接覆盖已上线项目。',
+ '通义千问':'按当前会话实际开放的图像/代码/文件能力执行；无法生成可编辑矢量时不得声称完成 SVG，需交接给具备矢量编辑能力的执行者。',
+ 'Kimi':'优先输出完整品牌研究和结构化执行 brief；仅在具备实际文件创作能力时导出 SVG/PNG，并标注缺少的工具或权限。',
+ 'GLM':'按照当前可用的图像及编程工具分工执行；不得假设所有版本具备同等图像生成、外部文件访问能力。',
+ 'Gemini':'若支持图像生成与文件输出则执行相应步骤，否则输出可复现的矢量构造说明；所有未运行的测试必须显式标记。',
+ 'Cursor':'优先使用代码仓库、SVG path 编辑与浏览器自动测试，真实提交版本和运行记录；图像模型不可用时不得伪装视觉生成结果。'
+};
+function prompt(){const b=brief(),a=$('agent').value;return `# DAVYLAB Logo System · ${a} 执行任务\n\n## 品牌需求\n${b.request}\n品牌：${b.brand}\n口号：${b.tagline}\n类型：${b.mode==='quick'?'智能推荐':b.type}\n风格：${b.mode==='quick'?'智能推荐':b.style}\n色彩：${b.mode==='quick'?'智能推荐':b.color}\n用途：${b.mode==='quick'?'全场景':b.usage}\n\n## 平台专用执行约束\n${agentGuidance[a]||'以实际可用工具为准，不假设自动访问、图片或文件操作能力。'}\n\n## 任务\n1. 梳理品牌定位、受众、品牌个性和竞争差异；缺失信息标记假设。\n2. 提供三套真正差异化的原创 Logo 方向，说明象征意义、几何结构、字体、配色和取舍。\n3. 生成真实高保真可视化设计及可编辑 SVG，不得以仅有提示词、低保真占位图或图片描摹冒充成品。\n4. 提供横排、竖排、图标、单色、深浅背景、24/32/64px 缩放预览及 PNG 导出。\n5. 提供色值、字体来源和授权状态、留白、安全区、最小尺寸及品牌使用规范。\n6. 执行 SVG 安全和结构校验、视觉一致性、可读性、原创性人工审查；商标检索和字体授权未完成必须标记为待审核。\n7. 评分：品牌契合20、原创20、可读15、几何15、适配15、字体色彩10、生产准备5；总分≥90 且全部强制门禁通过才可声明正式交付。\n\n## 交付\n三方向概念对比、最终 SVG/PNG、品牌指南、QA 报告、可下载资产包。明确区分设计完成、构建通过、运行验证、功能测试与生产发布。\n\n## 禁止\n禁止复制第三方现有商标、虚构商标检索、伪造测试结果、将演示预览称为已上线。\n`}
 $('quickBtn').onclick=()=>{$('advanced').hidden=true;$('quickBtn').setAttribute('aria-pressed','true');$('advancedBtn').setAttribute('aria-pressed','false')};$('advancedBtn').onclick=()=>{$('advanced').hidden=false;$('advancedBtn').setAttribute('aria-pressed','true');$('quickBtn').setAttribute('aria-pressed','false')};$('generate').onclick=render;$('makePrompt').onclick=()=>{$('instruction').textContent=prompt()};$('copy').onclick=async()=>{await navigator.clipboard.writeText($('instruction').textContent)};$('downloadPrompt').onclick=()=>file('DAVYLAB-logo-agent-brief.md',$('instruction').textContent,'text/markdown');$('save').onclick=()=>{localStorage.setItem('davylab-logo-studio-v1',JSON.stringify(brief()));alert('已保存到当前浏览器')};try{const saved=JSON.parse(localStorage.getItem('davylab-logo-studio-v1')||'null');if(saved){$('brief').value=saved.request||'';for(const key of ['brand','tagline','type','style','color','usage'])if(saved[key])$(key).value=saved[key]}}catch{}render();
-</script></body></html>
+function validateSVG(source){
+ const findings=[];if(/<!DOCTYPE|<!ENTITY/i.test(source))findings.push('禁止 DTD/ENTITY');if(source.length>1024*1024)findings.push('文件超过 1 MB');
+ const doc=new DOMParser().parseFromString(source,'image/svg+xml');
+ if(doc.querySelector('parsererror')||doc.documentElement.localName!=='svg')findings.push('不是有效 SVG XML');
+ const prohibited=new Set(['script','foreignObject','iframe','object','embed','image','use','animate','set','animateTransform','animateMotion']);
+ for(const el of doc.querySelectorAll('*')){
+   if(prohibited.has(el.localName))findings.push('禁止元素: '+el.localName);
+   for(const attr of [...el.attributes]){
+     const k=attr.name.toLowerCase(),v=attr.value;
+     if(k.startsWith('on')||k==='href'||k.endsWith(':href')||k==='style'||(/url\s*\(|javascript:|data:|https?:|@import/i.test(v)&&k!=='xmlns'))findings.push('不安全属性: '+attr.name);
+   }
+ }
+ if(!doc.documentElement.getAttribute('viewBox'))findings.push('缺少 viewBox');
+ return {pass:findings.length===0,findings:[...new Set(findings)],checks:['XML 结构','外部资源/脚本','viewBox'],manualPending:['商标相似性','原创性','字体授权','24px 可读性','跨媒介视觉一致性']};
+}
+$('svgUpload').addEventListener('change',async e=>{
+ const f=e.target.files?.[0];if(!f)return;const source=await f.text();qa=validateSVG(source);imported=qa.pass?source:null;
+ $('importStatus').textContent=qa.pass?'静态结构检查通过；人工品牌审查仍待完成':'文件未通过检查：'+qa.findings.join('；');
+ $('exportImported').disabled=!qa.pass;$('editImported').disabled=!qa.pass;$('exportQA').disabled=false;
+ if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=null}
+ $('importPreview').replaceChildren();
+ if(qa.pass){previewUrl=URL.createObjectURL(new Blob([source],{type:'image/svg+xml'}));const img=document.createElement('img');img.src=previewUrl;img.alt='导入的 SVG 预览';img.style.maxWidth='100%';img.style.maxHeight='250px';$('importPreview').append(img)}
+});
+$('editImported').onclick=()=>{if(imported)try{window.DAVYLAB_LOGO_SESSION.loadImported(imported,'外部 Agent Logo')}catch(err){$('importStatus').textContent=err.message}};
+$('exportImported').onclick=()=>{if(imported)file('davylab-reviewed-structure.svg',imported,'image/svg+xml')};
+$('exportQA').onclick=()=>{if(qa)file('logo-import-qa.json',JSON.stringify({...qa,productionReady:false},null,2),'application/json')};
+</script><script type="module" src="./ai-session.js"></script><script type="module" src="./quality-gate.js"></script><script type="module" src="./visual-editor.js"></script><script type="module" src="./brand-guide.js"></script><script type="module" src="./package.js"></script></body></html>
