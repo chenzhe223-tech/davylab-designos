@@ -1,6 +1,13 @@
 name: Deploy DesignOS with Pages Functions
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'logo-studio/**'
+      - 'functions/api/logo/**'
+      - 'studio/index.html'
+      - '.github/workflows/deploy-logo-studio.yml'
 permissions:
   contents: read
 jobs:
