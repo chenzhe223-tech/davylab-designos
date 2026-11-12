@@ -13,6 +13,10 @@ const dimensions=[
 let baseline=null;
 let approvedAsset=null;
 const history=[];
+const HISTORY_KEY='davylab-logo-qa-history-v1';
+function persistHistory(){try{localStorage.setItem(HISTORY_KEY,JSON.stringify(history.slice(-25)))}catch{el('qaLoopStatus').textContent='本地空间不足，请导出历史记录备份。'}}
+function restoreHistory(){try{const past=JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]');if(Array.isArray(past)){for(const record of past.slice(-25))if(record?.sha256&&typeof record.svg==='string'&&record.svg.length<=16000&&typeof record.score==='number')history.push(record);baseline=history.at(-1)||null}}catch{history.length=0}}
+
 const svgNow=()=>el('svgEditor').value.trim();
 async function hash(s){if(!s)return null;const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return Array.from(new Uint8Array(d),x=>x.toString(16).padStart(2,'0')).join('')}
 function score(){return window.DAVYLAB_LOGO_QA()}
@@ -57,7 +61,7 @@ async function saveReview(){
  const record={version:history.length+1,createdAt:new Date().toISOString(),svg,sha256:fingerprint,score:r.total,scores:r.scores,gates:r.gates,internalReviewPassed:r.internalReviewPassed,notes:r.notes,reviewer:r.reviewer,
  issues:d.low.map(x=>({key:x.id,score:x.value,max:x.max,guidance:x.action})),pendingManualGates:d.gates,
  origin:'human-review',legalApproval:false};
- history.push(record);baseline=record;approvedAsset=fingerprint;renderHistory();el('qaLoopStatus').textContent='已记录版本 V'+record.version+' · '+fingerprint.slice(0,12)+'… 评分关联当前 SVG。';return record
+ history.push(record);baseline=record;approvedAsset=fingerprint;persistHistory();renderHistory();el('qaLoopStatus').textContent='已记录版本 V'+record.version+' · '+fingerprint.slice(0,12)+'… 评分关联当前 SVG。';return record
 }
 function renderHistory(){
  const root=el('qaVersionHistory');root.replaceChildren();
@@ -96,6 +100,7 @@ async function invalidateChangedAsset(){
  emit();
 }
 function attach(){
+ restoreHistory();renderHistory();
  el('rubric').addEventListener('input',emit);
  ['logoTrademark','logoFont','logoLegible','logoOriginal','logoVisual'].forEach(id=>el(id).addEventListener('change',emit));
  el('svgEditor').addEventListener('input',()=>{emit();invalidateChangedAsset()});
@@ -122,7 +127,7 @@ function attach(){
  el('qaCompare').onclick=compare;
  el('qaDownloadHistory').onclick=()=>{
   if(!history.length){el('qaLoopStatus').textContent='先记录一次评分';return}
-  const exported=history.map(({svg,...record})=>record);const url=URL.createObjectURL(new Blob([JSON.stringify({schema:'davylab-logo-review-history-v1',records:exported},null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='DAVYLAB-logo-quality-history.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000)
+  const exported=history;const url=URL.createObjectURL(new Blob([JSON.stringify({schema:'davylab-logo-review-history-v1',records:exported},null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='DAVYLAB-logo-quality-history.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000)
  };
  emit();
 }
