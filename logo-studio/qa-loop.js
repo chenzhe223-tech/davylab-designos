@@ -11,6 +11,7 @@ const dimensions=[
  {id:'production',name:'生产文件质量',max:5,focus:'SVG 可编辑性、安全性与输出文件',action:'提供结构清晰且无外部依赖的 SVG，并检查标志视口、透明背景和矢量路径'}
 ];
 let baseline=null;
+let approvedAsset=null;
 const history=[];
 const ESC=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;':'&quot;'}[c]));
 const svgNow=()=>el('svgEditor').value.trim();
@@ -57,7 +58,7 @@ async function saveReview(){
  const record={version:history.length+1,createdAt:new Date().toISOString(),svg,sha256:fingerprint,score:r.total,scores:r.scores,gates:r.gates,internalReviewPassed:r.internalReviewPassed,notes:r.notes,reviewer:r.reviewer,
  issues:d.low.map(x=>({key:x.id,score:x.value,max:x.max,guidance:x.action})),pendingManualGates:d.gates,
  origin:'human-review',legalApproval:false};
- history.push(record);baseline=record;renderHistory();el('qaLoopStatus').textContent='已记录版本 V'+record.version+' · '+fingerprint.slice(0,12)+'… 评分关联当前 SVG。';return record
+ history.push(record);baseline=record;approvedAsset=fingerprint;renderHistory();el('qaLoopStatus').textContent='已记录版本 V'+record.version+' · '+fingerprint.slice(0,12)+'… 评分关联当前 SVG。';return record
 }
 function renderHistory(){
  const root=el('qaVersionHistory');root.replaceChildren();
@@ -71,7 +72,7 @@ function restore(index){
  if(typeof loader!=='function'){el('qaLoopStatus').textContent='当前工作台暂不支持恢复 SVG';return}
  loader(record.svg,'QA 历史版本 V'+record.version);
  // Review is intentionally not restored as valid: human must re-attest each version.
- const note='已恢复 V'+record.version+' 设计；请对当前内容重新评分和审核，不能继承旧版的商标/许可确认。';
+ approvedAsset=null;const note='已恢复 V'+record.version+' 设计；请对当前内容重新评分和审核，不能继承旧版的商标/许可确认。';
  el('qaLoopStatus').textContent=note;
  ['logoTrademark','logoFont','logoLegible','logoOriginal','logoVisual'].forEach(id=>el(id).checked=false);
  dimensions.forEach(d=>el('score-'+d.id).value='0');
@@ -84,11 +85,24 @@ async function compare(){
  const now=score();const delta=now.total-old.score;
  el('qaComparison').textContent='基线 V'+old.version+' '+old.score+'/100 → 当前 '+now.total+'/100（'+(delta>=0?'+':'')+delta+'） · SVG '+(changed?'已更改，必须重新人工评审':'未改变')+'。';
 }
+async function invalidateChangedAsset(){
+ if(!approvedAsset)return;
+ const current=svgNow(),fingerprint=await hash(current);
+ if(fingerprint===approvedAsset)return;
+ approvedAsset=null;
+ ['logoTrademark','logoFont','logoLegible','logoOriginal','logoVisual'].forEach(id=>el(id).checked=false);
+ dimensions.forEach(d=>el('score-'+d.id).value='0');
+ el('reviewNotes').value='';el('rubric').dispatchEvent(new Event('input',{bubbles:true}));
+ el('qaLoopStatus').textContent='检测到新 SVG 版本：已清空旧版评分与审核确认，请重新评分并保存新版本。';
+ emit();
+}
 function attach(){
  el('rubric').addEventListener('input',emit);
  ['logoTrademark','logoFont','logoLegible','logoOriginal','logoVisual'].forEach(id=>el(id).addEventListener('change',emit));
- el('svgEditor').addEventListener('input',emit);
- el('svgEditor').addEventListener('change',emit);
+ el('svgEditor').addEventListener('input',()=>{emit();invalidateChangedAsset()});
+ el('svgEditor').addEventListener('change',()=>{emit();invalidateChangedAsset()});
+ ['applySvg','applyVisual','aiGenerate','aiRefine','restoreAI','editImported'].forEach(id=>el(id)?.addEventListener('click',()=>setTimeout(invalidateChangedAsset,180)));
+ el('aiResults').addEventListener('click',()=>setTimeout(invalidateChangedAsset,70));
  el('qaGenerateInstruction').onclick=()=>{
   const r=score(),prompt=instruction(r);
   el('qaGeneratedPrompt').value=prompt;el('revision').value=prompt;
