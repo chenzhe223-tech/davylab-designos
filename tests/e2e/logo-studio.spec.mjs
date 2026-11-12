@@ -6,7 +6,7 @@ for(const width of [375,390,430,1280]){
   test('Logo Studio responsive workspace '+width+'px',async({page})=>{
     const errors=[];page.on('pageerror',err=>errors.push(err.message));
     await page.setViewportSize({width,height:844});await page.goto(base);
-    await page.locator('a[href="./logo-studio/"]').first().click();
+    const nav=page.locator('a[href="./logo-studio/"]:visible').first();await expect(nav).toBeVisible();await nav.click();
     await expect(page).toHaveURL(/logo-studio/);
     await expect(page.locator('#quickBtn')).toBeVisible();
     await page.locator('#advancedBtn').click();
