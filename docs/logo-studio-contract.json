@@ -1,0 +1,77 @@
+{
+  "name": "DAVYLAB Logo Studio",
+  "version": "1.1.0",
+  "modes": [
+    "quick",
+    "advanced"
+  ],
+  "quick": {
+    "required": [
+      "prompt"
+    ],
+    "defaults": {
+      "conceptCount": 3,
+      "deliverables": [
+        "svg",
+        "png",
+        "brand-guide",
+        "qa-report"
+      ]
+    }
+  },
+  "advanced": {
+    "fields": {
+      "brandName": "string",
+      "tagline": "string",
+      "industry": "string",
+      "audience": "string",
+      "personality": "string[]",
+      "logoType": [
+        "wordmark",
+        "lettermark",
+        "pictorial",
+        "abstract",
+        "mascot",
+        "emblem",
+        "combination"
+      ],
+      "style": [
+        "minimal",
+        "geometric",
+        "editorial",
+        "expressive",
+        "heritage"
+      ],
+      "geometry": "string",
+      "typography": "string",
+      "colors": "string[]",
+      "negativeSpace": "boolean",
+      "layout": [
+        "horizontal",
+        "stacked",
+        "icon-only"
+      ],
+      "usage": "string[]",
+      "references": "string[]",
+      "avoid": "string[]"
+    }
+  },
+  "outputs": [
+    "concepts",
+    "editable-svg",
+    "transparent-png",
+    "variants",
+    "brand-guide",
+    "qa-report"
+  ],
+  "releaseGate": {
+    "minScore": 90,
+    "required": [
+      "svg-safe",
+      "license-reviewed",
+      "originality-reviewed",
+      "trademark-reviewed",
+      "small-size-reviewed"
+    ]
+  }
+}
