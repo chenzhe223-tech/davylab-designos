@@ -36,12 +36,14 @@ export async function onRequestPost({request,env}){
   const model=['deepseek-flash','deepseek-v4-pro'].includes(data?.model)?data.model:'deepseek-flash';
   const byok=clean(request.headers.get('X-Provider-Key'),300);
   const serverKey=clean(env?.DEEPSEEK_API_KEY,300);
-  const token=clean(env?.LOGO_STUDIO_ACCESS_TOKEN,300);
   // Platform-funded calls are only accepted after Cloudflare Access has authenticated
   // the request at the edge. Access must cover both /design-agent/* and /api/brand/*.
   const managed=!byok;
   if(managed){
     if(!serverKey)return json({error:'平台 DeepSeek 尚未配置，请联系管理员'},503);
+    // Avoid future unprotected custom-domain aliases accidentally exposing paid calls.
+    const hostname=new URL(request.url).hostname;
+    if(hostname!=='davylab-designos.pages.dev'&&!hostname.endsWith('.davylab-designos.pages.dev'))return json({error:'平台额度仅允许通过受保护的正式入口访问'},403);
     if(!request.headers.get('Cf-Access-Jwt-Assertion'))return json({error:'请先通过 DAVYLAB 登录验证'},401);
     if(!env?.DESIGN_QUOTA)return json({error:'平台调用额度尚未启用'},503);
     // One atomic reservation per UTC day. Count attempted calls to cap worst-case spend.
@@ -53,8 +55,6 @@ export async function onRequestPost({request,env}){
       ).bind(day).first();
       if(!reserved)return json({error:'今日品牌策划额度已用完（10次），请明天再试'},429);
     }catch{return json({error:'额度保护暂不可用，已停止付费调用'},503)}
-  }else if(!byok&&token&&request.headers.get('X-Logo-Access-Token')!==token){
-    return json({error:'需要管理员授权'},401);
   }
   const key=byok||serverKey;
   if(!key)return json({error:'请先配置 DeepSeek API Key'},503);
