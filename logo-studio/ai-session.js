@@ -2,7 +2,7 @@
 const $=id=>document.getElementById(id);
 const state={concepts:[],selected:0,source:'',pending:false,strategy:null,provider:'',model:''};
 const note=(message)=>{$('aiStatus').textContent=message};
-function getBrief(){const advanced=!$('advanced').hidden;const request=$('brief').value.trim();const parsed=request.match(/(?:品牌(?:名称|名)?|brand\\s*name)\\s*[：:]\\s*([^，,。；;\\n]{2,28})/i)||request.match(/(?:为|给)\\s*["“「]?([^"”」\\s，,。]{2,24})["”」]?\\s*(?:设计|制作|打造)/);const brand=advanced?$('brand').value.trim():(parsed?parsed[1].trim():$('brand').value.trim());return {request,brand,tagline:$('tagline').value.trim(),type:advanced?$('type').value:'auto',style:advanced?$('style').value:'auto',color:advanced?$('color').value:'auto',usage:advanced?$('usage').value:'all'}}
+function getBrief(){const advanced=!$('advanced').hidden;const request=$('brief').value.trim();const parsed=request.match(/(?:品牌(?:名称|名)?|brand\s*name)\s*[：:]\s*([^，,。；;\n]{2,28})/i)||request.match(/(?:为|给)\s*["“「]?([^"”」\s，,。]{2,24})["”」]?\s*(?:设计|制作|打造)/);const brand=advanced?$('brand').value.trim():(parsed?parsed[1].trim():$('brand').value.trim());return {request,brand,tagline:$('tagline').value.trim(),type:advanced?$('type').value:'auto',style:advanced?$('style').value:'auto',color:advanced?$('color').value:'auto',usage:advanced?$('usage').value:'all'}}
 function isSafeSvg(svg){
   const normalized=typeof svg==='string'?svg.replace(/xmlns=["']http:\/\/www\.w3\.org\/2000\/svg["']/g,''):svg;
   if(typeof svg!=='string'||svg.length>16000||/<!DOCTYPE|<!ENTITY|<\/?(?:script|foreignObject|iframe|object|embed|image|use|animate|set|style|filter)\b|\bon[a-z]+\s*=|(?:href|src)\s*=|url\s*\(|javascript:|data:|https?:|@import/i.test(normalized))return false;
