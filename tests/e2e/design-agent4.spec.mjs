@@ -13,6 +13,10 @@ test('Demo directions are clearly labelled, selectable and saved',async({page})=
   await expect(page.getByRole('heading',{name:'让品牌，从想法走向完整表达。'})).toBeVisible();
   await page.getByRole('button',{name:'查看示例预览'}).click();
   await expect(page.locator('#conceptGrid .concept')).toHaveCount(3);
+  await page.locator('[data-edit="0"]').click();
+  await page.locator('#d_name').fill('自然奢华 · 定制版');
+  await page.locator('#directionForm button[type="submit"]').click();
+  await expect(page.locator('#conceptGrid .concept').first()).toContainText('自然奢华 · 定制版');
   await expect(page.locator('#conceptSource')).toContainText('示例');
   await expect(page.locator('.concept .labelnotice').first()).toContainText('非正式 Logo');
   await page.locator('[data-select="0"]').click();
