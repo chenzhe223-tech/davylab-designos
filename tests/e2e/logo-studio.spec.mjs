@@ -186,3 +186,17 @@ test('QA cannot approve blank asset even with perfect human scores and checked g
  await expect(page.locator('#qaSummary')).toContainText('未通过发布门禁');
  await expect(page.locator('#qaSaveReview')).toBeDisabled();
 });
+
+test('Optional AI source review is advisory and cannot auto-certify a brand',async({page})=>{
+ await page.route('**/api/logo/review',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({source:'live-model',reviewType:'advisory-source-only',scores:{brand:18,original:12,legibility:12,geometry:12,versatility:12,typography:8,production:4},total:78,strengths:['clear mark'],risks:['small-size legibility'],recommendations:['simplify negative space'],limitations:['SVG source only'],autoApproved:false,manualGatesUnchanged:true})}));
+ await page.goto(base+'logo-studio/');
+ await page.locator('#svgUpload').setInputFiles({name:'logo.svg',mimeType:'image/svg+xml',buffer:Buffer.from(svg)});
+ await page.locator('#editImported').click();
+ await page.locator('#qaAIReview').click();
+ await expect(page.locator('#qaAdvisoryResult')).toContainText('78/100');
+ await expect(page.locator('#qaSummary')).toContainText('0/100');
+ await page.locator('#qaAdoptAIScores').click();
+ await expect(page.locator('#qaSummary')).toContainText('78/100');
+ await expect(page.locator('#qaSummary')).toContainText('未通过发布门禁');
+ for(const id of ['logoTrademark','logoFont','logoLegible','logoOriginal','logoVisual'])await expect(page.locator('#'+id)).not.toBeChecked();
+});
