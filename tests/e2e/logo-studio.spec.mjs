@@ -162,6 +162,8 @@ test('QA feedback loop converts low scores into targeted revision instructions w
  await page.locator('#qaGenerateInstruction').click();
  await expect(page.locator('#qaGeneratedPrompt')).toHaveValue(/独特的负空间/);
  await expect(page.locator('#revision')).toHaveValue(/独特的负空间/);
+ await page.locator('#makePrompt').click();
+ await expect(page.locator('#instruction')).toContainText('Logo QA 迭代与改进要求');
  await expect(page.locator('#qaLoopStatus')).toContainText('未调用模型');
  await page.locator('#qaSaveReview').click();
  await expect(page.locator('#qaVersionHistory')).toContainText('V1');
