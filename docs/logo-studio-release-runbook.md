@@ -8,6 +8,7 @@
 - Temporary provider API key held in input memory only (not saved in localStorage). Configure a server-owned key only together with `LOGO_STUDIO_ACCESS_TOKEN`.
 - User-controlled local archive, external Agent task instructions (ChatGPT, Claude, WorkBuddy, Qwen, Kimi, GLM, Gemini, Cursor), and import checks.
 - Score-based QA with five manually attested release gates and source SHA256.
+- Source-backed five-file ZIP delivery with SVG, PNG, brand-guide.md, agent-brief.md, QA JSON. External SVG round-trips into the no-code visual editor.
 
 ## Important boundaries
 - A valid SVG parser result DOES NOT prove trademark clearance, font licensing, brand originality or quality.
