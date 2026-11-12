@@ -101,7 +101,7 @@ async function plan(){
     if(r.source!=='live-deepseek'||r.directions?.length!==3||!r.strategy?.brand_name)throw Error('策划结果不完整');
     p.strategy=r.strategy;p.directions=r.directions.map(x=>({...x,svg:''}));p.selected=null;p.source=r.source;p.vectors=false;
     save(true);render();feedback('planFeedback','DeepSeek 已返回真实品牌策划和三套差异化方向。可修改右侧策略，再生成矢量稿。');location.hash='#concepts';
-  }catch(err){const msg=String(err.message||'');if(/Key|密钥|授权|401|503/i.test(msg)){document.querySelector('.advanced-settings').open=true;feedback('planFeedback','还差一步：在「高级设置」填写 DeepSeek API Key，然后重新点击开始设计。','error')}else feedback('planFeedback','设计暂未完成：'+msg,'error')}finally{setBusy(false)}
+  }catch(err){const msg=String(err.message||'');if(/登录|验证|401/i.test(msg)){feedback('planFeedback','请先登录 DAVYLAB，再重新开始设计。','error')}else if(/额度|429/i.test(msg)){feedback('planFeedback','今日 AI 策划次数已达上限，请明天再试。','error')}else feedback('planFeedback','设计暂未完成：'+msg,'error')}finally{setBusy(false)}
 }
 function applyStrategy(){
   if(!p.strategy)return;
