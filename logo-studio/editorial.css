@@ -152,7 +152,7 @@ body[data-theme="dark"] .hero-stage-label,body[data-theme="dark"] .hero-stage-in
 @media(min-width:991px) and (prefers-reduced-motion:no-preference){
   .creator-panel{animation:studio-panel-arrive .65s cubic-bezier(.18,.7,.25,1) both}
   .creator-panel:hover{box-shadow:0 28px 55px rgba(49,71,129,.17),0 5px 14px rgba(49,71,129,.07);transition:box-shadow .35s ease}
-  @keyframes studio-panel-arrive{from{opacity:.75;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes studio-panel-arrive{from{opacity:.72;filter:brightness(.98)}to{opacity:1;filter:brightness(1)}}
 }
 @media(min-width:731px) and (max-width:990px){
   .hero-editorial,.workspace-grid{grid-template-columns:minmax(250px,33%) minmax(0,1fr);gap:14px}
