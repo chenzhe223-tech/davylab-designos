@@ -76,11 +76,14 @@ jobs:
           grep -q "设计档案" /tmp/designos.html
           grep -q '"profileId":"davylab-warm-editorial"' /tmp/designos.html
           echo "PASS: Cloudflare Pages deployment verified: $URL"
-          curl --fail --silent --show-error --retry 3 "https://davylab-designos.pages.dev/design-agent/" -o /tmp/design-agent.html
-          grep -q "DAVYLAB Design Agent 4.0" /tmp/design-agent.html
-          curl --fail --silent --show-error --retry 3 "https://davylab-designos.pages.dev/api/brand/plan" -o /tmp/brand-plan.json
-          grep -q '"service":"brand-planning"' /tmp/brand-plan.json
-          echo "PASS: Design Agent 4.0 UI and Pages Function routes are live"
+          # Owner-only app and paid API must challenge unauthenticated visitors.
+          for PATH_TO_CHECK in "/design-agent/" "/api/brand/plan"; do
+            STATUS="$(curl --silent --output /tmp/design-access-check.html --write-out "%{http_code}" "https://davylab-designos.pages.dev$PATH_TO_CHECK")"
+            case "$STATUS" in
+              302|401|403) echo "PASS: Design Agent owner login protects $PATH_TO_CHECK (HTTP $STATUS)" ;;
+              *) echo "::error::Expected Cloudflare Access challenge for $PATH_TO_CHECK, got HTTP $STATUS"; exit 1 ;;
+            esac
+          done
           for PATH_TO_CHECK in "/resources/" "/resources/private-registry.json"; do
             STATUS="$(curl --silent --output /tmp/access-check.html --write-out "%{http_code}" "https://davylab-designos.pages.dev$PATH_TO_CHECK")"
             case "$STATUS" in
