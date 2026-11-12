@@ -243,3 +243,22 @@ test('Blank brand requirement gives an accessible error instead of a silent clic
  await page.locator('#generate').click();
  await expect(page.locator('#conceptStatus')).toContainText('请先输入');
 });
+
+
+test('Desktop hero, creator, preview and control panels share geometric alignment',async({page})=>{
+ await page.setViewportSize({width:1440,height:900});
+ await page.goto(base+'logo-studio/');
+ const positions=await page.evaluate(()=>{
+  const box=selector=>{const r=document.querySelector(selector).getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width}};
+  return {hero:box('.hero-cover'),creator:box('.creator-panel'),stage:box('.stage-panel'),motion:box('.motion-panel'),visual:box('.visual-panel'),controls:box('.editorial-controls'),documentWidth:document.documentElement.scrollWidth};
+ });
+ expect(Math.abs(positions.hero.left-positions.stage.left)).toBeLessThanOrEqual(2);
+ expect(Math.abs(positions.creator.top-positions.stage.top)).toBeLessThanOrEqual(2);
+ expect(Math.abs(positions.creator.bottom-positions.stage.bottom)).toBeLessThanOrEqual(2);
+ expect(Math.abs(positions.creator.left-positions.motion.left)).toBeLessThanOrEqual(2);
+ expect(Math.abs(positions.stage.right-positions.visual.right)).toBeLessThanOrEqual(2);
+ expect(Math.abs(positions.motion.top-positions.visual.top)).toBeLessThanOrEqual(2);
+ expect(positions.documentWidth).toBeLessThanOrEqual(1441);
+ await mkdir('artifacts/logo-studio',{recursive:true});
+ await page.screenshot({path:'artifacts/logo-studio/desktop-symmetric-grid.png',fullPage:true});
+});
