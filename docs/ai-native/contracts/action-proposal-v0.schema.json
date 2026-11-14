@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DAVYLAB Action Proposal v0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "appId",
+    "projectId",
+    "tool",
+    "expectedVersion",
+    "idempotencyKey",
+    "patch"
+  ],
+  "properties": {
+    "appId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "projectId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tool": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "expectedVersion": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "idempotencyKey": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 128
+    },
+    "patch": {
+      "type": "object"
+    },
+    "approvedBy": {
+      "type": "string",
+      "description": "Set only by authenticated server, never trusted from model output"
+    }
+  }
+}
