@@ -8,7 +8,8 @@
     "render": "node scripts/render.mjs",
     "test": "node --test tests/*.test.mjs",
     "typecheck": "tsc --noEmit",
-    "verify:receipt": "node scripts/verify-receipt.mjs"
+    "verify:receipt": "node scripts/verify-receipt.mjs",
+    "preflight": "node preflight.mjs"
   },
   "dependencies": {
     "@remotion/cli": "4.0.543",
