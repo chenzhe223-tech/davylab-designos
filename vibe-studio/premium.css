@@ -66,3 +66,12 @@
 .director-shot .director-status{color:#c9d7e9;font-size:11px;text-align:right}
 .director-plan small{font-size:11px;color:#bbd2eb;line-height:1.55;margin-top:5px}
 @media(max-width:750px){.director-panel{padding:12px}.director-shot{font-size:11px}.director-shot .director-status{font-size:10px}}
+
+/* Local project revisions: compact productivity control, not a cloud archive. */
+.version-panel{margin-top:16px;border:1px solid var(--line);border-radius:13px;background:#15354e45;padding:12px 14px}
+.version-panel summary{cursor:pointer;font-size:12px;font-weight:650;color:#e3f3ff;list-style-position:inside}
+.version-controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.version-controls button{border:1px solid #c9e3ff55;border-radius:10px;padding:9px 12px;color:#e9f6ff;background:#5789c647;font-size:12px;min-height:40px}
+.version-controls select{min-width:135px;flex:1;background:#16334c;border:1px solid #b7d8fb55;border-radius:10px;color:white;padding:8px;font-size:12px;min-height:40px}
+.version-panel p{font-size:11px;color:#bdcee1;margin:9px 0 0;line-height:1.5}
+@media(max-width:750px){.version-controls{display:grid;grid-template-columns:1fr}.version-controls>*{width:100%}}
