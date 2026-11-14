@@ -71,3 +71,19 @@ test('Mobile starts with a single obvious action and hides premature workflow',a
  await expect(page.locator('.advanced-settings')).not.toHaveAttribute('open','');
  await expect(page.locator('#planFeedback')).toContainText('设计暂未完成');
 });
+
+test('P1 native design QA flags example-only output and exports inspectable JSON',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('/design-agent/');
+ await page.locator('#loadDemo').click();
+ await page.locator('#runDesignQA').click();
+ await expect(page.locator('#qaSummary')).toContainText('需要修正');
+ await expect(page.locator('#qaFindings')).toContainText('演示方案');
+ await expect(page.locator('#exportDesignQA')).toBeEnabled();
+ const downloadPromise=page.waitForEvent('download');
+ await page.locator('#exportDesignQA').click();
+ const download=await downloadPromise;
+ expect(download.suggestedFilename()).toMatch(/^DAVYLAB-design-QA-/);
+ const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1);
+ expect(overflow).toBe(false);
+});
