@@ -14,6 +14,7 @@ test('Remotion Composition imports exactly the same production validator as rend
   const source=await readFile(new URL('../vibe-renderer/src/root.tsx',import.meta.url),'utf8');
   assert.match(source,/import\s+\{prepareRenderProject\}\s+from\s+['"]\.\.\/render-input\.mjs['"]/);
   assert.match(source,/prepareRenderProject\(props\.project\?\?DEFAULT\)/);
+  assert.match(source,/const DEFAULT=\{[^\n]*prompt:/,'default props must include a valid prompt');
   assert.doesNotMatch(source,/seconds<1\|\|seconds>600/);
 });
 
