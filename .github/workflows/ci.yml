@@ -78,6 +78,13 @@ jobs:
           retention-days: 14
       - name: Run desktop and mobile end-to-end tests
         run: npx playwright test
+      - name: Verify Design Agent browser evidence is complete
+        run: |
+          for width in 375 390 430 768 1440; do
+            test -s "artifacts/design-agent-p1/design-agent-${width}.png"
+            test -s "artifacts/design-agent-p1/rendered-layout-${width}.json"
+          done
+          echo "Five screenshots and five layout JSON reports verified."
       - name: Preserve Design Agent rendered screenshot and layout evidence
         if: always()
         uses: actions/upload-artifact@v4
