@@ -18,6 +18,27 @@ export function inspectSVGSource(svg){
  if(/<!DOCTYPE|<!ENTITY|<\s*\/?\s*(?:script|style|foreignObject|iframe|object|embed|image|use|animate|set|filter|pattern)\b|\bon[a-z-]+\s*=|(?:href|src)\s*=|url\s*\(|javascript:|data:|@import/i.test(normalized))return {safe:false,reason:'active-content'};
  return {safe:true,reason:'static-source-only'};
 }
+// Deterministic, non-destructive preview contrast recommendation. No AI claims.
+export function recommendContrastForeground(background,foreground,minRatio=4.5){
+ const original=contrastRatio(background,foreground);
+ if(original===null)return {status:'invalid',original_ratio:null,recommended:null};
+ if(original>=minRatio)return {status:'already-passes',original_ratio:original,recommended:foreground};
+ const options=['#000000','#FFFFFF'].map(color=>({color,ratio:contrastRatio(background,color)})).filter(x=>x.ratio>=minRatio);
+ options.sort((a,b)=>b.ratio-a.ratio);
+ return {status:options.length?'recommendation':'unresolved',original_ratio:original,recommended:options[0]?.color||null,recommended_ratio:options[0]?.ratio||null};
+}
+export function buildRemediationPlan(project){
+ const audit=auditBrandProject(project);
+ const steps=[];
+ for(let i=0;i<(project?.directions||[]).length;i++){
+  const d=project.directions[i],palette=d?.palette||[];
+  if(palette.length>=2){
+   const fix=recommendContrastForeground(palette[0],palette[1]);
+   if(fix.status==='recommendation')steps.push({code:'PREVIEW_CONTRAST',direction_id:d.id||'ABC'[i],index:i,field:'palette[1]',before:palette[1],after:fix.recommended,before_ratio:Number(fix.original_ratio.toFixed(2)),after_ratio:Number(fix.recommended_ratio.toFixed(2)),auto_applicable:true});
+  }
+ }
+ return {schema:'davylab-remediation-plan-v1',project_id:project?.id||null,issue_count:audit.issues.length,steps,manual_review_required:true,disclaimer:'仅提出可复核的色彩修复建议；不自动覆盖设计，商标/字体/视觉品质仍需人工审核'};
+}
 const issue=(code,severity,message,evidence,action)=>({code,severity,message,evidence,action});
 export function auditBrandProject(project){
  const issues=[],checks=[];
