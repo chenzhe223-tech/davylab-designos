@@ -1,17 +1,13 @@
 import React from 'react';
 import {Composition} from 'remotion';
+import {prepareRenderProject} from '../render-input.mjs';
 import {Film} from './film';
 const DEFAULT={title:'DAVYLAB Vibe Studio',format:'landscape',shots:[{title:'创意开始',visual:'星光汇聚',duration:5},{title:'世界生长',visual:'城市逐渐成形',duration:5},{title:'创意成片',visual:'光线形成品牌',duration:5}]};
 export const Root=()=> <Composition
  id="VibeFilm" component={Film} fps={30} width={1920} height={1080} durationInFrames={450}
  defaultProps={{project:DEFAULT}}
  calculateMetadata={({props})=>{
-  const project=props.project ?? DEFAULT;
-  const shots=Array.isArray(project.shots)?project.shots:[];
-  if(shots.length<1||shots.length>24)throw Error('Invalid shot count: expected 1–24');
-  const durations=shots.map((s,i)=>{const seconds=Number(s.duration??(Number(s.end)-Number(s.start)));if(!Number.isFinite(seconds)||seconds<1||seconds>120)throw Error('Invalid duration at shot '+(i+1));return seconds});
-  const seconds=durations.reduce((sum,duration)=>sum+duration,0);
-  if(seconds<15||seconds>120)throw Error('Video duration must be 15–120 seconds');
-  return {durationInFrames:Math.ceil(seconds*30),width:project.format==='portrait'?1080:1920,height:project.format==='portrait'?1920:1080};
+  const prepared=prepareRenderProject(props.project??DEFAULT);
+  return {durationInFrames:prepared.durationInFrames,width:prepared.width,height:prepared.height};
  }}
 />;
