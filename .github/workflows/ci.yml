@@ -83,7 +83,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: design-agent-p1-browser-evidence
-          path: test-results/
+          path: artifacts/design-agent-p1/
           if-no-files-found: warn
           retention-days: 14
       - name: Preserve DesignOS 3.0 visual QA screenshots
