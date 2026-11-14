@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {auditBrandProject,contrastRatio,luminance} from '../design-agent/quality.js';
+import {auditBrandProject,contrastRatio,luminance,inspectSVGSource} from '../design-agent/quality.js';
 const project={
  source:'live-deepseek',vectors:false,
  strategy:{brand_name:'ISLAND DAYS',positioning:'亲子海岛度假'},
@@ -47,4 +47,24 @@ test('Design Agent UI has real QA action, honest caveats and export',async()=>{
  assert.match(html,/不等于真实浏览器视觉验收/);
  assert.match(js,/auditBrandProject\(p\)/);
  assert.match(js,/DAVYLAB-design-QA-/);
+});
+
+test('planning pass never implies production delivery readiness',()=>{
+ const a=auditBrandProject(project);
+ assert.equal(a.passed,true);
+ assert.equal(a.ready_for_delivery,false);
+});
+test('SVG security source checks reject active content and missing viewBox',()=>{
+ const base='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M0 0 L100 100" fill="none" stroke="#111111"/></svg>';
+ const safe=base+' '.repeat(60);
+ assert.equal(inspectSVGSource(safe).safe,true);
+ assert.equal(inspectSVGSource(safe.replace('<path','<script>alert(1)</script><path')).safe,false);
+ assert.equal(inspectSVGSource(safe.replace('viewBox','data-box')).safe,false);
+ const p=structuredClone(project);
+ p.vectors=true;p.directions.forEach(d=>d.svg=safe);
+ assert.equal(auditBrandProject(p).ready_for_delivery,true);
+ p.directions[0].svg=safe.replace('<path','<script>alert(1)</script><path');
+ const result=auditBrandProject(p);
+ assert.equal(result.ready_for_delivery,false);
+ assert.ok(result.issues.some(x=>x.code==='SVG_UNSAFE'));
 });
