@@ -210,3 +210,11 @@ READ FIRST: `docs/vibe-studio/DELIVERY_STATUS.md` is the current P0–P3 accepta
 - With separately authorized network-enabled runner, install Remotion dependencies; run root build/tests and renderer typecheck; render >=15s real Remotion MP4 and modified re-render, independently inspect frames/QA receipts; only then mark P0 functional.
 - Execute true anidoodle integration/maintenance/license study, real DeepSeek server integration and UI browser tests; then actual knowledge-film >=30s, Stickman/Shotcraft story/product, and Manim multi-engine verified output.
 - All upgrades remain in feature branch `feat/vibe-studio-architecture-20261114`; user requires ongoing safe development in Chat, not Work handoff or automated schedules.
+
+## 2026-11-15 · P0 render receipt readback gate (Chat-only)
+
+- Audited branch HEAD `0f7741af320418c9f771148ba6f4659124de17c3`, renderer composition, QA, receipt and opt-in workflow. Branch existed and matched the handoff at start.
+- Commit `d72b7c3a9a2a208ec0f31776323a300e4f88079b`: in `vibe-renderer/scripts/render.mjs`, after atomically writing receipt and before marking job `verified`, invoke `loadAndCheckReceipt` to re-read persisted receipt, check actual MP4 byte size and SHA-256, and fail closed on mismatches. Existing catch path removes MP4/receipt and marks failed.
+- GitHub readback verified the import, check call and ordering ahead of verified job persistence. **This is source-level verification only**; no full fresh checkout tests, renderer typecheck, Remotion runtime, video playback, browser E2E or deployment were performed in this increment.
+- GitHub manual acceptance workflow remains opt-in and unexecuted. Render licensing and cloud job costs need separate approval; no cloud workflow was launched.
+- Next: run actual `npm run check`; renderer `npm install && npm test && npm run typecheck` and 15s/17s Remotion render + receipt/visual QA in licensed authorized runner, without counting FFmpeg proof as Remotion evidence.
