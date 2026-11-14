@@ -1,7 +1,7 @@
 import React from 'react';
 import {SceneArt} from './scene-art';
 import {AbsoluteFill,useCurrentFrame,useVideoConfig,spring} from 'remotion';
-type Shot={title:string;visual?:string;visualFamily?:'auto'|'city'|'particles'|'nature';duration?:number;start?:number;end?:number};
+type Shot={title:string;visual?:string;visualFamily?:'auto'|'city'|'particles'|'nature';narration?:string;motion?:string;duration?:number;start?:number;end?:number};
 type Project={title?:string;format?:string;shots:Shot[]};
 export const Film=({project}:{project:Project})=>{
  const frame=useCurrentFrame();const {fps,width,height}=useVideoConfig();const seconds=frame/fps;
@@ -20,6 +20,7 @@ export const Film=({project}:{project:Project})=>{
    <div style={{marginTop:32,fontSize:portrait?88:104,fontWeight:750,letterSpacing:-4,lineHeight:1.18,textShadow:'0 6px 40px #05162988'}}>{shot.title||'创意正在成形'}</div>
    <div style={{marginTop:20,fontSize:portrait?34:33,opacity:.82,maxWidth:width*.78,lineHeight:1.5}}>{shot.visual||'创意与技术，构成新的表达方式'}</div>
   </div>
+  {shot.narration?<div style={{position:'absolute',left:width*.1,right:width*.1,bottom:height*.15,textAlign:'center',fontSize:portrait?30:30,lineHeight:1.4,color:'#f8fcff',padding:'14px 24px',borderRadius:18,background:'rgba(8,31,49,.65)',textShadow:'0 2px 10px #081c33',opacity:fade}}>{shot.narration}</div>:null}
   <div style={{position:'absolute',bottom:height*.055,left:width*.085,right:width*.085,borderTop:'2px solid #ffffff48',paddingTop:23,display:'flex',justifyContent:'space-between',letterSpacing:4,fontSize:portrait?23:20}}>
    <span>BY DAVYLAB</span><span>{String(shot.index+1).padStart(2,'0')} / {String(shots.length).padStart(2,'0')}</span>
   </div>
