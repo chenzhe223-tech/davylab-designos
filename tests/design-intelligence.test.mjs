@@ -9,6 +9,7 @@ const names = ['awesome-design-md','design-extract','designer-skills','graphify'
 test('P0 catalog adds 11 truthful external references without duplicating pinned UI UX Pro Max', ()=>{
   const ids=registry.resources.map(r=>r.id);
   assert.equal(ids.length,36);
+  assert.equal(registry.inventoryScope.publicResourceCount,registry.resources.length);
   assert.equal(new Set(ids).size,ids.length);
   assert.equal(registry.resources.filter(r=>r.id==='ui-ux-pro-max').length,1);
   for(const name of names){
