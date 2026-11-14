@@ -52,3 +52,25 @@ npm run verify:receipt -- receipt.json /path/to/transferred-video.mp4
 Hash verification **checks integrity, not video quality by itself**. Use it only with a receipt produced after successful actual FFprobe/FFmpeg QA. The initial receipt implementation has no digital signature or authenticated publisher identity; do not treat an arbitrary externally supplied receipt as trustworthy.
 
 **Current evidence:** receipt logic was tested with temporary binary fixtures, including altered-size and same-size tampering rejection (3/3). This is not evidence of a real Remotion MP4 render.
+
+## License & cost gating before real renders (Remotion 4.0.543)
+
+The isolated render CLI defaults to **development renders** (`--is-production=false`) and fails before creating a render job if no licensing declaration has been configured. The implementation follows the official Remotion CLI flags available in 4.0.539+.
+
+If you have independently verified that you qualify for the Remotion Free License, configure the following values in your **private runtime environment** (never GitHub or browser JavaScript):
+
+```bash
+VIBE_REMOTION_LICENSE_KEY=free-license
+VIBE_FREE_LICENSE_CONFIRMED=true
+```
+
+If you are **not** eligible for the free license, follow Remotion's terms and obtain a suitable paid company license with a server-side `rm_sec_` key. Do not enable paid resources without approval.
+
+Only after explicit cost authorization may production rendering be enabled:
+
+```bash
+VIBE_RENDER_PRODUCTION=true
+VIBE_RENDER_COST_APPROVED=true
+```
+
+Do not commit secret license keys, place them in browser bundles, or paste them into shared logs. No actual Remotion render has been executed in the current environment. See https://www.remotion.dev/docs/options/license-key and https://www.remotion.dev/docs/license/pricing.
