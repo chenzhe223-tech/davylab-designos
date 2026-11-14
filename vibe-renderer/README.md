@@ -74,3 +74,25 @@ VIBE_RENDER_COST_APPROVED=true
 ```
 
 Do not commit secret license keys, place them in browser bundles, or paste them into shared logs. No actual Remotion render has been executed in the current environment. See https://www.remotion.dev/docs/options/license-key and https://www.remotion.dev/docs/license/pricing.
+
+## P0 offline preflight and manual acceptance
+
+Before attempting a paid or resource-intensive render, run:
+
+```bash
+cd vibe-renderer
+npm run preflight
+```
+
+Preflight reports Node version, local FFmpeg/FFprobe availability, installed Remotion/React packages and privately configured license consent. It **does not** call AI services, install packages, render video, or print license keys. Non-ready environments return exit code 2 and concrete blockers.
+
+The feature branch includes `.github/workflows/vibe-p0-render-acceptance.yml`, an **opt-in, manually triggered** GitHub Actions workflow which performs:
+- Full DesignOS check, renderer tests and TypeScript typecheck
+- Environment/license preflight with production rendering disabled
+- Real Remotion 15-second H.264 MP4 render with FFmpeg QA and SHA-256 receipt
+- Modified 17-second storyboard rerender, with changed input/output hash verification
+- Upload of both independently verified outputs and QA records
+
+This workflow has **not been run**. GitHub may require its workflow file to be available on the default branch before the manual Run workflow control appears. Confirm Remotion licensing eligibility and GitHub Actions usage/cost implications before choosing to run it; feature-branch code creation alone does not authorize any cloud job.
+
+As of 2026-11-15 the current sandbox has Node 22, FFmpeg/FFprobe 7.1.5 but cannot resolve npmjs/GitHub domains. Remotion dependencies and a license declaration are not present, so P0 real Remotion video acceptance remains pending.
