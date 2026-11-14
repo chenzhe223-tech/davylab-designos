@@ -18,3 +18,10 @@
 .timeline-shot{display:flex;align-items:center;justify-content:center;background:linear-gradient(120deg,#629de5a8,#8cbdff5e);border:1px solid #add6ff48;font-size:11px;color:#fff;white-space:nowrap;overflow:hidden;min-width:0}
 .timeline-shot:nth-child(even){background:linear-gradient(120deg,#5d89a6a6,#74d8e26b)}
 @media(max-width:750px){#shots .shot-row{grid-template-columns:minmax(0,1fr)}.shot-details{grid-template-columns:64px minmax(80px,1fr) 65px}.shot-actions{justify-content:flex-end}.shot-details .visual-input{grid-column:1/4}.timeline-shell{padding:11px}}
+
+/* Optional, explicitly authenticated DeepSeek storyboard capability */
+.ai-access{margin-top:14px;padding:13px 14px;border:1px solid var(--line);border-radius:14px;background:rgba(10,32,52,.25)}
+.ai-access label{margin:0 0 8px;color:#e2effc}
+.ai-access input{display:block;width:100%;min-height:42px;border-radius:10px;border:1px solid #b6d6f747;background:#0b2a43a3;color:#f7fbff;padding:9px 12px}
+.ai-access p{margin:9px 0 0;font-size:11px;line-height:1.5;color:#c9ddef}
+#generate-ai:disabled{opacity:.55}
