@@ -18,6 +18,7 @@ function selectCreationMode(mode,{announce=true}={}){
  $('current-mode').textContent=modeDescription(selected).title;
  if(announce)status('已选择「'+modeDescription(selected).title+'」；当前内容保留。此入口与其他模式共用编辑器。');
  if($('director-plan'))renderDirectorPlan();
+ renderDomainAssets();
 }
 document.querySelectorAll('.entry-card[data-mode]').forEach(card=>card.addEventListener('click',()=>selectCreationMode(card.dataset.mode)));
 selectCreationMode(project.mode,{announce:false});
@@ -25,6 +26,43 @@ selectCreationMode(project.mode,{announce:false});
 const synchronize=()=>{project.prompt=$('prompt').value.trim();project.format=$('format').value;project.shots=normalizeShots(project.shots||[]);return projectSnapshot(project)};
 function storyboard(){if(!$('prompt').value.trim()){status('请先输入创意');return}project.prompt=$('prompt').value.trim();project.format=$('format').value;project.shots=normalizeShots(demoShotsForMode(project.mode));renderShots();status('已生成「'+modeDescription(project.mode).title+'」规则式示例分镜（非 AI 生成），可调整时长与顺序')}
 const makeButton=(label,action,disabled=false)=>{const btn=document.createElement('button');btn.type='button';btn.className='shot-action';btn.textContent=label;btn.disabled=disabled;btn.addEventListener('click',action);return btn};
+function renderDomainAssets(){
+ $('knowledge-panel').hidden=project.mode!=='knowledge';
+ $('characters-panel').hidden=project.mode!=='story';
+ const sources=project.sources||[],claims=project.claims||[],characters=project.characters||[];
+ const sourceList=$('source-list'),claimList=$('claim-list'),characterList=$('character-list'),claimSelect=$('claim-source');
+ sourceList.replaceChildren();claimList.replaceChildren();characterList.replaceChildren();claimSelect.replaceChildren();
+ for(const source of sources){
+  const row=document.createElement('div');row.className='asset-row';const text=document.createElement('span');text.textContent=(source.title||source.id)+' · '+source.url;
+  const del=makeButton('移除',()=>{if((project.claims||[]).some(c=>c.sourceIds?.includes(source.id))){status('该来源已被论点引用，请先移除相应论点');return}project.sources=project.sources.filter(x=>x.id!==source.id);renderDomainAssets();renderShots()});
+  row.append(text,del);sourceList.append(row);
+  const option=document.createElement('option');option.value=source.id;option.textContent=source.title||source.url;claimSelect.append(option)
+ }
+ for(const claim of claims){const row=document.createElement('div');row.className='asset-row';const text=document.createElement('span');text.textContent=claim.text+' · '+claim.sourceIds.join(',');row.append(text,makeButton('移除',()=>{project.claims=project.claims.filter(x=>x.id!==claim.id);renderDomainAssets()}));claimList.append(row)}
+ for(const character of characters){const row=document.createElement('div');row.className='asset-row';const text=document.createElement('span');text.textContent=(character.name||character.id)+' · '+character.appearance;row.append(text,makeButton('移除',()=>{if((project.shots||[]).some(x=>x.characterIds?.includes(character.id))){status('角色正在被镜头引用，请先解除引用');return}project.characters=project.characters.filter(x=>x.id!==character.id);renderDomainAssets();renderShots()}));characterList.append(row)}
+}
+const newId=prefix=>prefix+'-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7);
+$('add-source').onclick=()=>{
+ try{
+  const raw=$('source-url').value.trim(),url=new URL(raw);if(!['http:','https:'].includes(url.protocol))throw Error('仅支持 http/https 网页');
+  if((project.sources||[]).length>=40)throw Error('来源数量最多 40 条');
+  project.sources=[...(project.sources||[]),{id:newId('src'),url:url.href,title:url.hostname,excerpt:$('source-excerpt').value.trim()}];
+  $('source-url').value='';$('source-excerpt').value='';renderDomainAssets();renderShots();status('已登记用户提供的参考资料，尚未自动核验其真实性');
+ }catch(e){status('添加来源失败：'+e.message)}
+};
+$('add-claim').onclick=()=>{
+ const text=$('claim-text').value.trim(),source=$('claim-source').value;
+ if(!text||!source){status('请先输入论点，并关联一个已登记的来源');return}
+ project.claims=[...(project.claims||[]),{id:newId('claim'),text,sourceIds:[source]}];
+ $('claim-text').value='';renderDomainAssets();status('论点引用关系已保存；事实准确性仍需独立核查');
+};
+$('add-character').onclick=()=>{
+ const name=$('character-name').value.trim(),appearance=$('character-look').value.trim();
+ if(!name||!appearance){status('请填写角色名称与外观设定');return}
+ if((project.characters||[]).length>=24){status('角色档案最多支持 24 个');return}
+ project.characters=[...(project.characters||[]),{id:newId('character'),name,appearance,assetIds:[]}];
+ $('character-name').value='';$('character-look').value='';renderDomainAssets();renderShots();status('角色档案已保存为工程数据；尚未生成角色图像');
+};
 function renderDirectorPlan(){
  const container=$('director-plan');if(!container)return;
  container.replaceChildren();
@@ -40,7 +78,19 @@ function renderDirectorPlan(){
   const foot=document.createElement('small');foot.textContent='Remotion 为统一合成底座；其他 Skill 必须通过独立真实运行测试才能启用。';container.append(foot)
  }catch(error){container.textContent='引擎建议无法计算：'+error.message}
 }
-function renderShots(){const shots=project.shots||[];const container=$('shots');container.replaceChildren();shots.forEach((shot,i)=>{const li=document.createElement('li');li.className='shot-row';const details=document.createElement('div');details.className='shot-details';const clock=document.createElement('span');clock.className='shot-clock';clock.textContent=shot.start+'–'+shot.end+'s';const title=document.createElement('input');title.value=shot.title;title.maxLength=100;title.setAttribute('aria-label','镜头 '+(i+1)+' 标题');const duration=document.createElement('input');duration.type='number';duration.min='1';duration.max='120';duration.step='1';duration.value=String(shot.duration);duration.className='duration-input';duration.setAttribute('aria-label','镜头 '+(i+1)+' 时长（秒）');const visual=document.createElement('input');visual.value=shot.visual||'';visual.maxLength=1000;visual.className='visual-input';visual.setAttribute('aria-label','镜头 '+(i+1)+' 画面说明');title.addEventListener('change',()=>{project.shots=updateShot(project.shots,i,{title:title.value});renderShots()});duration.addEventListener('change',()=>{try{project.shots=updateShot(project.shots,i,{duration:Number(duration.value)});status('镜头时长已更新')}catch(e){status(e.message)}renderShots()});visual.addEventListener('change',()=>{project.shots=updateShot(project.shots,i,{visual:visual.value});renderShots()});const family=document.createElement('select');family.className='visual-family-select';family.setAttribute('aria-label','镜头 '+(i+1)+' 程序化画面');for(const [value,label] of [['auto','画面：自动匹配'],['particles','画面：星光粒子'],['city','画面：城市建筑'],['nature','画面：自然山景']]){const option=document.createElement('option');option.value=value;option.textContent=label;family.append(option)}family.value=shot.visualFamily||'auto';family.addEventListener('change',()=>{project.shots=updateShot(project.shots,i,{visualFamily:family.value});renderShots();status('已修改镜头 '+(i+1)+' 画面类型；预览将同步更新')});const motion=document.createElement('input');motion.className='motion-input';motion.value=shot.motion||'';motion.maxLength=1000;motion.placeholder='导演镜头运动（暂不控制动画）';motion.setAttribute('aria-label','镜头 '+(i+1)+' 导演镜头运动');motion.addEventListener('change',()=>{project.shots=updateShot(project.shots,i,{motion:motion.value});renderShots()});const narration=document.createElement('input');narration.className='narration-input';narration.value=shot.narration||'';narration.maxLength=1000;narration.placeholder='字幕文案（不生成配音）';narration.setAttribute('aria-label','镜头 '+(i+1)+' 字幕文案');narration.addEventListener('change',()=>{project.shots=updateShot(project.shots,i,{narration:narration.value});renderShots();status('镜头字幕已更新；预览将同步更新')});details.append(clock,title,duration,visual,family,motion,narration);const actions=document.createElement('div');actions.className='shot-actions';actions.append(makeButton('↑',()=>{project.shots=moveShot(project.shots,i,-1);renderShots()},i===0),makeButton('↓',()=>{project.shots=moveShot(project.shots,i,1);renderShots()},i===shots.length-1),makeButton('删除',()=>{project.shots=removeShot(project.shots,i);renderShots()}));li.append(details,actions);container.append(li)});renderTimeline();renderDirectorPlan()}
+function renderShots(){const shots=project.shots||[];const container=$('shots');container.replaceChildren();shots.forEach((shot,i)=>{const li=document.createElement('li');li.className='shot-row';const details=document.createElement('div');details.className='shot-details';const clock=document.createElement('span');clock.className='shot-clock';clock.textContent=shot.start+'–'+shot.end+'s';const title=document.createElement('input');title.value=shot.title;title.maxLength=100;title.setAttribute('aria-label','镜头 '+(i+1)+' 标题');const duration=document.createElement('input');duration.type='number';duration.min='1';duration.max='120';duration.step='1';duration.value=String(shot.duration);duration.className='duration-input';duration.setAttribute('aria-label','镜头 '+(i+1)+' 时长（秒）');const visual=document.createElement('input');visual.value=shot.visual||'';visual.maxLength=1000;visual.className='visual-input';visual.setAttribute('aria-label','镜头 '+(i+1)+' 画面说明');title.addEventListener('change',()=>{project.shots=updateShot(project.shots,i,{title:title.value});renderShots()});duration.addEventListener('change',()=>{try{project.shots=updateShot(project.shots,i,{duration:Number(duration.value)});status('镜头时长已更新')}catch(e){status(e.message)}renderShots()});visual.addEventListener('change',()=>{project.shots=updateShot(project.shots,i,{visual:visual.value});renderShots()});const family=document.createElement('select');family.className='visual-family-select';family.setAttribute('aria-label','镜头 '+(i+1)+' 程序化画面');for(const [value,label] of [['auto','画面：自动匹配'],['particles','画面：星光粒子'],['city','画面：城市建筑'],['nature','画面：自然山景']]){const option=document.createElement('option');option.value=value;option.textContent=label;family.append(option)}family.value=shot.visualFamily||'auto';family.addEventListener('change',()=>{project.shots=updateShot(project.shots,i,{visualFamily:family.value});renderShots();status('已修改镜头 '+(i+1)+' 画面类型；预览将同步更新')});const motion=document.createElement('input');motion.className='motion-input';motion.value=shot.motion||'';motion.maxLength=1000;motion.placeholder='导演镜头运动（暂不控制动画）';motion.setAttribute('aria-label','镜头 '+(i+1)+' 导演镜头运动');motion.addEventListener('change',()=>{project.shots=updateShot(project.shots,i,{motion:motion.value});renderShots()});const narration=document.createElement('input');narration.className='narration-input';narration.value=shot.narration||'';narration.maxLength=1000;narration.placeholder='字幕文案（不生成配音）';narration.setAttribute('aria-label','镜头 '+(i+1)+' 字幕文案');narration.addEventListener('change',()=>{project.shots=updateShot(project.shots,i,{narration:narration.value});renderShots();status('镜头字幕已更新；预览将同步更新')});const engineTag=document.createElement('select');engineTag.className='engine-tag-select';engineTag.setAttribute('aria-label','镜头 '+(i+1)+' 专业引擎优先级');for(const [value,label] of [['','引擎：自动选择'],['precise-math','精确数学 · Manim'],['knowledge-explainer','知识影片 · knowledge-film'],['character-story','角色叙事 · Stickman'],['cinematic-product','产品镜头 · Shotcraft']]){const opt=document.createElement('option');opt.value=value;opt.textContent=label;engineTag.append(opt)}engineTag.value=(shot.tags||[])[0]||'';engineTag.addEventListener('change',()=>{project.shots=updateShot(project.shots,i,{tags:engineTag.value?[engineTag.value]:[]});renderShots();status('已修改引擎建议；未通过实际验证的引擎不会启动')});
+const extras=[engineTag];
+if(project.mode==='story'){
+ const pick=document.createElement('select');pick.className='character-ref-select';pick.setAttribute('aria-label','镜头 '+(i+1)+' 角色引用');
+ for(const [id,name] of [['','不指定角色'],...(project.characters||[]).map(x=>[x.id,x.name||x.id])]){const option=document.createElement('option');option.value=id;option.textContent=name;pick.append(option)}
+ pick.value=shot.characterIds?.[0]||'';pick.addEventListener('change',()=>{project.shots=updateShot(project.shots,i,{characterIds:pick.value?[pick.value]:[]});renderShots()});extras.push(pick)
+}
+if(project.mode==='knowledge'){
+ const pick=document.createElement('select');pick.className='source-ref-select';pick.setAttribute('aria-label','镜头 '+(i+1)+' 来源引用');
+ for(const [id,name] of [['','不指定来源'],...(project.sources||[]).map(x=>[x.id,x.title||x.url])]){const option=document.createElement('option');option.value=id;option.textContent=name;pick.append(option)}
+ pick.value=shot.sourceIds?.[0]||'';pick.addEventListener('change',()=>{project.shots=updateShot(project.shots,i,{sourceIds:pick.value?[pick.value]:[]});renderShots()});extras.push(pick)
+}
+details.append(clock,title,duration,visual,family,motion,narration,...extras);const actions=document.createElement('div');actions.className='shot-actions';actions.append(makeButton('↑',()=>{project.shots=moveShot(project.shots,i,-1);renderShots()},i===0),makeButton('↓',()=>{project.shots=moveShot(project.shots,i,1);renderShots()},i===shots.length-1),makeButton('删除',()=>{project.shots=removeShot(project.shots,i);renderShots()}));li.append(details,actions);container.append(li)});renderTimeline();renderDirectorPlan()}
 function renderTimeline(){const shots=project.shots||[];const duration=shots.length?totalDuration(shots):0;$('timeline-duration').textContent=duration+' 秒';const track=$('timeline');track.replaceChildren();if(!duration){const empty=document.createElement('span');empty.textContent='生成分镜后显示镜头时间轴';track.append(empty);return}shots.forEach((shot,i)=>{const block=document.createElement('button');block.type='button';block.className='timeline-shot';block.setAttribute('aria-label','跳转镜头 '+(i+1));block.addEventListener('click',()=>{if(recording){status('录制期间无法跳转，请完成录制后再操作');return}start=performance.now()-shot.start*1000;status('跳转到镜头 '+(i+1)+'：'+shot.title)});block.style.flexGrow=String(shot.duration);block.style.flexBasis='0';block.title=shot.title+'：'+shot.start+'–'+shot.end+' 秒';block.textContent=(i+1)+' · '+shot.duration+'s';track.append(block)})}
 function download(name,content,type='application/json'){const a=document.createElement('a');const u=URL.createObjectURL(content instanceof Blob?content:new Blob([content],{type}));a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
 $('create').onclick=storyboard;
