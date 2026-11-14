@@ -52,7 +52,7 @@ test('Design Agent UI has real QA action, honest caveats and export',async()=>{
 test('planning pass never implies production delivery readiness',()=>{
  const a=auditBrandProject(project);
  assert.equal(a.passed,true);
- assert.equal(a.ready_for_delivery,false);
+ assert.equal(a.automated_asset_gate_passed,false);
 });
 test('SVG security source checks reject active content and missing viewBox',()=>{
  const base='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M0 0 L100 100" fill="none" stroke="#111111"/></svg>';
@@ -62,9 +62,9 @@ test('SVG security source checks reject active content and missing viewBox',()=>
  assert.equal(inspectSVGSource(safe.replace('viewBox','data-box')).safe,false);
  const p=structuredClone(project);
  p.vectors=true;p.directions.forEach(d=>d.svg=safe);
- assert.equal(auditBrandProject(p).ready_for_delivery,true);
+ assert.equal(auditBrandProject(p).automated_asset_gate_passed,true);
  p.directions[0].svg=safe.replace('<path','<script>alert(1)</script><path');
  const result=auditBrandProject(p);
- assert.equal(result.ready_for_delivery,false);
+ assert.equal(result.automated_asset_gate_passed,false);
  assert.ok(result.issues.some(x=>x.code==='SVG_UNSAFE'));
 });
