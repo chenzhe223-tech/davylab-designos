@@ -1,5 +1,6 @@
 import {readFile,writeFile,mkdir,stat,unlink,rename} from 'node:fs/promises';
-import {randomUUID} from 'node:crypto';
+import {randomUUID,createHash} from 'node:crypto';
+import {createReadStream} from 'node:fs';
 import {resolve,dirname,join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {spawn} from 'node:child_process';
@@ -7,6 +8,7 @@ import {prepareRenderProject} from '../render-input.mjs';
 import {inspectMp4} from './qa-video.mjs';
 import {createRenderJob,transitionRenderJob} from '../job-state.mjs';
 const here=resolve(dirname(fileURLToPath(import.meta.url)),'..');
+const hashOutput=path=>new Promise((resolveHash,reject)=>{const hash=createHash('sha256');const stream=createReadStream(path);stream.on('data',chunk=>hash.update(chunk));stream.on('error',reject);stream.on('end',()=>resolveHash(hash.digest('hex')))});
 const input=process.argv[2];if(!input){console.error('Usage: npm run render -- /absolute/path/project.json');process.exit(2)}
 const root=resolve(process.cwd(),'output');await mkdir(root,{recursive:true});
 let prepared;try{prepared=prepareRenderProject(JSON.parse(await readFile(resolve(input),'utf8')))}catch(e){console.error('Invalid input: '+e.message);process.exit(2)}
@@ -31,6 +33,7 @@ try{
  job=transitionRenderJob(job,'qa');await persist();
  const qa=await inspectMp4(output,{expectedSeconds:prepared.durationSeconds});
  if(qa.width!==prepared.width||qa.height!==prepared.height)throw new Error('QA resolution mismatch');
- job=transitionRenderJob(job,'verified',{evidence:qa});await persist();
+ const outputSha256=await hashOutput(output);
+ job=transitionRenderJob(job,'verified',{evidence:{...qa,outputSha256}});await persist();
  console.log(JSON.stringify({jobFile,output,bytes:file.size,durationSeconds:qa.durationSeconds,expectedSeconds:prepared.durationSeconds,qa,verified:true}));
-}catch(error){job=transitionRenderJob(job,'failed',{error:error.message});await persist().catch(()=>{});console.error('Render/QA failed: '+error.message);process.exitCode=1}finally{await unlink(propsFile).catch(()=>{})}
+}catch(error){job=transitionRenderJob(job,'failed',{error:error.message});await unlink(output).catch(()=>{});await persist().catch(()=>{});console.error('Render/QA failed: '+error.message);process.exitCode=1}finally{await unlink(propsFile).catch(()=>{})}
