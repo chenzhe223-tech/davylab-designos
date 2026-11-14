@@ -1,0 +1,87 @@
+name: Vibe Studio P0 - Manual real MP4 acceptance
+
+# Manual only: no scheduled runs, pushes, deployments or implicit paid resources.
+on:
+  workflow_dispatch:
+    inputs:
+      accept_render:
+        description: "I have checked the Remotion license and authorize this explicit render"
+        type: boolean
+        required: true
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  p0-render:
+    if: ${{ inputs.accept_render == true }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      VIBE_REMOTION_LICENSE_KEY: ${{ secrets.VIBE_REMOTION_LICENSE_KEY }}
+      VIBE_FREE_LICENSE_CONFIRMED: ${{ vars.VIBE_FREE_LICENSE_CONFIRMED }}
+      VIBE_RENDER_PRODUCTION: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate DesignOS build and all root tests
+        run: npm run check
+      - name: Install pinned Remotion dependencies
+        working-directory: vibe-renderer
+        run: npm install --no-audit --no-fund
+      - name: Test and typecheck isolated video engine
+        working-directory: vibe-renderer
+        run: |
+          npm test
+          npm run typecheck
+      - name: Enforce manual non-production licensing
+        run: |
+          test -n "$VIBE_REMOTION_LICENSE_KEY" || { echo "Remotion license secret missing"; exit 1; }
+          test "$VIBE_RENDER_PRODUCTION" = "false"
+      - name: Render real 15-second source video and verify evidence
+        working-directory: vibe-renderer
+        run: |
+          npm run render -- ./examples/p0-city-15s.json
+          receipt=$(find output -maxdepth 1 -type f -name 'render-receipt-*.json' | head -1)
+          test -n "$receipt"
+          npm run verify:receipt -- "$receipt"
+      - name: Generate modified storyboard to prove re-render editability
+        working-directory: vibe-renderer
+        run: |
+          node --input-type=module -e "import{readFileSync,writeFileSync}from'node:fs';const p=JSON.parse(readFileSync('./examples/p0-city-15s.json','utf8'));p.shots[1].duration=7;p.shots[1].title='城市在晨光中生长';p.shots[1].visual='新的建筑随镜头运动逐渐显现';writeFileSync('./output/edited-17s.json',JSON.stringify(p,null,2));"
+          npm run render -- ./output/edited-17s.json
+      - name: Inspect two independent real QA reports and changed output
+        working-directory: vibe-renderer
+        run: |
+          node --input-type=module <<'NODE'
+          import {readdir,readFile} from 'node:fs/promises';
+          import {join} from 'node:path';
+          import {checkRenderReceipt} from './artifact-receipt.mjs';
+          const receipts=(await readdir('output')).filter(n=>/^render-receipt-.*\.json$/.test(n));
+          if(receipts.length!==2)throw new Error('Expected exactly two verified MP4 receipts');
+          const data=await Promise.all(receipts.map(async name=>{
+            const receipt=JSON.parse(await readFile(join('output',name),'utf8'));
+            await checkRenderReceipt(receipt);
+            return receipt;
+          }));
+          const durations=data.map(r=>r.durationSeconds).sort((a,b)=>a-b);
+          if(Math.abs(durations[0]-15)>.5||Math.abs(durations[1]-17)>.5)throw Error('Edit and re-render durations mismatch: '+durations);
+          if(data[0].inputSha256===data[1].inputSha256||data[0].outputSha256===data[1].outputSha256)throw Error('Input edit did not change the real output');
+          for(const r of data)if(!r.qaVerified||r.codec!=='h264'||r.blackRegions!==0)throw Error('Media QA not verified');
+          console.log(JSON.stringify({verified:true,renderCount:2,durations,inputChanged:true,outputChanged:true},null,2));
+          NODE
+      - name: Upload independently validated MP4 and QA evidence
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe-p0-real-mp4-acceptance
+          path: |
+            vibe-renderer/output/*.mp4
+            vibe-renderer/output/render-job-*.json
+            vibe-renderer/output/render-receipt-*.json
+            vibe-renderer/output/edited-17s.json
+          retention-days: 3
+          if-no-files-found: error
