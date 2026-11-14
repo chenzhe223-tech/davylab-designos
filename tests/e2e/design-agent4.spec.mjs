@@ -101,7 +101,7 @@ for(const width of [375,390,430,768,1440]){
    const selectors=['#runPlan','#loadDemo','#runDesignQA','#exportDesignQA','#generateVectors','#openLogo'];
    const rect=(el)=>{const b=el.getBoundingClientRect();return {left:b.left,right:b.right,width:b.width,height:b.height}};
    const panels=roots.map(s=>{const el=document.querySelector(s);return {selector:s,rect:rect(el),visible:getComputedStyle(el).display!=='none'}});
-   const controls=selectors.map(s=>{const el=document.querySelector(s);const b=rect(el);return {selector:s,...b,visible:getComputedStyle(el).display!=='none',disabled:el.disabled}});
+   const controls=selectors.map(s=>{const el=document.querySelector(s);const b=rect(el);return {selector:s,...b,visible:el.checkVisibility({checkVisibilityCSS:true}),disabled:el.disabled}});
    return {viewport,documentWidth:document.documentElement.scrollWidth,panels,controls};
   });
   expect(evidence.documentWidth,'document horizontal overflow').toBeLessThanOrEqual(width+1);
