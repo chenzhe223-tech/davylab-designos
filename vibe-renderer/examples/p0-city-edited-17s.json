@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "prompt": "一座未来城市从星光中生长",
+  "mode": "animation",
+  "format": "landscape",
+  "title": "未来城市 · 修改后技术验证",
+  "shots": [
+    {
+      "duration": 5,
+      "title": "星光汇聚",
+      "visual": "粒子从夜空中心缓缓汇聚，勾勒城市轮廓",
+      "narration": "创意，从一道光开始",
+      "visualFamily": "particles"
+    },
+    {
+      "duration": 7,
+      "title": "晨光中的城市",
+      "visual": "建筑在清晨的光晕里成形",
+      "narration": "同一个想法，不同的表达",
+      "visualFamily": "city"
+    },
+    {
+      "duration": 5,
+      "title": "光之城",
+      "visual": "镜头缓缓推进，城市灯火和天空交相辉映",
+      "narration": "让创意，成为能用的工具",
+      "visualFamily": "nature"
+    }
+  ]
+}
