@@ -93,6 +93,27 @@ jobs:
           path: artifacts/design-agent-p1/
           if-no-files-found: warn
           retention-days: 14
+      - name: Verify P2 before-after browser evidence
+        run: |
+          test -s artifacts/design-agent-p2/remediation-before-390.png
+          test -s artifacts/design-agent-p2/remediation-after-390.png
+          test -s artifacts/design-agent-p2/remediation-comparison-390.json
+          python3 - <<'PY'
+          import json
+          with open('artifacts/design-agent-p2/remediation-comparison-390.json',encoding='utf-8') as f:
+              data=json.load(f)
+          assert data['before_color'] != data['after_color']
+          assert data['before_contrast_ratio'] < 4.5 <= data['after_contrast_ratio']
+          assert data['manual_visual_approval'] is False
+          PY
+      - name: Preserve P2 remediation screenshots and comparison
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: design-agent-p2-remediation-evidence
+          path: artifacts/design-agent-p2/
+          if-no-files-found: warn
+          retention-days: 14
       - name: Preserve DesignOS 3.0 visual QA screenshots
         if: always()
         uses: actions/upload-artifact@v4
