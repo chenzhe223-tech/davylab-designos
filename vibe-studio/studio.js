@@ -1,4 +1,5 @@
 import {normalizeShots,updateShot,moveShot,removeShot,projectSnapshot,totalDuration} from './timeline.mjs';
+import {resolvePreviewFrame} from './canvas-plan.mjs';
 const $=id=>document.getElementById(id);
 const KEY='davylab.vibe.p0';
 let project={prompt:$('prompt').value,format:'portrait',shots:[]};
@@ -8,7 +9,7 @@ const synchronize=()=>{project.prompt=$('prompt').value.trim();project.format=$(
 function storyboard(){if(!$('prompt').value.trim()){status('请先输入创意');return}project.prompt=$('prompt').value.trim();project.format=$('format').value;project.shots=normalizeShots([{duration:3,title:'星光出现',visual:'暗夜中的粒子逐渐汇聚'},{duration:4,title:'城市生长',visual:'建筑从光线中升起'},{duration:3,title:'世界成形',visual:'镜头展现完整城市天际线'}]);renderShots();status('已生成规则式示例分镜（非 AI 生成），可调整时长与顺序')}
 const makeButton=(label,action,disabled=false)=>{const btn=document.createElement('button');btn.type='button';btn.className='shot-action';btn.textContent=label;btn.disabled=disabled;btn.addEventListener('click',action);return btn};
 function renderShots(){const shots=project.shots||[];const container=$('shots');container.replaceChildren();shots.forEach((shot,i)=>{const li=document.createElement('li');li.className='shot-row';const details=document.createElement('div');details.className='shot-details';const clock=document.createElement('span');clock.className='shot-clock';clock.textContent=shot.start+'–'+shot.end+'s';const title=document.createElement('input');title.value=shot.title;title.maxLength=100;title.setAttribute('aria-label','镜头 '+(i+1)+' 标题');const duration=document.createElement('input');duration.type='number';duration.min='1';duration.max='120';duration.step='1';duration.value=String(shot.duration);duration.className='duration-input';duration.setAttribute('aria-label','镜头 '+(i+1)+' 时长（秒）');const visual=document.createElement('input');visual.value=shot.visual||'';visual.maxLength=1000;visual.className='visual-input';visual.setAttribute('aria-label','镜头 '+(i+1)+' 画面说明');title.addEventListener('change',()=>{project.shots=updateShot(project.shots,i,{title:title.value});renderShots()});duration.addEventListener('change',()=>{try{project.shots=updateShot(project.shots,i,{duration:Number(duration.value)});status('镜头时长已更新')}catch(e){status(e.message)}renderShots()});visual.addEventListener('change',()=>{project.shots=updateShot(project.shots,i,{visual:visual.value});renderShots()});details.append(clock,title,duration,visual);const actions=document.createElement('div');actions.className='shot-actions';actions.append(makeButton('↑',()=>{project.shots=moveShot(project.shots,i,-1);renderShots()},i===0),makeButton('↓',()=>{project.shots=moveShot(project.shots,i,1);renderShots()},i===shots.length-1),makeButton('删除',()=>{project.shots=removeShot(project.shots,i);renderShots()}));li.append(details,actions);container.append(li)});renderTimeline()}
-function renderTimeline(){const shots=project.shots||[];const duration=shots.length?totalDuration(shots):0;$('timeline-duration').textContent=duration+' 秒';const track=$('timeline');track.replaceChildren();if(!duration){const empty=document.createElement('span');empty.textContent='生成分镜后显示镜头时间轴';track.append(empty);return}shots.forEach((shot,i)=>{const block=document.createElement('span');block.className='timeline-shot';block.style.flexGrow=String(shot.duration);block.style.flexBasis='0';block.title=shot.title+'：'+shot.start+'–'+shot.end+' 秒';block.textContent=(i+1)+' · '+shot.duration+'s';track.append(block)})}
+function renderTimeline(){const shots=project.shots||[];const duration=shots.length?totalDuration(shots):0;$('timeline-duration').textContent=duration+' 秒';const track=$('timeline');track.replaceChildren();if(!duration){const empty=document.createElement('span');empty.textContent='生成分镜后显示镜头时间轴';track.append(empty);return}shots.forEach((shot,i)=>{const block=document.createElement('button');block.type='button';block.className='timeline-shot';block.setAttribute('aria-label','跳转镜头 '+(i+1));block.addEventListener('click',()=>{start=performance.now()-shot.start*1000;status('跳转到镜头 '+(i+1)+'：'+shot.title)});block.style.flexGrow=String(shot.duration);block.style.flexBasis='0';block.title=shot.title+'：'+shot.start+'–'+shot.end+' 秒';block.textContent=(i+1)+' · '+shot.duration+'s';track.append(block)})}
 function download(name,content,type='application/json'){const a=document.createElement('a');const u=URL.createObjectURL(content instanceof Blob?content:new Blob([content],{type}));a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
 $('create').onclick=storyboard;
 $('generate-ai').onclick=async()=>{
@@ -37,19 +38,45 @@ $('import-trigger').onclick=()=>$('import-file').click();
 $('import-file').addEventListener('change',async()=>{const file=$('import-file').files?.[0];if(!file)return;try{if(file.size>2*1024*1024)throw new Error('工程文件超过 2 MB');const raw=JSON.parse(await file.text());if(!raw||typeof raw!=='object'||typeof raw.prompt!=='string'||!Array.isArray(raw.shots))throw new Error('不是有效的 Vibe Studio 项目');const imported=projectSnapshot(raw);project=imported;$('prompt').value=project.prompt;$('format').value=project.format;renderShots();status('工程已导入（尚未覆盖本地保存，点击「保存项目」才会写入）')}catch(e){status('项目导入失败：'+e.message)}finally{$('import-file').value=''}});
 $('export').onclick=()=>{try{download('vibe-project.json',JSON.stringify(synchronize(),null,2))}catch(e){status('项目导出失败：'+e.message)}};
 $('handoff').onclick=()=>{try{const snapshot=synchronize();download('vibe-agent-handoff.md','# Vibe Studio 任务交接\n\n创意：'+snapshot.prompt+'\n\n画幅：'+snapshot.format+'\n\n总时长：'+totalDuration(snapshot.shots)+' 秒\n\n分镜：\n'+snapshot.shots.map(s=>'- '+s.start+'–'+s.end+'s '+s.title+'：'+s.visual).join('\n')+'\n\n执行：WorkBuddy 根据分镜实现 Remotion 合成与渲染，回传实际文件及测试证据。\n验收：时长、尺寸、播放、无黑帧。此交接单不代表 MP4 已生成。','text/markdown')}catch(e){status('交接导出失败：'+e.message)}};
-const c=$('scene'),ctx=c.getContext('2d');
-let importedMp4Url=null;
-$('load-mp4').onclick=()=>$('render-file').click();
-$('render-file').addEventListener('change',()=>{
- const file=$('render-file').files?.[0];if(!file)return;
- if(!(/\.mp4$/i.test(file.name)||file.type==='video/mp4')||file.size>1024*1024*1024){status('仅支持不超过 1GB 的本地 MP4 文件');$('render-file').value='';return}
- const video=$('rendered-video');video.pause();if(importedMp4Url)URL.revokeObjectURL(importedMp4Url);
- importedMp4Url=URL.createObjectURL(file);
- video.onloadedmetadata=()=>{c.hidden=true;video.hidden=false;status('本地 MP4 已载入：'+video.duration.toFixed(1)+' 秒 · '+video.videoWidth+'×'+video.videoHeight+'（尚未执行成片 QA）')};
- video.onerror=()=>{status('视频播放失败：文件可能损坏或编码不受支持');video.hidden=true;c.hidden=false};
- video.src=importedMp4Url;video.load();$('render-file').value='';
-});
-let start=performance.now(),frame=0;const particles=Array.from({length:90},(_,i)=>({x:(i*97%540),y:(i*137%720),r:1+(i%3)}));function draw(now){frame=requestAnimationFrame(draw);const t=((now-start)/1000)%10;const w=c.width,h=c.height;ctx.fillStyle='#080d17';ctx.fillRect(0,0,w,h);const g=ctx.createRadialGradient(w/2,h*.55,20,w/2,h*.55,380);g.addColorStop(0,'#233e5b');g.addColorStop(1,'#080d17');ctx.fillStyle=g;ctx.fillRect(0,0,w,h);for(const p of particles){const alpha=.2+.7*Math.abs(Math.sin(t*.8+p.x));ctx.fillStyle='rgba(242,194,129,'+alpha+')';ctx.beginPath();ctx.arc(p.x+Math.sin(t+p.y)*8,p.y,p.r,0,Math.PI*2);ctx.fill()}const grow=Math.min(1,Math.max(0,(t-2)/4));for(let i=0;i<15;i++){const bw=24+(i%4)*8,x=i*40-20,height=(85+(i*37%210))*grow;ctx.fillStyle=i%3===0?'#3a6380':'#233b52';ctx.fillRect(x,h*.84-height,bw,height);ctx.fillStyle='#e6ba7b';for(let j=12;j<height-8;j+=22)for(let k=7;k<bw-3;k+=12)if((i+j+k)%4!==0)ctx.fillRect(x+k,h*.84-j,3,5)}ctx.fillStyle='#f7e6cb';ctx.textAlign='center';ctx.font='bold 30px system-ui';ctx.fillText(t<3?'一颗星光':t<7?'一座城市':'一个世界',w/2,90);ctx.font='17px system-ui';ctx.fillText('VIBE STUDIO · By DAVYLAB',w/2,h-42)}$('play').onclick=()=>{$('rendered-video').pause();$('rendered-video').hidden=true;c.hidden=false;start=performance.now();status('正在播放真实 Canvas 动画（非导入 MP4）')};renderShots();draw(performance.now());
+const c=$('scene'),ctx=c.getContext('2d');let start=performance.now();
+const particles=Array.from({length:90},(_,i)=>({x:(i*97%540)/540,y:(i*137%720)/720,r:1+(i%3)}));
+function fitCanvas(){const landscape=$('format').value==='landscape';const w=landscape?960:540,h=landscape?540:960;if(c.width!==w||c.height!==h){c.width=w;c.height=h}c.style.aspectRatio=landscape?'16 / 9':'9 / 16'}
+$('format').addEventListener('change',fitCanvas);
+function draw(now){
+ requestAnimationFrame(draw);fitCanvas();
+ const elapsed=Math.max(0,(now-start)/1000),selected=resolvePreviewFrame(project.shots,elapsed);
+ const {shot,family,localSeconds}=selected,w=c.width,h=c.height;
+ const shotDuration=Number(shot.duration??Number(shot.end)-Number(shot.start))||10;
+ const progress=Math.min(1,Math.max(0,localSeconds/shotDuration));
+ ctx.fillStyle='#071729';ctx.fillRect(0,0,w,h);
+ const gradient=ctx.createRadialGradient(w*.65,h*.46,10,w*.65,h*.46,h*.78);
+ gradient.addColorStop(0,'#497ea7');gradient.addColorStop(.6,'#1d405e');gradient.addColorStop(1,'#071729');
+ ctx.fillStyle=gradient;ctx.fillRect(0,0,w,h);
+ for(const p of particles){ctx.fillStyle='rgba(201,227,255,'+(.18+.6*Math.abs(Math.sin(elapsed*.4+p.x*11)))+')';ctx.beginPath();ctx.arc(p.x*w+Math.sin(elapsed*.4+p.y*8)*6,p.y*h,p.r,0,Math.PI*2);ctx.fill()}
+ if(family==='city'){
+  const horizon=h*.82,scale=Math.min(1,progress*3);
+  for(let i=0;i<24;i++){const x=i*w/24,bw=w/27,building=(.15+(i*37%100)/280)*h*scale;
+   ctx.fillStyle=i%3?'#254b6a':'#326484';ctx.fillRect(x,horizon-building,bw,building);
+   ctx.fillStyle='#b9eaff';for(let row=12;row<building-4;row+=24)for(let col=7;col<bw-4;col+=12)if((i+row+col)%5!==0)ctx.fillRect(x+col,horizon-row,3,5)
+  }
+ }else if(family==='nature'){
+  ctx.fillStyle='#224f67';ctx.fillRect(0,h*.78,w,h*.22);
+  for(let i=0;i<7;i++){const x=i*w/6-w*.2,peak=h*(.3+(i*17%31)/100),rise=progress*.12*h;
+   ctx.fillStyle=i%2?'#376d82':'#234c71';ctx.beginPath();ctx.moveTo(x,h*.8);ctx.lineTo(x+w*.18,peak+rise);ctx.lineTo(x+w*.48,h*.8);ctx.closePath();ctx.fill()
+  }
+ }else{
+  const radius=Math.min(w,h)*(.1+progress*.14),x=w*.63,y=h*.48;
+  for(let i=0;i<5;i++){ctx.strokeStyle='rgba(174,228,255,'+(.17+i*.1)+')';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(x,y,radius*(1.1+i*.25),radius*(.35+i*.07),-.35,0,Math.PI*2);ctx.stroke()}
+  ctx.fillStyle='#c4efff';ctx.beginPath();ctx.arc(x,y,radius*.3,0,Math.PI*2);ctx.fill()
+ }
+ const title=String(shot.title||'创意正在成形'),visual=String(shot.visual||'');
+ const fontSize=Math.max(20,Math.min(37,w*.045));ctx.textAlign='center';ctx.fillStyle='#f7fbff';ctx.font='bold '+fontSize+'px system-ui';
+ ctx.fillText(title.slice(0,22),w/2,h*.19);
+ ctx.font=Math.max(12,Math.min(20,w*.022))+'px system-ui';ctx.fillStyle='#d3e9ff';ctx.fillText(visual.slice(0,35),w/2,h*.19+40);
+ ctx.font=Math.max(11,Math.min(17,w*.02))+'px system-ui';ctx.fillStyle='#d1e5f8';ctx.fillText('DAVYLAB VIBE STUDIO · 预览动画',w/2,h-25);
+}
+$('play').onclick=()=>{start=performance.now();status('正在播放分镜对应的程序化 Canvas 动画（不等于最终视频）')};
+renderShots();draw(performance.now());
 // Browser-native recording: real canvas frames, never mislabeled as MP4.
 let recording=false;
 $('record').onclick=async()=>{
