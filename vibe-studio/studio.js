@@ -35,14 +35,14 @@ $('generate-ai').onclick=async()=>{
  const button=$('generate-ai');button.disabled=true;button.textContent='分镜生成中…';
  const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),55000);
  try{
-  status('正在通过安全服务请求 DeepSeek，现有动画预览暂不跟随 AI 分镜变化');
+  status('正在通过安全服务请求 DeepSeek，生成完成后将更新分镜及程序化预览');
   const response=await fetch('/api/vibe/storyboard',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+pass},body:JSON.stringify({prompt:promptText,duration:Number($('target-duration').value),mode:project.mode,aspectRatio:$('format').value==='landscape'?'16:9':'9:16'}),signal:controller.signal,credentials:'same-origin'});
   const data=await response.json();
   if(!response.ok)throw new Error(data?.error||'服务请求失败');
   if(data?.source!=='deepseek'||!Array.isArray(data?.storyboard?.scenes))throw new Error('服务响应结构不正确');
   const shots=normalizeShots(data.storyboard.scenes.map(s=>({title:s.title,duration:s.durationSeconds,visual:s.visual,motion:s.motion,narration:s.narration})));
   project.shots=shots;project.prompt=promptText;project.format=$('format').value;renderShots();
-  status('DeepSeek 分镜已生成：'+shots.length+' 个镜头，共 '+totalDuration(shots)+' 秒。请检查并保存；当前 Canvas 动画尚未与这些分镜联动。');
+  status('DeepSeek 分镜已生成：'+shots.length+' 个镜头，共 '+totalDuration(shots)+' 秒。请检查并保存；Canvas 展示的是近似程序化预览，不是 Remotion 成片。');
  }catch(e){status(e.name==='AbortError'?'AI 分镜请求超时':('AI 分镜失败：'+e.message))}
  finally{clearTimeout(timeout);button.disabled=false;button.textContent='DeepSeek 智能分镜'}
 };
