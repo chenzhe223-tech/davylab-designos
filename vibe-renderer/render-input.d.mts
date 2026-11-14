@@ -5,6 +5,7 @@ export type RenderShot = {
   duration: number;
   title: string;
   visual: string;
+  visualFamily: 'auto' | 'city' | 'particles' | 'nature';
   motion: string;
   narration: string;
 };
