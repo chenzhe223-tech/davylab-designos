@@ -61,3 +61,10 @@ Next task: test the existing Remotion CLI with actual Node dependencies in a con
 3. Only after true video and model API tests: integrate render job queue/status persistence and authenticated upload/download into UI; do not represent standalone sample video as an already completed live user job.
 
 Current statuses: **Code Completed** (renderer skeleton and media QA code); **Build Passed** (unverified for package/root); **Runtime Verified** (QA utility only); **Functional Tested** (Node normalization 4/4 + synthetic QA checker; actual Remotion rendering unverified); **Production Deployed** (no).
+
+## Same-turn continuation: render jobs and local MP4 preview
+- Renderer now creates UUID-based output and atomically persists `output/render-job-<uuid>.json`: `queued -> running -> qa -> verified` or `failed`. Verification needs real media QA evidence. This is **local worker persistence only**, not cross-device sync.
+- New `vibe-renderer/job-state.mjs` and `vibe-renderer/tests/job-state.test.mjs`. Git blob SHAs of locally tested copies: `359d4b0db006913cd7e543b93aca89ff950c44bd`, `68ee12a10e745c5ffe553401e06b05312654335d`. `node --test vibe-renderer/tests/*.test.mjs`: **8/8 passed** (input 4; state 4).
+- User-facing workbench can now import local MP4 for native playback and switch back to Canvas. Imported videos are explicitly marked as **not QA-verified**. New source test `tests/vibe-video-import.test.mjs`, not yet run as part of root test.
+- CLI calls Remotion metadata validation and FFmpeg black-frame QA before verified; **real Remotion video output has still not been executed** because npm registry is unavailable in this environment.
+- Next: install Remotion in authorized network-enabled environment; execute >=15s sample render; visually inspect, modify and re-render; run root build, unit tests and browser viewport checks; then connect render queue and persistent storage.
