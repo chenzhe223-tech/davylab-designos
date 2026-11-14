@@ -187,7 +187,7 @@ function runDesignQA(){
   latestQA=auditBrandProject(p);
   const blockers=latestQA.issues.filter(i=>i.severity==='blocker').length;
   const major=latestQA.issues.filter(i=>i.severity==='major').length;
-  $('qaSummary').textContent=(latestQA.passed?'基础检查通过':'需要修正')+' · 阻断 '+blockers+' · 重要 '+major+' · 共 '+latestQA.issues.length+' 项发现';
+  $('qaSummary').textContent=(latestQA.passed?'策划基础检查通过':'需要修正')+(latestQA.automated_asset_gate_passed?' · 资产静态检查通过（仍待人工审核）':' · 尚未满足资产静态交付门槛')+' · 阻断 '+blockers+' · 重要 '+major+' · 共 '+latestQA.issues.length+' 项发现';
   const list=$('qaFindings');list.replaceChildren();
   for(const finding of latestQA.issues){
     const li=document.createElement('li');
