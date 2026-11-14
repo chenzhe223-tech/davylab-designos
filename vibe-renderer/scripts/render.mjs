@@ -3,7 +3,7 @@ import {randomUUID,createHash} from 'node:crypto';
 import {createReadStream} from 'node:fs';
 import {resolve,dirname,join} from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {spawn} from 'node:child_process';
+import {runRendererCommand} from './process-runner.mjs';
 import {prepareRenderProject} from '../render-input.mjs';
 import {inspectMp4} from './qa-video.mjs';
 import {createRenderJob,transitionRenderJob} from '../job-state.mjs';
@@ -25,7 +25,7 @@ const args=['render','src/index.ts','VibeFilm',output,'--codec=h264','--props='+
 console.log('Rendering '+prepared.durationSeconds+'s '+prepared.width+'x'+prepared.height+' MP4 via Remotion');
 try{
  job=transitionRenderJob(job,'running');await persist();
- await new Promise((done,reject)=>{const child=spawn(bin,args,{cwd:here,stdio:'inherit',shell:false});child.on('error',reject);child.on('exit',(code,signal)=>code===0?done():reject(new Error('Renderer exited '+code+' '+(signal||''))))});
+ await runRendererCommand(bin,args,{cwd:here,timeoutMs:600000});
  const file=await stat(output);if(file.size<10_000)throw new Error('MP4 file too small to count as validated video');
  const {getVideoMetadata}=await import('@remotion/renderer');
  const metadata=await getVideoMetadata(output);
