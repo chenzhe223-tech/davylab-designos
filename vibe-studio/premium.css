@@ -37,3 +37,5 @@
 .timeline-shot{cursor:pointer;border:1px solid rgba(174,214,255,.35);font:inherit;min-height:43px}
 .timeline-shot:focus-visible{outline:3px solid #cce5ff;outline-offset:-3px}
 @media(max-width:750px){.preview video{max-height:370px}.timeline-shot{min-height:42px}}
+
+[hidden]{display:none!important}
