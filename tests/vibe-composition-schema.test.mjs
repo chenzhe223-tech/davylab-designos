@@ -21,7 +21,7 @@ test('Remotion Composition imports exactly the same production validator as rend
 
 test('actual default Composition props are accepted by renderer without fallback',async()=>{
   const source=await readFile(new URL('../vibe-renderer/src/root.tsx',import.meta.url),'utf8');
-  const literal=source.match(/^const DEFAULT=(\\{.*\\});$/m)?.[1];
+  const literal=source.match(/^const DEFAULT=(\{.*\});$/m)?.[1];
   assert.ok(literal,'default project literal missing');
   const defaults=runInNewContext('('+literal+')',Object.create(null),{timeout:1000});
   const render=prepareRenderProject(defaults);
