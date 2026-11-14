@@ -16,8 +16,8 @@ console.log('Rendering '+prepared.durationSeconds+'s '+prepared.width+'x'+prepar
 try{
  await new Promise((done,reject)=>{const child=spawn(bin,args,{cwd:here,stdio:'inherit',shell:false});child.on('error',reject);child.on('exit',(code,signal)=>code===0?done():reject(new Error('Renderer exited '+code+' '+(signal||''))))});
  const file=await stat(output);if(file.size<10_000)throw new Error('MP4 file too small to count as validated video');
- const {getVideoMetadata}=await import('@remotion/media-utils');
+ const {getVideoMetadata}=await import('@remotion/renderer');
  const metadata=await getVideoMetadata(output);
- if(metadata.durationInSeconds<prepared.durationSeconds-1||metadata.durationInSeconds>prepared.durationSeconds+1)throw new Error('Rendered duration does not match storyboard');
+ if(metadata.durationInSeconds<prepared.durationSeconds-1||metadata.durationInSeconds>prepared.durationSeconds+1||metadata.width!==prepared.width||metadata.height!==prepared.height)throw new Error('Rendered duration/resolution does not match storyboard');
  console.log(JSON.stringify({output,bytes:file.size,durationSeconds:metadata.durationInSeconds,expectedSeconds:prepared.durationSeconds,verified:true}));
 }catch(error){console.error('Render/QA failed: '+error.message);process.exitCode=1}finally{await unlink(propsFile).catch(()=>{})}
