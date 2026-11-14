@@ -168,3 +168,19 @@ Delivery states: Code Completed (these fixes); Build Passed (unverified); Runtim
 
 ### Next safe step
 - Verify manual workflow accessibility and authorized runner/license prerequisites, then run full root/build and renderer typecheck; perform first real 15s MP4 with visual and FFmpeg QA followed by 17s re-render. Do not label user projects ready or P0 completed until real evidence exists.
+
+## 2026-11-15 · Chat-only hardening: streaming FFmpeg QA + director shot controls
+
+- User explicitly continues in Chat mode only. No Work handoff, no automations, no autonomous paid resources or production deployment.
+- Streamed black-frame QA in `vibe-renderer/scripts/qa-video.mjs`: FFmpeg `stderr` is inspected as it arrives via `createBlackRegionScanner` rather than scanning only the capped trailing log. This guards against early black regions becoming invisible when diagnostics exceed 512 KB. New regression cases in `vibe-renderer/tests/qa-command.test.mjs` cover split chunks, >900 KB trailing diagnostics, and nonblack stderr. Actual exact-GitHub source function executed in a V8 isolate: **4/4 scanner checks passed** (including no final newline). QA source blob `1e18db91b9e55e7d0785fd7ee513fcff0bbf12be`; full Node/FFmpeg integration tests for this revision are still unrun.
+- Professional shot editing extended with explicit `visualFamily` values (`auto`, `particles`, `city`, `nature`). Saved/JSON-imported normalized project retains selected family with invalid values falling back to auto; `canvas-plan.mjs` and Remotion `SceneArt` now honor the explicit setting rather than guessing from text. CSS handles mobile width. New `tests/vibe-visual-family.test.mjs` authored.
+- User can now edit `motion` director notes and `narration` on-screen subtitle text in the same per-shot editor. The subtitle renders in Canvas approximation and Remotion composition, and handoff Markdown includes visual family, motion and subtitle. **Motion notes are not yet applied as animation camera controls; audio narration/TTS is not implemented.** Typed render-input declaration updated to include `visualFamily`. New `tests/vibe-subtitles.test.mjs` authored.
+- Actual GitHub-source logic/wiring validation in Code Mode V8: **9/9 per-shot visual family checks** and **12/12 subtitle/director data/DOM/JS checks passed**. Both used source fetched from the current GitHub feature branch. They are narrower than Node build and real browser/Remotion tests. Latest source hashes at these checks: timeline `40cf6fdcf461679f600cf540aad4a7fcb318ecc3`; Canvas plan `511ced41354b4d3ad0560e9c4f67a369954845e6`; `studio.js` `d88cf429f7c750576d78362928855db6067c0b8a`; `film.tsx` `723019adbfa09ccd85da34e72108e609881d65a3`; `scene-art.tsx` `e548b36946b69045a972e49ff732d0e53ab29ef6`.
+- No full root build, npm install, TypeScript typecheck, browser device QA, real Remotion MP4 or live DeepSeek call was performed in this increment. Current environment still cannot resolve npm/GitHub domains. P0 real editable >=15s MP4 acceptance is **pending**.
+
+### Next
+1. Preserve user-approved iOS blue-gray UI and real production standards. Audit new scene/subtitle settings in 15s/17s actual render when network-enabled renderer environment becomes available; check timed subtitles and frame alignment.
+2. Install pinned Remotion dependencies and run `npm run typecheck`, full root `npm run check`, and manually authorized render workflow with QA receipts. Do not trigger paid cloud activity without explicit consent.
+3. After real P0 MP4: implement audio track/assets, precise motion/camera controls, render queue persistence, and Skill adapters after license checks.
+
+Current delivery gates: **Code Completed** (incremental editor+QA fixes); **Build Passed** (unverified); **Runtime Verified** (targeted pure JS checks only); **Functional Tested** (partial, not end-to-end); **Production Deployed** (no).
