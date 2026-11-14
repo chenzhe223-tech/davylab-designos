@@ -36,3 +36,19 @@ node scripts/qa-video.mjs output/your-video.mp4 15
 On 2026-11-14, a byte-for-byte verified copy of `qa-video.mjs` (Git blob SHA `2566d08becbcf39e7f2b1fae4d343e70d1c1a808`) passed a real 15-second, 480x320 H.264 synthetic *QA fixture* (not a Vibe Studio render): 2,756,322 bytes, 15.0s, 0 black regions. A synthetic 2s black fixture was rejected with `Black frame region(s) detected: black_start:0 black_end:1.966667`. This **validates the QA checker**, not the Remotion pipeline or P0 final video.
 
 The package install/render could not be executed in the current sandbox because `registry.npmjs.org` could not be resolved (EAI_AGAIN). Run it in an authorized checkout with network access before changing Build Passed / Runtime Verified status.
+
+## Verified delivery receipt
+
+After a successful Remotion render and media QA, the CLI writes both `render-job-<uuid>.json` and `render-receipt-<uuid>.json` next to the MP4 under `output/`. The receipt records the normalized project input SHA-256, rendered MP4 SHA-256, duration, codec, dimensions and QA status. A failed render does not keep a deliverable MP4 or a successful receipt.
+
+Independently verify that a received artifact is byte-identical to its QA-tested MP4:
+
+```bash
+npm run verify:receipt -- output/render-receipt-<uuid>.json
+# On a different computer, override the video path:
+npm run verify:receipt -- receipt.json /path/to/transferred-video.mp4
+```
+
+Hash verification **checks integrity, not video quality by itself**. Use it only with a receipt produced after successful actual FFprobe/FFmpeg QA. The initial receipt implementation has no digital signature or authenticated publisher identity; do not treat an arbitrary externally supplied receipt as trustworthy.
+
+**Current evidence:** receipt logic was tested with temporary binary fixtures, including altered-size and same-size tampering rejection (3/3). This is not evidence of a real Remotion MP4 render.
