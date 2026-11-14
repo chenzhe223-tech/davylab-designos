@@ -50,5 +50,5 @@ export function auditBrandProject(project){
  if(project?.source==='example-only')issues.push(issue('DEMO_ONLY','blocker','当前为演示方案，不能作为正式生成成果',null,'运行真实模型并完成审核'));
  if(!project?.vectors)issues.push(issue('NO_FINAL_ASSET','info','目前只有设计策划或预览，尚无正式矢量资产',null,'按需生成真实 SVG'));
  issues.sort((a,b)=>({blocker:0,major:1,minor:2,info:3}[a.severity]-{blocker:0,major:1,minor:2,info:3}[b.severity]));
- return {schema:'davylab-design-qa-v1',engine:'native-static-heuristics',passed:!issues.some(x=>x.severity==='blocker'||x.severity==='major'),ready_for_delivery:!!project?.vectors&&project?.source!=='example-only'&&!issues.some(x=>x.severity==='blocker'||x.severity==='major'),checks,issues,limits:['未运行真实浏览器视觉比对','SVG 仅静态源码启发式检查，未替代浏览器 DOM 安全解析或可编辑性验收','未核查商标、字体和图片授权','未验证实际模型供应商响应']};
+ return {schema:'davylab-design-qa-v1',engine:'native-static-heuristics',passed:!issues.some(x=>x.severity==='blocker'||x.severity==='major'),automated_asset_gate_passed:!!project?.vectors&&project?.source!=='example-only'&&!issues.some(x=>x.severity==='blocker'||x.severity==='major'),checks,issues,limits:['未运行真实浏览器视觉比对','SVG 仅静态源码启发式检查，未替代浏览器 DOM 安全解析或可编辑性验收','未核查商标、字体和图片授权','未验证实际模型供应商响应']};
 }
