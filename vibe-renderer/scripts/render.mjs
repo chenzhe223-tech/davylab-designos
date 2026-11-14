@@ -3,6 +3,7 @@ import {resolve,dirname,join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {spawn} from 'node:child_process';
 import {prepareRenderProject} from '../render-input.mjs';
+import {inspectMp4} from './qa-video.mjs';
 const here=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const input=process.argv[2];if(!input){console.error('Usage: npm run render -- /absolute/path/project.json');process.exit(2)}
 const root=resolve(process.cwd(),'output');await mkdir(root,{recursive:true});
@@ -19,5 +20,7 @@ try{
  const {getVideoMetadata}=await import('@remotion/renderer');
  const metadata=await getVideoMetadata(output);
  if(metadata.durationInSeconds<prepared.durationSeconds-1||metadata.durationInSeconds>prepared.durationSeconds+1||metadata.width!==prepared.width||metadata.height!==prepared.height)throw new Error('Rendered duration/resolution does not match storyboard');
- console.log(JSON.stringify({output,bytes:file.size,durationSeconds:metadata.durationInSeconds,expectedSeconds:prepared.durationSeconds,verified:true}));
+ const qa=await inspectMp4(output,{expectedSeconds:prepared.durationSeconds});
+ if(qa.width!==prepared.width||qa.height!==prepared.height)throw new Error('QA resolution mismatch');
+ console.log(JSON.stringify({output,bytes:file.size,durationSeconds:qa.durationSeconds,expectedSeconds:prepared.durationSeconds,qa,verified:true}));
 }catch(error){console.error('Render/QA failed: '+error.message);process.exitCode=1}finally{await unlink(propsFile).catch(()=>{})}
