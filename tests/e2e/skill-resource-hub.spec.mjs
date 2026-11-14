@@ -62,6 +62,7 @@ test('resource hub: public and authenticated private catalogues merge with filte
   await openHub(page);
   await expect(page.locator('#resourceCards .resource-card')).toHaveCount(37);
   await expect(page.locator('#skillCount')).toHaveText('29');
+  await expect(page.locator('#engineCount')).toHaveText('1');
   await expect(page.locator('#privateCount')).toHaveText('1');
   await expect(page.locator('#publicCount')).toHaveText('35');
   await page.locator('#visibilityFilter').selectOption('private');
@@ -99,6 +100,7 @@ test('new design references are visibly uninstalled and source-linked', async ({
   await expect(card).toContainText('仅供参考 · 未接入');
   await card.click();
   await expect(page.locator('#resourceDetail')).toContainText('reference');
+  await expect(page.getByRole('button',{name:'生成资源评估指令'})).toBeVisible();
   await expect(page.locator('#resourceDetail')).toContainText('没有安装');
   await expect(page.locator('#resourceDetail a[href*="pbakaus/impeccable"]')).toHaveAttribute('target','_blank');
 });
