@@ -1,4 +1,4 @@
-import {auditBrandProject} from './quality.js';
+import {auditBrandProject,buildRemediationPlan} from './quality.js';
 // DAVYLAB Design Agent 4.0 P0 — browser-local project state, live model strategy and SVG concepts.
 const $=id=>document.getElementById(id);
 const STORAGE='davylab-design-agent-projects-p0';
@@ -206,6 +206,15 @@ document.addEventListener('input',event=>{
   $('qaSummary').textContent='输入内容已修改，请重新检查';
   $('qaFindings').replaceChildren();
 });
+function exportRemediationPlan(){
+ applyPendingInputs();
+ const plan=buildRemediationPlan(p);
+ const blob=new Blob([JSON.stringify({...plan,created_at:new Date().toISOString()},null,2)],{type:'application/json'});
+ const url=URL.createObjectURL(blob);
+ const link=document.createElement('a');link.href=url;link.download='DAVYLAB-remediation-'+p.id+'.json';link.click();
+ setTimeout(()=>URL.revokeObjectURL(url),4000);
+ $('qaSummary').textContent='已导出 '+plan.steps.length+' 项可复核色彩整改建议；不会自动修改设计';
+}
 function exportDesignQA(){
   if(!latestQA)return;
   const report={...latestQA,project_id:p.id,project_updated:p.updated,checked_at:new Date().toISOString()};
@@ -215,6 +224,7 @@ function exportDesignQA(){
 }
 $('runDesignQA').addEventListener('click',runDesignQA);
 $('exportDesignQA').addEventListener('click',exportDesignQA);
+$('exportRemediation').addEventListener('click',exportRemediationPlan);
 let editingIndex=-1;
 function openDirectionEditor(index){
   if(!p.directions[index])return;
