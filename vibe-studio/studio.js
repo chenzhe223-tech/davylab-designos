@@ -1,12 +1,26 @@
+import {normalizeCreationMode,modeDescription,demoShotsForMode} from './creation-modes.mjs';
 import {normalizeShots,updateShot,moveShot,removeShot,projectSnapshot,totalDuration} from './timeline.mjs';
 import {resolvePreviewFrame} from './canvas-plan.mjs';
 const $=id=>document.getElementById(id);
 const KEY='davylab.vibe.p0';
-let project={prompt:$('prompt').value,format:'portrait',shots:[]};
+let project={prompt:$('prompt').value,format:'portrait',mode:'animation',shots:[]};
 try{const saved=JSON.parse(localStorage.getItem(KEY));if(saved&&typeof saved.prompt==='string'){project=projectSnapshot(saved);$('prompt').value=project.prompt;$('format').value=project.format}}catch(error){console.warn('本地项目恢复失败，使用空白项目',error)}
 const status=message=>{$('status').textContent=message};
+function selectCreationMode(mode,{announce=true}={}){
+ const selected=normalizeCreationMode(mode);project.mode=selected;
+ document.querySelectorAll('.entry-card[data-mode]').forEach(card=>{
+  const active=card.dataset.mode===selected;
+  card.classList.toggle('is-selected',active);
+  if(active)card.setAttribute('aria-current','true');else card.removeAttribute('aria-current');
+ });
+ $('current-mode').textContent=modeDescription(selected).title;
+ if(announce)status('已选择「'+modeDescription(selected).title+'」；当前内容保留。此入口与其他模式共用编辑器。');
+}
+document.querySelectorAll('.entry-card[data-mode]').forEach(card=>card.addEventListener('click',()=>selectCreationMode(card.dataset.mode)));
+selectCreationMode(project.mode,{announce:false});
+
 const synchronize=()=>{project.prompt=$('prompt').value.trim();project.format=$('format').value;project.shots=normalizeShots(project.shots||[]);return projectSnapshot(project)};
-function storyboard(){if(!$('prompt').value.trim()){status('请先输入创意');return}project.prompt=$('prompt').value.trim();project.format=$('format').value;project.shots=normalizeShots([{duration:3,title:'星光出现',visual:'暗夜中的粒子逐渐汇聚'},{duration:4,title:'城市生长',visual:'建筑从光线中升起'},{duration:3,title:'世界成形',visual:'镜头展现完整城市天际线'}]);renderShots();status('已生成规则式示例分镜（非 AI 生成），可调整时长与顺序')}
+function storyboard(){if(!$('prompt').value.trim()){status('请先输入创意');return}project.prompt=$('prompt').value.trim();project.format=$('format').value;project.shots=normalizeShots(demoShotsForMode(project.mode));renderShots();status('已生成「'+modeDescription(project.mode).title+'」规则式示例分镜（非 AI 生成），可调整时长与顺序')}
 const makeButton=(label,action,disabled=false)=>{const btn=document.createElement('button');btn.type='button';btn.className='shot-action';btn.textContent=label;btn.disabled=disabled;btn.addEventListener('click',action);return btn};
 function renderShots(){const shots=project.shots||[];const container=$('shots');container.replaceChildren();shots.forEach((shot,i)=>{const li=document.createElement('li');li.className='shot-row';const details=document.createElement('div');details.className='shot-details';const clock=document.createElement('span');clock.className='shot-clock';clock.textContent=shot.start+'–'+shot.end+'s';const title=document.createElement('input');title.value=shot.title;title.maxLength=100;title.setAttribute('aria-label','镜头 '+(i+1)+' 标题');const duration=document.createElement('input');duration.type='number';duration.min='1';duration.max='120';duration.step='1';duration.value=String(shot.duration);duration.className='duration-input';duration.setAttribute('aria-label','镜头 '+(i+1)+' 时长（秒）');const visual=document.createElement('input');visual.value=shot.visual||'';visual.maxLength=1000;visual.className='visual-input';visual.setAttribute('aria-label','镜头 '+(i+1)+' 画面说明');title.addEventListener('change',()=>{project.shots=updateShot(project.shots,i,{title:title.value});renderShots()});duration.addEventListener('change',()=>{try{project.shots=updateShot(project.shots,i,{duration:Number(duration.value)});status('镜头时长已更新')}catch(e){status(e.message)}renderShots()});visual.addEventListener('change',()=>{project.shots=updateShot(project.shots,i,{visual:visual.value});renderShots()});details.append(clock,title,duration,visual);const actions=document.createElement('div');actions.className='shot-actions';actions.append(makeButton('↑',()=>{project.shots=moveShot(project.shots,i,-1);renderShots()},i===0),makeButton('↓',()=>{project.shots=moveShot(project.shots,i,1);renderShots()},i===shots.length-1),makeButton('删除',()=>{project.shots=removeShot(project.shots,i);renderShots()}));li.append(details,actions);container.append(li)});renderTimeline()}
 function renderTimeline(){const shots=project.shots||[];const duration=shots.length?totalDuration(shots):0;$('timeline-duration').textContent=duration+' 秒';const track=$('timeline');track.replaceChildren();if(!duration){const empty=document.createElement('span');empty.textContent='生成分镜后显示镜头时间轴';track.append(empty);return}shots.forEach((shot,i)=>{const block=document.createElement('button');block.type='button';block.className='timeline-shot';block.setAttribute('aria-label','跳转镜头 '+(i+1));block.addEventListener('click',()=>{start=performance.now()-shot.start*1000;status('跳转到镜头 '+(i+1)+'：'+shot.title)});block.style.flexGrow=String(shot.duration);block.style.flexBasis='0';block.title=shot.title+'：'+shot.start+'–'+shot.end+' 秒';block.textContent=(i+1)+' · '+shot.duration+'s';track.append(block)})}
@@ -22,7 +36,7 @@ $('generate-ai').onclick=async()=>{
  const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),55000);
  try{
   status('正在通过安全服务请求 DeepSeek，现有动画预览暂不跟随 AI 分镜变化');
-  const response=await fetch('/api/vibe/storyboard',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+pass},body:JSON.stringify({prompt:promptText,duration:Number($('target-duration').value),aspectRatio:$('format').value==='landscape'?'16:9':'9:16'}),signal:controller.signal,credentials:'same-origin'});
+  const response=await fetch('/api/vibe/storyboard',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+pass},body:JSON.stringify({prompt:promptText,duration:Number($('target-duration').value),mode:project.mode,aspectRatio:$('format').value==='landscape'?'16:9':'9:16'}),signal:controller.signal,credentials:'same-origin'});
   const data=await response.json();
   if(!response.ok)throw new Error(data?.error||'服务请求失败');
   if(data?.source!=='deepseek'||!Array.isArray(data?.storyboard?.scenes))throw new Error('服务响应结构不正确');
@@ -35,7 +49,7 @@ $('generate-ai').onclick=async()=>{
 
 $('save').onclick=()=>{try{localStorage.setItem(KEY,JSON.stringify(synchronize()));status('已保存在当前浏览器；尚未跨设备同步')}catch(e){status('本地保存失败：'+e.message)}};
 $('import-trigger').onclick=()=>$('import-file').click();
-$('import-file').addEventListener('change',async()=>{const file=$('import-file').files?.[0];if(!file)return;try{if(file.size>2*1024*1024)throw new Error('工程文件超过 2 MB');const raw=JSON.parse(await file.text());if(!raw||typeof raw!=='object'||typeof raw.prompt!=='string'||!Array.isArray(raw.shots))throw new Error('不是有效的 Vibe Studio 项目');const imported=projectSnapshot(raw);project=imported;$('prompt').value=project.prompt;$('format').value=project.format;renderShots();status('工程已导入（尚未覆盖本地保存，点击「保存项目」才会写入）')}catch(e){status('项目导入失败：'+e.message)}finally{$('import-file').value=''}});
+$('import-file').addEventListener('change',async()=>{const file=$('import-file').files?.[0];if(!file)return;try{if(file.size>2*1024*1024)throw new Error('工程文件超过 2 MB');const raw=JSON.parse(await file.text());if(!raw||typeof raw!=='object'||typeof raw.prompt!=='string'||!Array.isArray(raw.shots))throw new Error('不是有效的 Vibe Studio 项目');const imported=projectSnapshot(raw);project=imported;$('prompt').value=project.prompt;$('format').value=project.format;selectCreationMode(project.mode,{announce:false});renderShots();status('工程已导入（尚未覆盖本地保存，点击「保存项目」才会写入）')}catch(e){status('项目导入失败：'+e.message)}finally{$('import-file').value=''}});
 $('export').onclick=()=>{try{download('vibe-project.json',JSON.stringify(synchronize(),null,2))}catch(e){status('项目导出失败：'+e.message)}};
 $('handoff').onclick=()=>{try{const snapshot=synchronize();download('vibe-agent-handoff.md','# Vibe Studio 任务交接\n\n创意：'+snapshot.prompt+'\n\n画幅：'+snapshot.format+'\n\n总时长：'+totalDuration(snapshot.shots)+' 秒\n\n分镜：\n'+snapshot.shots.map(s=>'- '+s.start+'–'+s.end+'s '+s.title+'：'+s.visual).join('\n')+'\n\n执行：WorkBuddy 根据分镜实现 Remotion 合成与渲染，回传实际文件及测试证据。\n验收：时长、尺寸、播放、无黑帧。此交接单不代表 MP4 已生成。','text/markdown')}catch(e){status('交接导出失败：'+e.message)}};
 const c=$('scene'),ctx=c.getContext('2d');let start=performance.now();
