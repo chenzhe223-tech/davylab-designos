@@ -1,0 +1,15 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {webcrypto} from 'node:crypto';
+import {onRequestPost,onRequest} from '../functions/api/vibe/storyboard.js';
+if(!globalThis.crypto)globalThis.crypto=webcrypto;
+const env={VIBE_STUDIO_ACCESS_TOKEN:'test-only-secret',DEEPSEEK_API_KEY:'test-only-model-key'};
+const url='https://studio.example/api/vibe/storyboard';
+function request({token='test-only-secret',origin='https://studio.example',data={prompt:'星光生长成为一座城市',duration:30,aspectRatio:'16:9'},type='application/json'}={}){return new Request(url,{method:'POST',headers:{Origin:origin,Authorization:'Bearer '+token,'Content-Type':type},body:JSON.stringify(data)})}
+async function check(context){return onRequestPost({request:request(context),env:{...env}})}
+test('model route stays disabled without server secrets',async()=>{const response=await onRequestPost({request:request(),env:{}});assert.equal(response.status,503);assert.match(JSON.stringify(await response.json()),/尚未配置/)});
+test('strict same origin and secret authentication are enforced',async()=>{assert.equal((await check({origin:'https://evil.example'})).status,403);assert.equal((await check({token:'invalid'})).status,401)});
+test('payload rejects unsupported aspect ratio and invalid duration',async()=>{assert.equal((await check({data:{prompt:'hi',duration:15,aspectRatio:'16:9'}})).status,400);assert.equal((await check({data:{prompt:'星光生成世界',duration:4,aspectRatio:'16:9'}})).status,400);assert.equal((await check({data:{prompt:'星光生成世界',duration:30,aspectRatio:'4:3'}})).status,400);assert.equal((await check({type:'text/plain'})).status,415)});
+test('provider response is validated, metadata survives and secrets never return',async()=>{const before=globalThis.fetch;let upstream;globalThis.fetch=async(target,options)=>{upstream={target,options};return new Response(JSON.stringify({choices:[{message:{content:JSON.stringify({title:'未来城市',scenes:[{title:'片头',durationSeconds:15,visual:'星光',motion:'推进',narration:'未来开始了'},{title:'城市',durationSeconds:15,visual:'大楼',motion:'环绕'}]})}}]}),{status:200})};try{const response=await check();assert.equal(response.status,200);const body=await response.json();assert.equal(body.source,'deepseek');assert.equal(body.storyboard.scenes[1].startSeconds,15);assert.equal(body.storyboard.durationSeconds,30);assert.equal(body.storyboard.scenes[0].motion,'推进');assert.equal(upstream.target,'https://api.deepseek.com/chat/completions');assert.equal(JSON.parse(upstream.options.body).response_format.type,'json_object');assert.ok(!JSON.stringify(body).includes(env.DEEPSEEK_API_KEY));assert.equal(response.headers.get('Cache-Control'),'no-store')}finally{globalThis.fetch=before}});
+test('upstream 429 response is sanitized',async()=>{const before=globalThis.fetch;globalThis.fetch=async()=>new Response('private data',{status:429});try{const res=await check();assert.equal(res.status,502);assert.ok(!JSON.stringify(await res.json()).includes('private data'))}finally{globalThis.fetch=before}});
+test('unsupported HTTP method returns explicit 405',async()=>{const response=onRequest();assert.equal(response.status,405)});
