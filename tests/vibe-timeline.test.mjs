@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {normalizeShots,updateShot,moveShot,removeShot,totalDuration,projectSnapshot} from '../vibe-studio/timeline.mjs';
+const seed=[{title:'片头',duration:3,visual:'粒子出现'},{title:'城市',duration:5,visual:'建筑生长'},{title:'结尾',duration:2,visual:'片尾字幕'}];
+test('timeline recalculates continuous start/end times',()=>{const shots=normalizeShots(seed);assert.deepEqual(shots.map(s=>[s.start,s.end]),[[0,3],[3,8],[8,10]]);assert.equal(totalDuration(shots),10)});
+test('edit duration updates all following shot offsets without mutation',()=>{const before=normalizeShots(seed);const after=updateShot(before,0,{duration:6});assert.equal(after[1].start,6);assert.equal(after[2].end,13);assert.equal(before[1].start,3)});
+test('reorder preserves titles and recomputes timeline',()=>{const moved=moveShot(normalizeShots(seed),0,1);assert.deepEqual(moved.map(s=>s.title),['城市','片头','结尾']);assert.deepEqual(moved.map(s=>s.start),[0,5,8]);assert.deepEqual(moveShot(moved,0,-1).map(s=>s.title),moved.map(s=>s.title))});
+test('delete scene and export normalized project',()=>{const remaining=removeShot(normalizeShots(seed),1);assert.equal(remaining.length,2);assert.equal(remaining[1].start,3);const saved=projectSnapshot({prompt:'测试',format:'landscape',shots:remaining});assert.equal(saved.shots[1].end,5);assert.equal(saved.format,'landscape');assert.equal(saved.schemaVersion,1)});
+test('invalid durations and excessive shots are rejected',()=>{assert.throws(()=>normalizeShots([{duration:0}]));assert.throws(()=>updateShot(normalizeShots(seed),1,{duration:121}));assert.throws(()=>normalizeShots(Array.from({length:25},()=>({duration:1}))));assert.throws(()=>updateShot(normalizeShots(seed),50,{title:'bad'}))});
+test('legacy shot structure with start/end can be recovered',()=>{const legacy=normalizeShots([{start:0,end:3,title:'A'},{start:3,end:7,title:'B'}]);assert.equal(legacy[1].start,3);assert.equal(legacy[1].duration,4)});
