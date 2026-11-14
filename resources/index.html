@@ -192,7 +192,7 @@ POST /api/skills/match</div><button class="btn small" id="copyApi">复制 API �
  };
  const li = (items) => {const ul=document.createElement("ul");(items||[]).forEach(item=>{const e=document.createElement("li");e.textContent=String(item);ul.append(e)});return ul;};
  const section = (host,title,content,full=false) => {const box=document.createElement("section");box.className="detail-section"+(full?" full":"");const h=document.createElement("h3");h.textContent=title;box.append(h);if(Array.isArray(content))box.append(li(content));else{const p=document.createElement("p");p.textContent=content||"未登记";box.append(p);}host.append(box);};
- const statusLabel = r => r.type==="visual-pack"?"参考包":r.type==="engine"?"已集成":r.type==="profile-library"?"档案库":r.status==="active"?"可用":"已集成";
+ const statusLabel = r => r.status==="reference"?"仅供参考 · 未接入":r.type==="visual-pack"?"参考包":r.type==="engine"?"已集成":r.type==="profile-library"?"档案库":r.status==="active"?"可用":"已集成";
  function renderDetail(){
   const r=resources.find(x=>x.id===state.chosen);const host=$("resourceDetail");host.replaceChildren();if(!r){host.hidden=true;return;}host.hidden=false;
   const head=document.createElement("div");head.className="detail-head";const titleWrap=document.createElement("div");
@@ -249,7 +249,7 @@ POST /api/skills/match</div><button class="btn small" id="copyApi">复制 API �
    card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();card.click();}});
    const top=document.createElement("div");top.className="card-top";const symbol=document.createElement("div");symbol.className="resource-symbol";symbol.textContent=symbols[r.type]||"✳";
    const title=document.createElement("div");title.className="card-title";const h=document.createElement("h3");h.textContent=r.name;const small=document.createElement("small");small.textContent=(r.englishName||r.id)+" · "+(r.version||"版本未注明");title.append(h,small);
-   const pill=document.createElement("span");pill.className="status-pill"+(r.type==="visual-pack"?" reference":r.type==="engine"?" engine":"");pill.textContent=statusLabel(r);top.append(symbol,title,pill);
+   const pill=document.createElement("span");pill.className="status-pill"+(r.status==="reference"?" reference":r.type==="visual-pack"?" reference":r.type==="engine"?" engine":"");pill.textContent=statusLabel(r);top.append(symbol,title,pill);
    const sum=document.createElement("p");sum.className="card-summary";sum.textContent=r.summary;
    const best=document.createElement("div");best.className="best-use";const b=document.createElement("b");b.textContent="适合：";best.append(b,document.createTextNode((r.whenToUse||[]).slice(0,2).join("；")||"查看详情"));
    const tags=document.createElement("div");tags.className="tags";(r.tags||[]).slice(0,4).forEach(t=>{const x=document.createElement("span");x.className="tag";x.textContent=t;tags.append(x);});
