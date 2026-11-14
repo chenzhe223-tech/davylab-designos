@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DAVYLAB Chat Engine Context v0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "appId",
+    "projectId",
+    "entityId",
+    "version",
+    "permissions"
+  ],
+  "properties": {
+    "appId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "projectId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "entityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "permissions": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "read",
+          "propose",
+          "write"
+        ]
+      }
+    },
+    "context": {
+      "type": "object",
+      "description": "Server-filtered, app-scoped context; never secrets or unrestricted document dumps"
+    }
+  }
+}
