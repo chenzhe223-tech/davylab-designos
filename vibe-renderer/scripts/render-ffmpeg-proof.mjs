@@ -5,6 +5,7 @@ import {createHash} from 'node:crypto';
 import {join,resolve} from 'node:path';
 import {tmpdir} from 'node:os';
 import {prepareRenderProject} from '../render-input.mjs';
+import {inspectMp4} from './qa-video.mjs';
 const FONT='/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc';
 const PALETTES={particles:['0x102947','0x5a91c1'],city:['0x122d4b','0x628dae'],nature:['0x15384b','0x4c9c9c']};
 const sha=b=>createHash('sha256').update(b).digest('hex');
@@ -50,8 +51,10 @@ export async function renderTechnicalProof(input,output,{width=854,height=480,fo
   await runProcess('ffprobe',['-v','error','-show_streams','-show_format','-of','json','-o',probe,dest]);
   const meta=JSON.parse(await readFile(probe,'utf8')),video=meta.streams?.find(x=>x.codec_type==='video'),seconds=Number(meta.format?.duration);
   if(video?.codec_name!=='h264'||video.width!==width||video.height!==height||!Number.isFinite(seconds)||Math.abs(seconds-prepared.durationSeconds)>.2)throw Error('MP4 metadata QA failed');
+  const qa=await inspectMp4(dest,{expectedSeconds:prepared.durationSeconds});
+  if(qa.width!==width||qa.height!==height||qa.codec!=='h264'||qa.blackRegions!==0)throw Error('Fallback media QA failed');
   const bytes=await readFile(dest);
-  const receipt={kind:'DAVYLAB-FFmpeg-technical-proof',remotionVerified:false,sourceSha256:sha(Buffer.from(JSON.stringify(prepared.project))),outputSha256:sha(bytes),durationSeconds:seconds,expectedSeconds:prepared.durationSeconds,shotCount:prepared.project.shots.length,bytes:bytes.byteLength,width,height,codec:'h264'};
+  const receipt={kind:'DAVYLAB-FFmpeg-technical-proof',remotionVerified:false,sourceSha256:sha(Buffer.from(JSON.stringify(prepared.project))),outputSha256:sha(bytes),durationSeconds:seconds,expectedSeconds:prepared.durationSeconds,shotCount:prepared.project.shots.length,bytes:bytes.byteLength,width,height,codec:'h264',blackRegions:qa.blackRegions,qaVerified:true};
   await writeFile(dest+'.qa.json',JSON.stringify(receipt,null,2));return receipt;
  }catch(error){await rm(dest,{force:true}).catch(()=>{});throw error}
  finally{await rm(work,{recursive:true,force:true}).catch(()=>{})}
