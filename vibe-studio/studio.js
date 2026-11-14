@@ -2,6 +2,7 @@ import {normalizeCreationMode,modeDescription,demoShotsForMode} from './creation
 import {normalizeShots,updateShot,moveShot,removeShot,projectSnapshot,totalDuration} from './timeline.mjs';
 import {resolvePreviewFrame} from './canvas-plan.mjs';
 import {planDirectorProject,ENGINE_CATALOG} from './director.mjs';
+import {saveRevision,listRevisions,restoreRevision} from './revisions.mjs';
 const $=id=>document.getElementById(id);
 const KEY='davylab.vibe.p0';
 let project={prompt:$('prompt').value,format:'portrait',mode:'animation',shots:[]};
@@ -65,6 +66,31 @@ $('generate-ai').onclick=async()=>{
 };
 
 $('save').onclick=()=>{try{localStorage.setItem(KEY,JSON.stringify(synchronize()));status('已保存在当前浏览器；尚未跨设备同步')}catch(e){status('本地保存失败：'+e.message)}};
+
+const VERSION_KEY='davylab.vibe.revisions.v1';
+let history=[];
+try{const saved=JSON.parse(localStorage.getItem(VERSION_KEY)||'[]');if(Array.isArray(saved))history=saved}catch(e){console.warn('历史版本记录无法解析：',e)}
+function renderVersions(){
+ const select=$('revision-select');if(!select)return;select.replaceChildren();
+ for(const item of listRevisions(history)){const option=document.createElement('option');option.value=item.id;option.textContent=item.createdAt+' · '+item.label+' · '+item.shotCount+' 镜头';select.append(option)}
+ if(!history.length){const option=document.createElement('option');option.value='';option.textContent='暂无历史版本';select.append(option)}
+}
+$('save-revision').onclick=()=>{
+ try{const snapshot=synchronize();history=saveRevision(snapshot,history);localStorage.setItem(VERSION_KEY,JSON.stringify(history));renderVersions();status('当前版本已归档至本机浏览器，最多保留 12 个版本（不含跨设备同步）')}
+ catch(e){status('版本归档失败：'+e.message)}
+};
+$('restore-revision').onclick=()=>{
+ const id=$('revision-select').value;if(!id){status('请先选择历史版本');return}
+ if(!confirm('恢复历史版本将覆盖当前尚未保存的分镜内容，是否继续？'))return;
+ try{
+  const restored=projectSnapshot(restoreRevision(history,id));project=restored;
+  $('prompt').value=restored.prompt;$('format').value=restored.format;
+  selectCreationMode(restored.mode,{announce:false});renderShots();
+  status('历史工程已恢复到编辑器；如需永久保留，请点击「保存项目」')
+ }catch(e){status('无法恢复历史版本：'+e.message)}
+};
+renderVersions();
+
 $('import-trigger').onclick=()=>$('import-file').click();
 $('import-file').addEventListener('change',async()=>{const file=$('import-file').files?.[0];if(!file)return;try{if(file.size>2*1024*1024)throw new Error('工程文件超过 2 MB');const raw=JSON.parse(await file.text());if(!raw||typeof raw!=='object'||typeof raw.prompt!=='string'||!Array.isArray(raw.shots))throw new Error('不是有效的 Vibe Studio 项目');const imported=projectSnapshot(raw);project=imported;$('prompt').value=project.prompt;$('format').value=project.format;selectCreationMode(project.mode,{announce:false});renderShots();status('工程已导入（尚未覆盖本地保存，点击「保存项目」才会写入）')}catch(e){status('项目导入失败：'+e.message)}finally{$('import-file').value=''}});
 $('export').onclick=()=>{try{download('vibe-project.json',JSON.stringify(synchronize(),null,2))}catch(e){status('项目导出失败：'+e.message)}};
