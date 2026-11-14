@@ -35,5 +35,5 @@ try{
  if(qa.width!==prepared.width||qa.height!==prepared.height)throw new Error('QA resolution mismatch');
  const outputSha256=await hashOutput(output);
  job=transitionRenderJob(job,'verified',{evidence:{...qa,outputSha256}});await persist();
- console.log(JSON.stringify({jobFile,output,bytes:file.size,durationSeconds:qa.durationSeconds,expectedSeconds:prepared.durationSeconds,qa,verified:true}));
+ console.log(JSON.stringify({jobFile,output,inputSha256:job.inputSha256,outputSha256,bytes:file.size,durationSeconds:qa.durationSeconds,expectedSeconds:prepared.durationSeconds,qa,verified:true}));
 }catch(error){job=transitionRenderJob(job,'failed',{error:error.message});await unlink(output).catch(()=>{});await persist().catch(()=>{});console.error('Render/QA failed: '+error.message);process.exitCode=1}finally{await unlink(propsFile).catch(()=>{})}
