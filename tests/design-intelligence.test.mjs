@@ -36,3 +36,10 @@ test('DAVYLAB native design charter preserves product and verification boundarie
   }
   assert.match(doc,/reference-only, not installed, not invoked/);
 });
+
+test('coding agents are instructed to read the native design contract before UI changes',async()=>{
+  const instructions=await file('AGENTS.md');
+  assert.match(instructions,/Read `DESIGN\.md`/);
+  assert.match(instructions,/reference-only/);
+  assert.match(instructions,/npm test/);
+});
