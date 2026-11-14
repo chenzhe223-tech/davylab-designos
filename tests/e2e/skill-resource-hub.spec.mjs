@@ -94,6 +94,7 @@ test('resource hub: private resources participate in local task matching and mob
 test('new design references are visibly uninstalled and source-linked', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openHub(page);
+  await page.locator('#visibilityFilter').selectOption('reference');
   await page.locator('#searchInput').fill('Impeccable');
   const card = page.locator('#resourceCards .resource-card').first();
   await expect(card).toBeVisible();
