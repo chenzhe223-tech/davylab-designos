@@ -98,7 +98,7 @@ test('new design references are visibly uninstalled and source-linked', async ({
   await expect(card).toBeVisible();
   await expect(card).toContainText('仅供参考 · 未接入');
   await card.click();
-  await expect(page.locator('#resourceDetail')).toContainText('仅供参考');
+  await expect(page.locator('#resourceDetail')).toContainText('reference');
   await expect(page.locator('#resourceDetail')).toContainText('没有安装');
   await expect(page.locator('#resourceDetail a[href*="pbakaus/impeccable"]')).toHaveAttribute('target','_blank');
 });
