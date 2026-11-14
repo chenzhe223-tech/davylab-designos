@@ -8,8 +8,10 @@ export const Root=()=> <Composition
  calculateMetadata={({props})=>{
   const project=props.project ?? DEFAULT;
   const shots=Array.isArray(project.shots)?project.shots:[];
-  const seconds=shots.reduce((n,s)=>n+Number(s.duration??(Number(s.end)-Number(s.start))),0);
-  if(!Number.isFinite(seconds)||seconds<1||seconds>600)throw Error('Invalid video duration');
+  if(shots.length<1||shots.length>24)throw Error('Invalid shot count: expected 1–24');
+  const durations=shots.map((s,i)=>{const seconds=Number(s.duration??(Number(s.end)-Number(s.start)));if(!Number.isFinite(seconds)||seconds<1||seconds>120)throw Error('Invalid duration at shot '+(i+1));return seconds});
+  const seconds=durations.reduce((sum,duration)=>sum+duration,0);
+  if(seconds<15||seconds>120)throw Error('Video duration must be 15–120 seconds');
   return {durationInFrames:Math.ceil(seconds*30),width:project.format==='portrait'?1080:1920,height:project.format==='portrait'?1920:1080};
  }}
 />;
