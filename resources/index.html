@@ -92,13 +92,13 @@ body[data-low-motion="true"] .resource-card,body[data-low-motion="true"] .ui-pre
  <p>你的 Skill、设计系统和集成引擎，都有自己的位置。先看清它能做什么、何时使用、有哪些边界；需要时，让 Agent 按任务找到合适的能力。</p>
  <div class="hero-bottom">
   <div class="stats">
-   <div class="stat"><strong id="skillCount">—</strong><span>可复用 Skills</span></div>
+   <div class="stat"><strong id="skillCount">—</strong><span>Skill 目录项</span></div>
    <div class="stat"><strong id="engineCount">—</strong><span>集成引擎</span></div>
-   <div class="stat"><strong id="assetCount">—</strong><span>视觉 / 设计资产</span></div>
+   <div class="stat"><strong id="assetCount">—</strong><span>视觉 / 设计参考</span></div>
    <div class="stat"><strong id="privateCount">—</strong><span>私有仓库资源</span></div>
    <div class="stat"><strong id="publicCount">—</strong><span>公开仓库资源</span></div>
   </div>
-  <div class="hero-note"><b>一份登记 · 多个 Agent 使用</b><br>资源摘要公开展示；私有 Skill 原文仍由原仓库权限控制。</div>
+  <div class="hero-note"><b>一份目录 · 按需验证再接入</b><br>资源摘要公开展示；私有 Skill 原文仍由原仓库权限控制。</div>
  </div>
 </section>
 <div class="workspace">
@@ -220,7 +220,7 @@ POST /api/skills/match</div><button class="btn small" id="copyApi">复制 API �
   if(r.source?.access?.includes("authorized")||r.source?.visibility==="private"){const note=document.createElement("p");note.style.marginTop="10px";note.textContent="这是私有资源。链接本身不会授予访问权；Agent 必须使用已授权的 GitHub 连接或本地工作区读取原文。";source.append(note);}
   grid.append(source);body.append(grid);
   const actions=document.createElement("div");actions.className="detail-actions";
-  const use=document.createElement("button");use.className="btn primary";use.textContent="生成此 Skill 的 Agent 调用指令";use.addEventListener("click",()=>makePrompt(r));
+  const use=document.createElement("button");use.className="btn primary";use.textContent=r.status==="reference"?"生成资源评估指令":"生成此 Skill 的 Agent 调用指令";use.addEventListener("click",()=>makePrompt(r));
   const copySource=document.createElement("button");copySource.className="btn";copySource.textContent="复制来源路径";copySource.addEventListener("click",()=>copy(r.source?.repository ? r.source.repository+"/"+r.source.path : r.source?.url||""));
   const sourceRepo=String(r.source?.repository||"");
   const sourceVisibility=r.source?.visibility||"";
@@ -259,7 +259,7 @@ POST /api/skills/match</div><button class="btn small" id="copyApi">复制 API �
  }
  function updateStats(){
   $("skillCount").textContent=resources.filter(r=>r.type==="skill").length;
-  $("engineCount").textContent=resources.filter(r=>r.type==="engine").length;
+  $("engineCount").textContent=resources.filter(r=>r.type==="engine"&&r.status==="integrated").length;
   $("assetCount").textContent=resources.filter(r=>["visual-pack","profile-library"].includes(r.type)).length;
   $("privateCount").textContent=resources.filter(r=>[r.source,...(r.alternateSources||[])].some(s=>s.visibility==="private")).length;
   $("publicCount").textContent=resources.filter(r=>[r.source,...(r.alternateSources||[])].some(s=>s.visibility==="public")).length;
@@ -325,7 +325,7 @@ POST /api/skills/match</div><button class="btn small" id="copyApi">复制 API �
   const agent=state.agent==="all"?"当前 Agent":state.agent;
   const source=r.source||{};
   const prompt=[
-   "# DAVYLAB Skill Resource — Agent Activation Brief",
+   r.status==="reference"?"# DAVYLAB Skill Resource — Reference Evaluation Brief":"# DAVYLAB Skill Resource — Agent Activation Brief",
    "",
    "Agent: "+agent,
    "Task context: "+($("intentInput").value.trim()||"请根据当前用户任务判断是否适用。"),
@@ -347,6 +347,7 @@ POST /api/skills/match</div><button class="btn small" id="copyApi">复制 API �
    "- URL: "+(source.url||"not available"),
    "",
    "## Required activation workflow",
+   ...(r.status==="reference"?["**REFERENCE ONLY: This resource is NOT installed, NOT invoked and NOT validated. First evaluate license, source and isolated tests; do not execute from this brief.**",""]:[]),
    ...(r.activation?.steps||["Read the complete resource and validate that it applies to the current task."]).map((x,i)=>(i+1)+". "+x),
    "1. Before use, retrieve the complete source text from the source repository or the authorized local workspace. If it is private and your current credentials do not grant access, stop and report the permission blocker; do not guess or use an unrelated copy.",
    "2. Verify the source revision/blob SHA against the registry. If the SHA has changed, re-read and reconcile the latest content rather than treating this metadata as current instructions.",
