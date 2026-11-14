@@ -21,7 +21,7 @@ $('generate-ai').onclick=async()=>{
  const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),55000);
  try{
   status('正在通过安全服务请求 DeepSeek，现有动画预览暂不跟随 AI 分镜变化');
-  const response=await fetch('/api/vibe/storyboard',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+pass},body:JSON.stringify({prompt:promptText,duration:30,aspectRatio:$('format').value==='landscape'?'16:9':'9:16'}),signal:controller.signal,credentials:'same-origin'});
+  const response=await fetch('/api/vibe/storyboard',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+pass},body:JSON.stringify({prompt:promptText,duration:Number($('target-duration').value),aspectRatio:$('format').value==='landscape'?'16:9':'9:16'}),signal:controller.signal,credentials:'same-origin'});
   const data=await response.json();
   if(!response.ok)throw new Error(data?.error||'服务请求失败');
   if(data?.source!=='deepseek'||!Array.isArray(data?.storyboard?.scenes))throw new Error('服务响应结构不正确');
