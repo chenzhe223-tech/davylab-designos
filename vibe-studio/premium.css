@@ -39,3 +39,8 @@
 @media(max-width:750px){.preview video{max-height:370px}.timeline-shot{min-height:42px}}
 
 [hidden]{display:none!important}
+
+.player-status{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:11px 1px 0;color:#d9eafe;font-size:12px}
+#preview-clock{font-variant-numeric:tabular-nums;color:#b8d0eb;white-space:nowrap}
+.timeline-shot.is-active{background:linear-gradient(120deg,#7baaff,#62baf1)!important;color:#0d2843;box-shadow:inset 0 0 0 2px #e0f2ffb9;font-weight:750}
+@media(max-width:750px){.player-status{font-size:11px}}
