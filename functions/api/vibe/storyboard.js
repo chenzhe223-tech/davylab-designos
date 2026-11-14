@@ -29,7 +29,7 @@ export async function onRequestPost({request,env}){
   if(!upstream.ok)return json({error:upstream.status===429?'模型服务请求过于频繁':'模型服务调用失败',code:'UPSTREAM_ERROR'},502);
   const data=await upstream.json();
   const storyboard=parseDeepseekStoryboard(data);
-  if(storyboard.durationSeconds>180)return json({error:'分镜总时长超过当前限制，请缩短创意'},422);
+  if(storyboard.durationSeconds<15||storyboard.durationSeconds>120)return json({error:'分镜总时长须为 15–120 秒，请调整镜头时长后重试'},422);
   return json({source:'deepseek',storyboard});
  }catch(err){return json({error:err?.name==='AbortError'?'分镜生成超时':'模型响应解析失败',code:'GENERATION_FAILED'},502)}
  finally{clearTimeout(timeout)}
