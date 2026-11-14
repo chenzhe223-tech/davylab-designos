@@ -1,5 +1,6 @@
 // Deterministic timeline-to-preview mapping. No AI scene is passed off as a rendered film.
 export const resolveVisualFamily=(shot,index=0)=>{
+ if(['city','particles','nature'].includes(shot?.visualFamily))return shot.visualFamily;
  const text=String(shot?.visual||'')+' '+String(shot?.title||'');
  if(/城市|大楼|高楼|建筑|街道|都市|天际|city|building|skyline/i.test(text))return 'city';
  if(/星|宇宙|太空|银河|粒子|星光|星球|space|galaxy|particle|orbit/i.test(text))return 'particles';
