@@ -104,3 +104,15 @@ The user requires this project to continue **in Chat mode only**, without automa
 - Current container has Node 22, FFmpeg and FFprobe but no access to GitHub checkout or npmjs registry for Remotion dependency installation; do **not** substitute FFmpeg synthetic QA clips for real Remotion renders.
 - Next: run full `npm run check` when full repo is accessible, install pinned Remotion dependencies, `npm run typecheck`, execute sample `npm run render -- ./examples/p0-city-15s.json`, visual frame QA, change a shot then re-render. Validate desktop/iPad/mobile and persistent saved data.
 - Delivery gates: Code Completed for incremental changes; Build Passed: unverified; Runtime Verified: targeted Node functions only; Functional Tested: partial local components, no end-to-end; Production Deployed: no.
+
+## 2026-11-15 · Chat-only continuation: preview, local MP4 playback, bounded renderer
+
+- Added `vibe-studio/canvas-plan.mjs`: map editable storyboard timings and shot descriptions to deterministic Canvas preview family and seek position. Local independent Node tests: **5/5 passed**, verified byte-identical to GitHub blobs.
+- Updated `vibe-studio/studio.js` to use timeline-aware scene preview with canvas portrait/landscape sizing, shot seeking, current shot name and timecode, active track segment highlighting. This is an **approximate procedural preview**, not the final Remotion composition.
+- Fixed a pre-existing broken local MP4 button: `load-mp4` and `render-file` now bind real native video playback, Blob URL cleanup and explicit warning that importing a file does not mean QA was performed.
+- `vibe-renderer/scripts/process-runner.mjs` adds 10-minute Remotion subprocess timeout, failed process detection and termination for hangs. Local Node subprocess tests: **4/4 passed**, verified byte-identical Git blobs. Render CLI uses it and includes input/output SHA-256 in successful delivery receipts.
+- Additional root regression tests: `tests/vibe-canvas-preview.test.mjs`, `tests/vibe-preview-wiring.test.mjs` updated; full root build-distribution tests not executed.
+- Source-level readback checks passed JS parsing, all DOM IDs resolving, no duplicated IDs, timecode/active track wiring, media URL cleanup and mobile CSS. These are not a replacement for browser QA.
+- **9/9 newly executed local Node assertions passed**. No Remotion dependency install, actual Remotion MP4, full root build, desktop/iPad/mobile E2E tests, or production deployment in this increment; avoid claiming P0 passed.
+- Current GitHub branch is `feat/vibe-studio-architecture-20261114`. Preserve approved blue-gray iOS glass visual.
+- Next priority: complete repo `npm run check`; renderer `npm install && npm test && npm run typecheck`; 15s Remotion render + visual/ffprobe QA + edit-and-rerender test in a connected environment. Then add real persisted render jobs and authenticated downloads without false completion states.
