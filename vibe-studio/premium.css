@@ -56,3 +56,13 @@
 /* Director-only motion notes + real editable on-screen subtitle text. */
 .shot-details input.motion-input,.shot-details input.narration-input{grid-column:2/4;min-width:0;width:100%;max-width:none!important}
 @media(max-width:750px){.shot-details input.motion-input,.shot-details input.narration-input{grid-column:1/4}}
+
+/* Shot-level routing is advisory until a renderer is independently runtime-verified. */
+.director-panel{border:1px solid var(--line);border-radius:14px;background:#102b4345;padding:14px;margin-top:12px}
+.director-panel .timeline-heading{gap:12px}
+.director-panel .timeline-heading span{font-size:11px;color:#cbddeb;text-align:right}
+.director-plan{display:grid;gap:7px}
+.director-shot{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#d4eafa0e;border:1px solid #d4eafa29;border-radius:9px;padding:9px 10px;font-size:12px}
+.director-shot .director-status{color:#c9d7e9;font-size:11px;text-align:right}
+.director-plan small{font-size:11px;color:#bbd2eb;line-height:1.55;margin-top:5px}
+@media(max-width:750px){.director-panel{padding:12px}.director-shot{font-size:11px}.director-shot .director-status{font-size:10px}}
