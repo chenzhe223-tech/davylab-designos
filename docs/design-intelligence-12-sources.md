@@ -48,3 +48,6 @@ Implemented a **dependency-free, native and local** quality evaluator in `design
 Evidence: `tests/design-quality.test.mjs` covers contrast, missing data, duplicate names, demo provenance and UI wiring; `tests/e2e/design-agent4.spec.mjs` exercises the real browser QA action, report download and mobile width. CI results are the acceptance source; this section does not claim deployment.
 
 **Next P1 tasks:** verify licenses and pin exact upstream revisions for design-extract / Impeccable / Hallmark; run a permission-scoped browser extraction pilot; generate screenshot-backed issues at 375/390/430/1440px; apply a real fix and compare before/after. Do not label external upstream Skills integrated until each adapter has a reproducible end-to-end test.
+
+### Rendered visual evidence extension
+The Playwright browser suite now exercises the Design Agent at **375, 390, 430, 768, and 1440px**, measures document and panel bounds, checks primary action hit-area dimensions, and attaches **full-page PNG screenshots plus JSON layout measurements** to each test result. A separate browser test confirms unsaved changes invalidate prior QA exports. These are real rendered-browser evidence artifacts, not model-imagined visual assessments. Human review of the PNGs and screenshot-diff baselines remain outstanding; no pixel-perfect approval is claimed.
