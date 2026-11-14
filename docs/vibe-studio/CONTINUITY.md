@@ -184,3 +184,29 @@ Delivery states: Code Completed (these fixes); Build Passed (unverified); Runtim
 3. After real P0 MP4: implement audio track/assets, precise motion/camera controls, render queue persistence, and Skill adapters after license checks.
 
 Current delivery gates: **Code Completed** (incremental editor+QA fixes); **Build Passed** (unverified); **Runtime Verified** (targeted pure JS checks only); **Functional Tested** (partial, not end-to-end); **Production Deployed** (no).
+
+## 2026-11-15 · Current Chat-only implementation and verified offline MP4 proof
+
+READ FIRST: `docs/vibe-studio/DELIVERY_STATUS.md` is the current P0–P3 acceptance matrix. The earlier planning in `ARCHITECTURE.md` predates the approved four creation entries. This Chat has NOT triggered GitHub Actions, external API billing, or production deployment.
+
+### Actual changes made in this iteration
+1. Added `vibe-studio/director.mjs` and `tests/vibe-director.test.mjs`: shot-level engine recommendations for Remotion, anidoodle, knowledge-film, Stickman, Shotcraft and Manim. Unintegrated engines remain explicitly blocked; recommendations are not runtime integration.
+2. Added engine readiness to the unified UI, with honest non-rendered badges; `tests/vibe-director-wiring.test.mjs`.
+3. Fixed browser WebM capture from hardcoded 10 seconds to the full 15–120s storyboard and froze the project snapshot during capture; it is NOT H.264 MP4.
+4. Added independent `vibe-renderer/scripts/render-ffmpeg-proof.mjs`, `render:ffmpeg-proof` and opt-in `tests/ffmpeg-proof.test.mjs`. The repo version additionally calls shared FFmpeg black-region QA.
+5. **REAL LOCAL MP4 PROOF** (source: a functionally equivalent local version of the FFmpeg script, not freshly cloned GitHub): generated and checked 15.000s 854×480 H.264 MP4 SHA256 `d44d74ebf27c1f5c903daff98f396945e1e0c382c86b5cdc842989e5e081295e`, and a changed 17.000s 854×480 H.264 MP4 SHA256 `1f453411bafd95ad6fbe5d2741ee41c1af2a02eac79a75371e162da781b57dd4`; no FFmpeg blackdetect regions >=0.15s. Visuals are elementary gradients/text, not polished commercial footage or Remotion.
+6. Added `vibe-studio/revisions.mjs`: user can store/recover up to 12 immutable local project snapshots in collapsed editor controls; no cloud sync. Local Node tests **4/4 passed**, GitHub readback DOM/style checks.
+7. Upgraded `vibe-studio/timeline.mjs` to project Schema V2: preserves P1 sources/claims, P2 characters and shot IDs, P3 engine tags, while migrating old schema. Local Node tests **5/5 passed**, local file Git blob exactly matched GitHub `a0059ce9972167db3f8865cba728ddb6754d9d34`. Updated old schema test and added `tests/vibe-production-schema.test.mjs`.
+8. Added knowledge-source URL/excerpt and claim citation input; story character/appearance registry; scene-specific character/source refs; per-shot skill selection. These are functioning editor metadata workflows, not actual Skill video renderers; `tests/vibe-domain-assets.test.mjs`.
+9. Exact GitHub code fetched and evaluated: director source 8/8 checks passed; Schema V2 + data/DOM/JS checks 10/10 passed; no duplicate HTML IDs, no unresolved DOM lookups, JS parses. This is narrower than Chromium browser E2E.
+
+### Verified limitations
+- Container Node 22, FFmpeg/FFprobe 7.1.5, and Chromium exist. Network DNS and outbound connectivity to npmjs/GitHub unavailable; pinned Remotion packages unavailable locally. **No genuine Remotion MP4 was built or tested, so P0 cannot be marked complete.**
+- No full repository `npm run check`, no full Remotion `npm test`/`typecheck`, no live DeepSeek API, no verified anidoodle/knowledge-film/Stickman/Shotcraft/Manim execution, no cross-device persistence and no online deployment.
+- `vibe-renderer/render-input.mjs` still sets 15–120 sec and has separate licensing. GitHub workflow `.github/workflows/vibe-p0-render-acceptance.yml` is manual/opt-in and has **NOT run**. Remotion 4.0.543 CLI and getVideoMetadata usages were cross-checked against official documentation on 2026-11-15.
+- The FFmpeg proof ZIP is a Chat artifact stored in this turn's active container, **not a permanent public GitHub release**. Do not infer sandbox paths from this document in another window.
+
+### Next required execution
+- With separately authorized network-enabled runner, install Remotion dependencies; run root build/tests and renderer typecheck; render >=15s real Remotion MP4 and modified re-render, independently inspect frames/QA receipts; only then mark P0 functional.
+- Execute true anidoodle integration/maintenance/license study, real DeepSeek server integration and UI browser tests; then actual knowledge-film >=30s, Stickman/Shotcraft story/product, and Manim multi-engine verified output.
+- All upgrades remain in feature branch `feat/vibe-studio-architecture-20261114`; user requires ongoing safe development in Chat, not Work handoff or automated schedules.
