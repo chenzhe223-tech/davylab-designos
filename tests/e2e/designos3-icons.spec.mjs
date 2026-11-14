@@ -11,8 +11,8 @@ for (const width of [375,390,430]) {
     await expect(page.locator('.mobile-nav button .ui-icon')).toHaveCount(6);
     await expect(page.locator('.mobile-nav [data-nav=skills]')).toContainText('资源');
     await page.locator('.mobile-nav [data-nav=skills]').click();
-    await expect(page.locator('.resource-icon .ui-icon')).toHaveCount(25);
-    await expect(page.locator('.resource-trailing .ui-icon')).toHaveCount(25);
+    await expect(page.locator('.resource-icon .ui-icon')).toHaveCount(36);
+    await expect(page.locator('.resource-trailing .ui-icon')).toHaveCount(36);
     const findings=await page.evaluate(()=>{
       const body=document.body;
       const first=document.querySelector('.resource-item strong');
@@ -42,7 +42,7 @@ test('iPhone-style dark mode preserves readable resource names and icons',async 
   await page.locator('[data-action=theme][data-theme=dark]').click();
   await expect(page.locator('body')).toHaveAttribute('data-app-theme','dark');
   await page.locator('.mobile-nav [data-nav=skills]').click();
-  await expect(page.locator('.resource-icon .ui-icon')).toHaveCount(25);
+  await expect(page.locator('.resource-icon .ui-icon')).toHaveCount(36);
   const colors=await page.locator('.resource-item').first().evaluate(button=>{
     const strong=button.querySelector('strong'),svg=button.querySelector('svg');
     return {
@@ -68,6 +68,6 @@ test('external actions render vector arrows, not blue-square emoji',async ({page
   if(await mobileSkills.isVisible()) await mobileSkills.click();
   else await page.locator('.primary-nav [data-nav=skills]').click();
   await expect(page.locator('.page-heading a .inline-icon svg')).toHaveCount(1);
-  await expect(page.locator('.resource-item .resource-trailing svg')).toHaveCount(25);
+  await expect(page.locator('.resource-item .resource-trailing svg')).toHaveCount(36);
   expect(broken.test(await page.locator('body').innerText())).toBe(false);
 });
