@@ -39,3 +39,12 @@ README counts and star ratings in the user's source are snapshots or author clai
 
 ## Acceptance
 P0 = catalog + honest status labels + unique IDs + native design charter + automated regression. P0 does **not** mean UI generation, MCP invocation, live Figma connectivity or customer-visible AI critique is functional. Build, browser, CI and deployment statuses must be reported separately.
+
+## P1 increment · native quality gate (2026-11-14)
+Implemented a **dependency-free, native and local** quality evaluator in `design-agent/quality.js`. It inspects actual Design Agent project data: brand positioning, exactly three distinct direction names, HEX validity, WCAG-relative luminance and 4.5:1 foreground/background contrast in the existing preview palette, design rationale and SVG state provenance. The Design Agent page now has a manual `检查当前设计` action and exports a JSON report with issue codes, severity, evidence, suggested remediation and explicit limits.
+
+**Important scope:** This is a *static heuristic* quality gate, **not** the upstream Impeccable/Hallmark engine, not a Playwright screenshot audit, and not legal clearance. Demo content is always blocked from final-delivery status. A planning-only project may pass basic design completeness but still reports `NO_FINAL_ASSET`; delivery requires independent final-asset and browser checks.
+
+Evidence: `tests/design-quality.test.mjs` covers contrast, missing data, duplicate names, demo provenance and UI wiring; `tests/e2e/design-agent4.spec.mjs` exercises the real browser QA action, report download and mobile width. CI results are the acceptance source; this section does not claim deployment.
+
+**Next P1 tasks:** verify licenses and pin exact upstream revisions for design-extract / Impeccable / Hallmark; run a permission-scoped browser extraction pilot; generate screenshot-backed issues at 375/390/430/1440px; apply a real fix and compare before/after. Do not label external upstream Skills integrated until each adapter has a reproducible end-to-end test.
