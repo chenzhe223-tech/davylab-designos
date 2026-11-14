@@ -85,3 +85,22 @@ User explicitly requires development to remain in this Chat conversation (no Wor
 - No network DNS for github.com / registry.npmjs.org in this container. Root `npm run check`, renderer `npm install && npm run typecheck`, actual Remotion render, browser device QA, and independent MP4 playback are **not** verified.
 - Next priority in a runnable environment: install pinned Remotion dependencies, compile/typecheck the new SceneArt TSX, run real >=15s example MP4, visually inspect all shots, run ffprobe/black-frame QA, change a shot and rerender. Do not mark P0 complete before this.
 - Render-state unit tests confirm validation logic but do not prove the video is playable.
+
+## 2026-11-15 · Chat-only preview synchronization and render process safeguards
+
+The user requires this project to continue **in Chat mode only**, without automatic scheduling or Work handoff. Maintain the approved blue-gray iOS glass visual language and existing repositories.
+
+### Implemented and GitHub-read-back
+- `vibe-studio/canvas-plan.mjs`: pure mapping from editable scene duration/title/visual into current timeline position and procedural preview family. Frame timing wraps around full total duration and responds immediately to shot duration edits.
+- `vibe-studio/studio.js`: preview frame now follows the actual storyboard model rather than the old unconditional fixed 10-second city loop; camera/landscape/particle scene variants, vertical/horizontal canvas sizing and click-to-seek timeline. **Still only a procedural Canvas approximation; does not claim to match final Remotion output.**
+- `tests/vibe-canvas-preview.test.mjs`: 5/5 local Node tests passed using GitHub SHA-matching copies (planner `d318b2e254cc05c15a56f551bfea000f6be38c2b`, test `b751f010008fff8140a4783630ad47795ecc1b0c`).
+- Repaired an actual dead button: existing `load-mp4` / `render-file` UI had no listener in `studio.js`. Now imports a local MP4 to the native video element with Blob URL lifecycle cleanup, explicit not-QA-verified status, and Canvas/video switching. Updated responsive media CSS. Source-level checks verified all DOM IDs/references, JS parse and import handling; browser playback has **not yet been tested**.
+- `vibe-renderer/scripts/process-runner.mjs`: encapsulates spawned subprocess, detects nonzero exit, stops timed-out rendering (10 minute default) and safely rejects bad command settings. `render.mjs` uses it; receives actual input/output SHA-256 in successful CLI receipt.
+- `vibe-renderer/tests/process-runner.test.mjs`: **4/4 actual Node subprocess tests passed**, including deliberately hung process termination; GitHub SHA-matching copies verified (runner `ff2bd2536e6f2db8667a0685ee0166b79aff65d1`, tests `ace66e99d391a86bc5251a0e76790bc9facd5e85`).
+- New `tests/vibe-preview-wiring.test.mjs` was committed but full build-distribution test cannot run without entire root repository checkout. Source checks confirmed syntax, unique IDs and missing DOM refs = 0.
+
+### Current state and next step
+- This increment: 9/9 verified targeted Node tests. No full root build, TypeScript typecheck, browser test or Remotion >=15s MP4 rendering has been demonstrated in this turn.
+- Current container has Node 22, FFmpeg and FFprobe but no access to GitHub checkout or npmjs registry for Remotion dependency installation; do **not** substitute FFmpeg synthetic QA clips for real Remotion renders.
+- Next: run full `npm run check` when full repo is accessible, install pinned Remotion dependencies, `npm run typecheck`, execute sample `npm run render -- ./examples/p0-city-15s.json`, visual frame QA, change a shot then re-render. Validate desktop/iPad/mobile and persistent saved data.
+- Delivery gates: Code Completed for incremental changes; Build Passed: unverified; Runtime Verified: targeted Node functions only; Functional Tested: partial local components, no end-to-end; Production Deployed: no.
