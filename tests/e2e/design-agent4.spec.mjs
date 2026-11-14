@@ -117,3 +117,13 @@ for(const width of [375,390,430,768,1440]){
   await testInfo.attach('design-agent-'+width+'.png',{body:await page.screenshot({fullPage:true,animations:'disabled'}),contentType:'image/png'});
  });
 }
+
+test('QA report cannot be exported after a user changes unsaved brand inputs',async({page})=>{
+ await page.goto('/design-agent/');
+ await page.locator('#loadDemo').click();
+ await page.locator('#runDesignQA').click();
+ await expect(page.locator('#exportDesignQA')).toBeEnabled();
+ await page.locator('#brief').fill('重新定位为更亲民的家庭海岛品牌');
+ await expect(page.locator('#exportDesignQA')).toBeDisabled();
+ await expect(page.locator('#qaSummary')).toContainText('重新检查');
+});
