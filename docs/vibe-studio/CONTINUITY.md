@@ -68,3 +68,20 @@ Current statuses: **Code Completed** (renderer skeleton and media QA code); **Bu
 - User-facing workbench can now import local MP4 for native playback and switch back to Canvas. Imported videos are explicitly marked as **not QA-verified**. New source test `tests/vibe-video-import.test.mjs`, not yet run as part of root test.
 - CLI calls Remotion metadata validation and FFmpeg black-frame QA before verified; **real Remotion video output has still not been executed** because npm registry is unavailable in this environment.
 - Next: install Remotion in authorized network-enabled environment; execute >=15s sample render; visually inspect, modify and re-render; run root build, unit tests and browser viewport checks; then connect render queue and persistent storage.
+
+## 2026-11-15 · Chat-only renderer improvement
+
+User explicitly requires development to remain in this Chat conversation (no Work handoff, no automations). Keep performing authorized safe increments in Chat and GitHub; don't imply background execution.
+
+### Changed and GitHub read back
+- `vibe-renderer/src/scene-art.tsx` (blob `a2760f46550a0d6f901a0a538a476886d70fd052`): deterministic per-frame SVG visual assets for three simple families (city skyline, particles/orbits, and mountains). Classification uses shot title/visual description; gradients and motion are frame-driven. **P0 procedural imagery only**, not anidoodle / knowledge-film / Stickman, and not a replacement for professional scene rendering.
+- `vibe-renderer/src/film.tsx` (blob `a08648c93ab2871338e72ab3a72ac6e17a610ef2`): integrates `SceneArt` beneath existing readable animated shot captions. Existing 15-second render example and root composition remain intact.
+- `vibe-renderer/job-state.mjs` (blob `8fdfadff22b21b4973881e698682e878ed2c9b62`): canonical SHA-256 `inputSha256` records exact normalized project data (no raw secret storage); `verified` now also requires valid QA duration within .5 second, dimensions >=320 px, and file size >=10 KB.
+- `vibe-renderer/tests/job-state.test.mjs` (blob `72d45b087b845ee4a6faece6637508458b4f6a1c`): added fingerprint order-independence/content-change tests and invalid evidence rejection. **6/6 tests passed using local byte-identical Git blob copies**, SHA cross-checked by `git hash-object`.
+- `vibe-renderer/scripts/render.mjs` (blob `6cba4d7e2d039bcfa96408a81b47b40b7425ac7b`): now SHA-256 hashes QA-verified MP4 to evidence, and deletes partial/unverified MP4 on render failure while preserving failed job status.
+- No production environment changed, no model API or paid service called.
+
+### Still blocked / pending
+- No network DNS for github.com / registry.npmjs.org in this container. Root `npm run check`, renderer `npm install && npm run typecheck`, actual Remotion render, browser device QA, and independent MP4 playback are **not** verified.
+- Next priority in a runnable environment: install pinned Remotion dependencies, compile/typecheck the new SceneArt TSX, run real >=15s example MP4, visually inspect all shots, run ffprobe/black-frame QA, change a shot and rerender. Do not mark P0 complete before this.
+- Render-state unit tests confirm validation logic but do not prove the video is playable.
