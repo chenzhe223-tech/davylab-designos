@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { mkdir, writeFile } from 'node:fs/promises';
 const sample={
   source:'live-deepseek',model:'deepseek-flash',
   strategy:{brand_name:'ISLAND DAYS',tagline:'自然相伴',positioning:'高品质海岛度假',audience:'年轻家庭',personality:'温暖',core_value:'亲子同行',brand_story:'每一段旅行都值得记忆',usage:'网页及印刷',keywords:['海岛','家庭'],assumptions:['商标待查']},
@@ -113,8 +114,13 @@ for(const width of [375,390,430,768,1440]){
    expect(control.width,control.selector+' touch width').toBeGreaterThanOrEqual(40);
    expect(control.height,control.selector+' touch height').toBeGreaterThanOrEqual(28);
   }
+  const screenshot=await page.screenshot({fullPage:true,animations:'disabled'});
+  const evidenceDir='artifacts/design-agent-p1';
+  await mkdir(evidenceDir,{recursive:true});
+  await writeFile(evidenceDir+'/rendered-layout-'+width+'.json',JSON.stringify(evidence,null,2));
+  await writeFile(evidenceDir+'/design-agent-'+width+'.png',screenshot);
   await testInfo.attach('rendered-layout-'+width+'.json',{body:Buffer.from(JSON.stringify(evidence,null,2)),contentType:'application/json'});
-  await testInfo.attach('design-agent-'+width+'.png',{body:await page.screenshot({fullPage:true,animations:'disabled'}),contentType:'image/png'});
+  await testInfo.attach('design-agent-'+width+'.png',{body:screenshot,contentType:'image/png'});
  });
 }
 
