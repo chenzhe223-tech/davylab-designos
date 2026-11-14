@@ -75,7 +75,25 @@ function draw(now){
  ctx.font=Math.max(12,Math.min(20,w*.022))+'px system-ui';ctx.fillStyle='#d3e9ff';ctx.fillText(visual.slice(0,35),w/2,h*.19+40);
  ctx.font=Math.max(11,Math.min(17,w*.02))+'px system-ui';ctx.fillStyle='#d1e5f8';ctx.fillText('DAVYLAB VIBE STUDIO · 预览动画',w/2,h-25);
 }
-$('play').onclick=()=>{start=performance.now();status('正在播放分镜对应的程序化 Canvas 动画（不等于最终视频）')};
+$('play').onclick=()=>{showCanvas();start=performance.now();status('正在播放分镜对应的程序化 Canvas 动画（不等于最终视频）')};
+const importedVideo=$('rendered-video');let importedVideoUrl=null;
+function showCanvas(){importedVideo.pause();importedVideo.hidden=true;c.hidden=false}
+$('load-mp4').onclick=()=>$('render-file').click();
+$('render-file').addEventListener('change',()=>{
+ const file=$('render-file').files?.[0];if(!file)return;
+ try{
+  if(file.size===0||file.size>2*1024*1024*1024)throw new Error('视频文件应在 1B 至 2GB 之间');
+  if(file.type&&file.type!=='video/mp4'&&!file.name.toLowerCase().endsWith('.mp4'))throw new Error('请选择 MP4 视频');
+  const url=URL.createObjectURL(file);
+  importedVideo.pause();
+  if(importedVideoUrl)URL.revokeObjectURL(importedVideoUrl);
+  importedVideoUrl=url;importedVideo.src=url;importedVideo.hidden=false;c.hidden=true;
+  importedVideo.onloadedmetadata=()=>status('本地 MP4 已加载：'+Math.round(importedVideo.duration)+' 秒。仅供预览，未进行渲染 QA 验证。');
+  importedVideo.onerror=()=>status('MP4 文件无法播放，请检查编码格式或文件完整性');
+ }catch(e){status('视频导入失败：'+e.message)}finally{$('render-file').value=''}
+});
+window.addEventListener('pagehide',()=>{if(importedVideoUrl)URL.revokeObjectURL(importedVideoUrl)});
+
 renderShots();draw(performance.now());
 // Browser-native recording: real canvas frames, never mislabeled as MP4.
 let recording=false;
