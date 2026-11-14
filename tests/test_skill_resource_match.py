@@ -53,7 +53,7 @@ class SkillResourceMatchTests(unittest.TestCase):
         private_items = [item for item in self.resources if ENGINE.resource_has_visibility(item, "private")]
         public_items = [item for item in self.resources if ENGINE.resource_has_visibility(item, "public")]
         self.assertEqual(len(private_items), 0)
-        self.assertEqual(len(public_items), 24)
+        self.assertEqual(len(public_items), 35)
         self.assertNotIn("bid-quote-cockpit", {item["id"] for item in self.resources})
         self.assertNotIn("feishu-mail-workboard", {item["id"] for item in self.resources})
         visual_dna = next(item for item in self.resources if item["id"] == "visual-dna-design")
