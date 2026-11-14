@@ -7,7 +7,7 @@ import {runRendererCommand} from './process-runner.mjs';
 import {prepareRenderProject} from '../render-input.mjs';
 import {inspectMp4} from './qa-video.mjs';
 import {createRenderJob,transitionRenderJob} from '../job-state.mjs';
-import {makeRenderReceipt} from '../artifact-receipt.mjs';
+import {makeRenderReceipt,loadAndCheckReceipt} from '../artifact-receipt.mjs';
 import {renderLicenseFlags} from '../render-license.mjs';
 const here=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const hashOutput=path=>new Promise((resolveHash,reject)=>{const hash=createHash('sha256');const stream=createReadStream(path);stream.on('data',chunk=>hash.update(chunk));stream.on('error',reject);stream.on('end',()=>resolveHash(hash.digest('hex')))});
@@ -43,6 +43,9 @@ try{
  const receiptTemp=receiptFile+'.tmp';
  await writeFile(receiptTemp,JSON.stringify(receipt,null,2),{mode:0o600});
  await rename(receiptTemp,receiptFile);
+ // Independently read the persisted receipt and verify the actual MP4 bytes before publishing a verified job.
+ const checked=await loadAndCheckReceipt(receiptFile,{file:output});
+ if(checked.sha256!==outputSha256||checked.bytes!==file.size)throw new Error('Persisted render artifact failed independent readback');
  await persist(verifiedJob);
  job=verifiedJob;
  console.log(JSON.stringify({jobFile,receiptFile,output,inputSha256:job.inputSha256,outputSha256,bytes:file.size,durationSeconds:qa.durationSeconds,expectedSeconds:prepared.durationSeconds,qa,verified:true}));
