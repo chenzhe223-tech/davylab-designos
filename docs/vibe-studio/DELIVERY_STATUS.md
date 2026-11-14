@@ -42,3 +42,13 @@ Local FFmpeg proof rendered two **real playable videos**, not static concept scr
 3. Implement real DeepSeek service integration and rate limits, then validate 4 creation modes on desktop, iPad and mobile.
 4. P1 knowledge-film first, then P2 Stickman/Shotcraft, then P3 Manim/engine adapters, with actual exported videos for each.
 5. Maintain `docs/vibe-studio/CONTINUITY.md` after each major tested increment. Never mark a task passed from source-only tests.
+
+## Consolidated local verification addendum (2026-11-15)
+
+- Local Node 22 cross-module suite executed for director planning, local revision history, Schema V2 metadata, and renderer input validation: **21/21 tests passed**, 0 failed. The local Schema V2 `timeline.mjs` and `render-input.mjs` matched current GitHub Git-blob SHAs `a0059ce9972167db3f8865cba728ddb6754d9d34` and `9d835e8c197a9d200bb86a88112bd16605f2fb53`, respectively. Director/revisions tests used tested local implementations plus GitHub source-level readback checks; the 21 tests are not a full GitHub checkout test run.
+- Actual FFprobe after rendering proved 30fps / H.264 / 854×480 / exactly 15.000s and 17.000s; original and edited SHA-256 different. Both real FFmpeg blackdetect checks reported no qualifying black regions.
+- Local proof ZIP integrity passed `unzip -t` with no errors; ZIP is a downloadable Chat artifact, not a GitHub release.
+- Remotion official API documentation checked: `@remotion/renderer.getVideoMetadata()`, CLI `--props`, `--license-key`, and `--is-production=false` are documented. Missing dependencies remain the block; this check is not runtime evidence.
+- Additional UI implemented: editable source/claim references, character registry, per-shot engine tags, and local 12-version restore; source-level JS syntax and DOM reference checks passed. Actual full desktop/iPad/mobile browser E2E remains pending.
+
+**Do not downgrade P0 or P1–P3 acceptance criteria** to the FFmpeg technical proof or metadata-only implementations.
