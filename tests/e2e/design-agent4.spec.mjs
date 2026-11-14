@@ -206,3 +206,32 @@ test('P2 actual browser before-after remediation screenshots and measured eviden
  await testInfo.attach('remediation-after-390.png',{body:after,contentType:'image/png'});
  await testInfo.attach('remediation-comparison-390.json',{body:Buffer.from(JSON.stringify(report,null,2)),contentType:'application/json'});
 });
+
+test('P2 remediation before-after visual evidence is captured and measurable',async({page},testInfo)=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('/design-agent/');
+ await page.locator('#loadDemo').click();
+ await page.locator('[data-edit="0"]').click();
+ await page.locator('#d_palette').fill('#FFFFFF, #EEEEEE, #DEAC62, #C7D0B8');
+ await page.locator('#directionForm button[type="submit"]').click();
+ const before=await page.locator('#conceptGrid .concept').first().screenshot({animations:'disabled'});
+ const beforeColor=await page.locator('#conceptGrid .swatches').first().locator('i').nth(1).evaluate(el=>getComputedStyle(el).backgroundColor);
+ page.once('dialog',dialog=>dialog.accept());
+ const downloadPromise=page.waitForEvent('download');
+ await page.locator('#applyRemediation').click();
+ await downloadPromise;
+ const after=await page.locator('#conceptGrid .concept').first().screenshot({animations:'disabled'});
+ const afterColor=await page.locator('#conceptGrid .swatches').first().locator('i').nth(1).evaluate(el=>getComputedStyle(el).backgroundColor);
+ expect(beforeColor).toBe('rgb(238, 238, 238)');
+ expect(afterColor).toBe('rgb(0, 0, 0)');
+ expect(before.equals(after)).toBe(false);
+ const dir='artifacts/design-agent-p2';
+ await mkdir(dir,{recursive:true});
+ await writeFile(dir+'/remediation-before-390.png',before);
+ await writeFile(dir+'/remediation-after-390.png',after);
+ const evidence={viewport:390,project:'explicitly-labelled-demo',before_color:beforeColor,after_color:afterColor,visually_changed:!before.equals(after),human_review_required:true};
+ await writeFile(dir+'/remediation-before-after-390.json',JSON.stringify(evidence,null,2));
+ await testInfo.attach('remediation-before-390.png',{body:before,contentType:'image/png'});
+ await testInfo.attach('remediation-after-390.png',{body:after,contentType:'image/png'});
+ await testInfo.attach('remediation-before-after-390.json',{body:Buffer.from(JSON.stringify(evidence,null,2)),contentType:'application/json'});
+});
