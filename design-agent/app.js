@@ -1,3 +1,4 @@
+import {auditBrandProject} from './quality.js';
 // DAVYLAB Design Agent 4.0 P0 — browser-local project state, live model strategy and SVG concepts.
 const $=id=>document.getElementById(id);
 const STORAGE='davylab-design-agent-projects-p0';
@@ -173,6 +174,31 @@ function exportProject(){
   const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='DAVYLAB-brand-'+(p.strategy?.brand_name||'project').replace(/[^a-zA-Z0-9_-]/g,'-')+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),4000);
 }
 
+let latestQA=null;
+function runDesignQA(){
+  applyPendingInputs();
+  latestQA=auditBrandProject(p);
+  const blockers=latestQA.issues.filter(i=>i.severity==='blocker').length;
+  const major=latestQA.issues.filter(i=>i.severity==='major').length;
+  $('qaSummary').textContent=(latestQA.passed?'基础检查通过':'需要修正')+' · 阻断 '+blockers+' · 重要 '+major+' · 共 '+latestQA.issues.length+' 项发现';
+  const list=$('qaFindings');list.replaceChildren();
+  for(const finding of latestQA.issues){
+    const li=document.createElement('li');
+    li.textContent='['+finding.severity+'] '+finding.message+' — '+finding.action;
+    list.append(li);
+  }
+  if(!latestQA.issues.length){const li=document.createElement('li');li.textContent='基础静态检查无发现。仍需完成真实视觉、可访问性与授权验收。';list.append(li)}
+  $('exportDesignQA').disabled=false;
+}
+function exportDesignQA(){
+  if(!latestQA)return;
+  const report={...latestQA,project_id:p.id,project_updated:p.updated,checked_at:new Date().toISOString()};
+  const url=URL.createObjectURL(new Blob([JSON.stringify(report,null,2)],{type:'application/json'}));
+  const link=document.createElement('a');link.href=url;link.download='DAVYLAB-design-QA-'+p.id+'.json';link.click();
+  setTimeout(()=>URL.revokeObjectURL(url),4000);
+}
+$('runDesignQA').addEventListener('click',runDesignQA);
+$('exportDesignQA').addEventListener('click',exportDesignQA);
 let editingIndex=-1;
 function openDirectionEditor(index){
   if(!p.directions[index])return;
