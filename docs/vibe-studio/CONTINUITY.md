@@ -127,3 +127,27 @@ The user requires this project to continue **in Chat mode only**, without automa
 - GitHub readback: unique DOM ids; no missing studio.js element lookups; 4 mode cards present; selected mode persisted and forwarded to API; mode checked server-side; selection CSS present.
 - Current environment retry of `npm view remotion@4.0.543` failed with `EAI_AGAIN registry.npmjs.org`, so no Remotion dependency install, typecheck, real >=15s MP4, browser QA, or production deploy has been proved in this increment.
 - Next: gain an authorized runner with access to npm registry; run package install/typecheck and true Remotion render + FFmpeg QA, edit/rerender, and browser responsive tests. Once verified, wire authenticated render jobs and downloadable receipts. Do not mark P0 complete merely from unit tests.
+
+## 2026-11-15 · Audit and production-gate hardening (Chat-only)
+
+User explicitly requested "检查，并继续任务": source audit and safe code changes performed in Chat, on `feat/vibe-studio-architecture-20261114`.
+
+### Audited defects fixed
+1. Remotion `src/root.tsx` previously allowed 1–600 seconds while `render-input.mjs` enforced 15–120 seconds. `calculateMetadata` now imports and invokes the **same `prepareRenderProject` validator**. This also applies the existing 1–24 scene and duration checks.
+2. Once the shared validator was connected, the root's default example was found missing `prompt` (a required field). Fixed by adding a valid prompt and `mode:'animation'` to `DEFAULT`.
+3. `scripts/qa-video.mjs` previously invoked FFprobe/FFmpeg with no timeout and unbounded captured diagnostics. Added `runMediaCommand` with 5-minute default timeout, forced termination and bounded stdout/stderr.
+4. Remotion CLI 4.0.543 supports `--license-key` and `--is-production=false`. Added fail-closed `render-license.mjs`: a free license must be explicitly self-confirmed through private environment variables; company license uses private `rm_sec_` key, and production mode additionally requires explicit cost approval. Test renders default to `--is-production=false`. No license key or paid API was provisioned or invoked.
+
+### Actual checks in this turn
+- `tests/vibe-composition-schema.test.mjs` **5/5 passed**, including parsing actual Composition `DEFAULT` and passing it through real `prepareRenderProject`. SHA-matched local files: `src/root.tsx` `31ca1f83bbf9fa4ee5fcd8721ded3829ff35a88d`, test `fc4c39085e860ef55005577c0fa62f455cd9e2cc`, `render-input.mjs` `896f41fd570ad2c36632c7145215423427fda8e8`, `timeline.mjs` `4b5c4e2e1239fe88c8b01234dccd341db4a69957`, `creation-modes.mjs` `6c18810b29bebb3e0b5e7d8527d3ffa594391207`.
+- `vibe-renderer/tests/qa-command.test.mjs` **4/4 passed**, including hung subprocess termination. Git SHA-matched QA module `626a779830e38519ec9ed31e8e7c1c93c3f7a8c2` and tests `336d3230bd090656592dd68c8baf6efb627a522e`.
+- Actual FFmpeg-generated *2-second synthetic H.264 fixtures* checked new media QA: visual clip 320×320, 2s, 98,107 bytes accepted with zero black regions; black fixture rejected by FFmpeg blackdetect when `minBytes:1000` supplied, black_start 0 / black_end 1.933333. Synthetic fixtures validate QA logic only, **not a real Remotion render**.
+- `vibe-renderer/tests/render-license.test.mjs` **4/4 passed** using blob-matched `render-license.mjs` SHA `c8e3b200274b14e50fba4341f33a02f55cbf0006` and test SHA `f7de1d5247816689467a7c6911cd1035c176040c`.
+- **13/13 targeted Node tests passed** (5 schema + 4 QA command + 4 license).
+- Independent registry and GitHub clone DNS still failed: `registry.npmjs.org EAI_AGAIN`, `github.com` cannot resolve. Thus full repo build, actual Remotion TypeScript/Chromium render and visual evaluation could NOT be performed.
+
+### Next priority
+- When network-enabled build/runner is available, use approved private license flags, install dependencies, run `npm run typecheck`, `npm test`, and `npm run render -- ./examples/p0-city-15s.json` with source inspection and ffprobe QA; modify the rendered example and re-render. **Do not claim P0 complete** before this.
+- Then verify desktop/iPad/mobile interactions, persistent project storage, and live authenticated DeepSeek call only with user's cost authorization.
+
+Delivery states: Code Completed (these fixes); Build Passed (unverified); Runtime Verified (targeted Node & FFmpeg QA, not Remotion); Functional Tested (partial, not end-to-end); Production Deployed (no).
