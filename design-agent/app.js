@@ -28,6 +28,13 @@ function validSVG(s){
 }
 function phaseIndex(){if(p.selected!==null)return p.vectors?5:4;if(p.vectors)return 3;if(p.directions.length)return 3;if(p.strategy)return 2;return 1}
 function render(){
+  // Any project mutation or navigation invalidates previously exported QA evidence.
+  if(typeof latestQA!=='undefined'){
+    latestQA=null;
+    $('exportDesignQA').disabled=true;
+    $('qaSummary').textContent='设计已变化，请重新检查';
+    $('qaFindings').replaceChildren();
+  }
   $('brief').value=p.brief||'';
   $('model').value=p.model||'deepseek-flash';
   $('projectLabel').textContent=p.strategy?.brand_name||'新品牌项目';
