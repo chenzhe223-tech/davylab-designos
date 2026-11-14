@@ -177,3 +177,32 @@ test('P2 remediation respects cancellation and does not alter project',async({pa
  await page.locator('#applyRemediation').click();
  await expect(page.locator('#conceptGrid .swatches').first().locator('i').nth(1)).toHaveAttribute('style',/EEEEEE/i);
 });
+
+test('P2 actual browser before-after remediation screenshots and measured evidence',async({page},testInfo)=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('/design-agent/');
+ await page.locator('#loadDemo').click();
+ await page.locator('[data-edit="0"]').click();
+ await page.locator('#d_palette').fill('#FFFFFF, #EEEEEE, #DEAC62, #C7D0B8');
+ await page.locator('#directionForm button[type="submit"]').click();
+ const evidenceDir='artifacts/design-agent-p2';
+ await mkdir(evidenceDir,{recursive:true});
+ const before=await page.screenshot({fullPage:true,animations:'disabled'});
+ await writeFile(evidenceDir+'/remediation-before-390.png',before);
+ const beforeColor=await page.locator('#conceptGrid .swatches').first().locator('i').nth(1).evaluate(el=>getComputedStyle(el).backgroundColor);
+ page.once('dialog',dialog=>dialog.accept());
+ const downloadPromise=page.waitForEvent('download');
+ await page.locator('#applyRemediation').click();
+ const download=await downloadPromise;
+ expect(download.suggestedFilename()).toMatch(/^DAVYLAB-remediation-evidence-/);
+ const afterColor=await page.locator('#conceptGrid .swatches').first().locator('i').nth(1).evaluate(el=>getComputedStyle(el).backgroundColor);
+ expect(beforeColor).toBe('rgb(238, 238, 238)');
+ expect(afterColor).toBe('rgb(0, 0, 0)');
+ const after=await page.screenshot({fullPage:true,animations:'disabled'});
+ await writeFile(evidenceDir+'/remediation-after-390.png',after);
+ const report={schema:'davylab-remediation-visual-evidence-v1',viewport:{width:390,height:844},before_color:beforeColor,after_color:afterColor,before_contrast_ratio:1.16,after_contrast_ratio:21,screenshot_files:['remediation-before-390.png','remediation-after-390.png'],source:'playwright-rendered-browser',manual_visual_approval:false};
+ await writeFile(evidenceDir+'/remediation-comparison-390.json',JSON.stringify(report,null,2));
+ await testInfo.attach('remediation-before-390.png',{body:before,contentType:'image/png'});
+ await testInfo.attach('remediation-after-390.png',{body:after,contentType:'image/png'});
+ await testInfo.attach('remediation-comparison-390.json',{body:Buffer.from(JSON.stringify(report,null,2)),contentType:'application/json'});
+});
