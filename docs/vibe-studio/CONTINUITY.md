@@ -151,3 +151,20 @@ User explicitly requested "检查，并继续任务": source audit and safe code
 - Then verify desktop/iPad/mobile interactions, persistent project storage, and live authenticated DeepSeek call only with user's cost authorization.
 
 Delivery states: Code Completed (these fixes); Build Passed (unverified); Runtime Verified (targeted Node & FFmpeg QA, not Remotion); Functional Tested (partial, not end-to-end); Production Deployed (no).
+
+
+## 2026-11-15 · Chat-only P0 validation and manual render acceptance
+
+- User requirement: work entirely in Chat; no Work handoff or automatic scheduled tasks. No paid infrastructure or API calls without explicit consent.
+- Fixed `vibe-renderer/render-input.mjs` to reject empty briefs, explicit unsupported aspect ratios, and fractional-second shots before rendering. Omitted aspect ratio remains compatible with legacy projects (defaults to portrait). Changed shot lengths remain deterministic at FPS 30.
+- Updated `vibe-renderer/tests/render-input.test.mjs` with invalid-format, empty-brief, fractional-duration and valid 20s editing assertions.
+- **Actual tests: 6/6 passed**, using local files verified byte-for-byte by Git hash against GitHub: `vibe-studio/creation-modes.mjs` `6c18810b29bebb3e0b5e7d8527d3ffa594391207`, `vibe-studio/timeline.mjs` `4b5c4e2e1239fe88c8b01234dccd341db4a69957`, `vibe-renderer/render-input.mjs` `9d835e8c197a9d200bb86a88112bd16605f2fb53`, test `4feb214eb4169f71011c8de116e8b836e1e2de46`.
+- Added offline `vibe-renderer/preflight.mjs` and `npm run preflight` to report Node, FFmpeg, FFprobe, Remotion CLI/package readiness and license consent, without performing rendering or exposing a license key.
+- **Actual preflight unit tests: 3/3 passed**, byte-identical Git blobs `preflight.mjs` `6c47197faf0908c4b281cea54ff874690e273e01`, `tests/preflight.test.mjs` `66beae5336c6946af49a853aa0539da93bf8a638`, `render-license.mjs` `c8e3b200274b14e50fba4341f33a02f55cbf0006`.
+- **Actual offline preflight outcome:** Node 22.16.0, FFmpeg 7.1.5 and FFprobe 7.1.5 available; Remotion CLI, Remotion/React packages absent; license secret absent. `ready=false`, `renderInvoked=false`. GitHub/npmjs DNS unavailable in local container, so real Remotion install and rendering remain blocked.
+- Created opt-in GitHub workflow `.github/workflows/vibe-p0-render-acceptance.yml` (manual `workflow_dispatch` only) for root `npm run check`, Remotion install/unit/typecheck/preflight, a real 15s MP4 and a modified 17s re-render, QA receipts and artifact comparison. Workflow **has not run**, and deploying this file only on a feature branch may not expose its Run button in the default-branch Actions UI until the workflow exists on the default branch. No auto-trigger, deployment, or paid action was authorized.
+- Corrected stale front-end DeepSeek status text: Canvas does track storyboard timing as an approximate procedural preview, not a final Remotion-rendered video.
+- **Current status:** Code Completed for incremental changes; Build Passed unverified; Runtime Verified targeted input/preflight only; Functional Tested partial 9/9 tests, no end-to-end MP4; Production Deployed no.
+
+### Next safe step
+- Verify manual workflow accessibility and authorized runner/license prerequisites, then run full root/build and renderer typecheck; perform first real 15s MP4 with visual and FFmpeg QA followed by 17s re-render. Do not label user projects ready or P0 completed until real evidence exists.
