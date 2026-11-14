@@ -1,16 +1,16 @@
 import React from 'react';
 import {AbsoluteFill,interpolate} from 'remotion';
 
-type SceneArtProps={frame:number;fps:number;width:number;height:number;durationFrames:number;index:number;title:string;visual?:string};
+type SceneArtProps={frame:number;fps:number;width:number;height:number;durationFrames:number;index:number;title:string;visual?:string;visualFamily?:'auto'|'city'|'particles'|'nature'};
 const clamp={extrapolateLeft:'clamp',extrapolateRight:'clamp'} as const;
 const hash=(n:number)=>((Math.sin(n*127.1+71.7)*43758.5453)%1+1)%1;
 
-export const SceneArt=({frame,fps,width,height,durationFrames,index,title,visual=''}:SceneArtProps)=>{
+export const SceneArt=({frame,fps,width,height,durationFrames,index,title,visual='',visualFamily='auto'}:SceneArtProps)=>{
  const text=(title+' '+visual).toLowerCase();
  const isCity=/城市|高楼|建筑|街道|都市|天际|city|building/.test(text);
  const isSpace=/星|宇宙|太空|银河|粒子|星光|space|galaxy|particle/.test(text);
  const isNature=/山|森林|自然|云|海|森林|mountain|forest|ocean/.test(text);
- const family=isCity?'city':isSpace?'particles':isNature?'nature':index%2?'city':'particles';
+ const family=visualFamily==='auto'?(isCity?'city':isSpace?'particles':isNature?'nature':index%2?'city':'particles'):visualFamily;
  const progress=Math.max(0,Math.min(1,frame/Math.max(1,durationFrames)));
  const t=frame/fps;
  const colors=[['#102a4c','#2474a4','#c7edff'],['#122f4c','#3b83a5','#bce8ff'],['#132c4e','#575dab','#d0c8ff'],['#0a3542','#3b9aaf','#b5f2e8']][index%4];
