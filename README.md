@@ -47,6 +47,14 @@ A Looseleaf Paper-inspired resource center is available at `/resources/`. It cat
 Agent discovery protocol: see [resources/agent-discovery.md](resources/agent-discovery.md). The DesignOS Render API provides read-only `GET /api/skills`, `GET /api/skills/{id}`, and `POST /api/skills/match` endpoints. Matching is deterministic keyword ranking and does not grant access to private source files or authorize external actions.
 
 
+## Design Intelligence · 12 public upstream references (P0)
+
+This repository now has a DAVYLAB-authored [DESIGN.md](DESIGN.md), establishing five layers (primitive tokens, semantic tokens, components, rules and Skills) and non-negotiable accessibility, responsive and asset-provenance gates.
+
+The public Resource Hub tracks 36 entries, including **11 newly curated upstream design references**. UI UX Pro Max already exists as one pinned engine entry and is not duplicated. The eleven additional resources are marked **reference-only / not installed / not executed** until source, license, compatibility and browser-based quality checks are completed. The Hub explicitly shows `仅供参考 · 未接入` rather than reporting these as integrated.
+
+See [the 12-source implementation plan](docs/design-intelligence-12-sources.md) for P0/P1/P2/P3 sequencing and acceptance boundaries. No additional model API requests, MCP calls or paid deployments are introduced by these catalog changes.
+
 ## Logo Studio · live AI-assisted brand identity (release candidate)
 
 The new `/logo-studio/` route offers a one-sentence quick brief, advanced brand controls, three clearly marked **offline SVG templates**, and an independently triggered **real AI generation** workflow at `POST /api/logo/generate` (Cloudflare Pages Function). Model-generated concepts can be refined by instruction or no-code SVG wordmark/color/font-size edits, exported to SVG/PNG and saved locally. Full agent-targeted handoffs support ChatGPT, Claude, WorkBuddy, Qwen, Kimi, GLM, Gemini and Cursor. External agents are not executed by exporting instructions.
