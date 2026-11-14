@@ -25,7 +25,7 @@ selectCreationMode(project.mode,{announce:false});
 
 const synchronize=()=>{project.prompt=$('prompt').value.trim();project.format=$('format').value;project.shots=normalizeShots(project.shots||[]);return projectSnapshot(project)};
 function storyboard(){if(!$('prompt').value.trim()){status('请先输入创意');return}project.prompt=$('prompt').value.trim();project.format=$('format').value;project.shots=normalizeShots(demoShotsForMode(project.mode));renderShots();status('已生成「'+modeDescription(project.mode).title+'」规则式示例分镜（非 AI 生成），可调整时长与顺序')}
-const makeButton=(label,action,disabled=false)=>{const btn=document.createElement('button');btn.type='button';btn.className='shot-action';btn.textContent=label;btn.disabled=disabled;btn.addEventListener('click',action);return btn};
+function makeButton(label,action,disabled=false){const btn=document.createElement('button');btn.type='button';btn.className='shot-action';btn.textContent=label;btn.disabled=disabled;btn.addEventListener('click',action);return btn}
 function renderDomainAssets(){
  $('knowledge-panel').hidden=project.mode!=='knowledge';
  $('characters-panel').hidden=project.mode!=='story';
