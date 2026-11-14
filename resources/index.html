@@ -185,7 +185,7 @@ POST /api/skills/match</div><button class="btn small" id="copyApi">复制 API �
   if(state.type!=="all")list=list.filter(r=>r.type===state.type);
   if(state.category!=="all")list=list.filter(r=>r.category===state.category);
   if(state.agent!=="all")list=list.filter(r=>(r.agentSupport||[]).includes(state.agent));
-  if(state.visibility!=="all")list=list.filter(r=>{const sources=[r.source,...(r.alternateSources||[])].filter(Boolean);return sources.some(s=>state.visibility==="reference"?s.visibility==="reference":s.visibility===state.visibility);});
+  if(state.visibility!=="all")list=list.filter(r=>{const sources=[r.source,...(r.alternateSources||[])].filter(Boolean);return state.visibility==="reference" ? (r.status==="reference"||sources.some(s=>s.visibility==="reference")) : sources.some(s=>s.visibility===state.visibility);});
   if(state.query){list=list.map(r=>({...r,_score:score(r,state.query)})).filter(r=>r._score>0).sort((a,b)=>state.matchedOrder.length?(state.matchedOrder.indexOf(a.id)<0?999:state.matchedOrder.indexOf(a.id))-(state.matchedOrder.indexOf(b.id)<0?999:state.matchedOrder.indexOf(b.id)):b._score-a._score);}
   else list.sort((a,b)=>state.order.indexOf(a.id)-state.order.indexOf(b.id));
   return list;
