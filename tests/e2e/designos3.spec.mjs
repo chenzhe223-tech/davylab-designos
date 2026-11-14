@@ -17,7 +17,7 @@ test('DesignOS 3.0 opens as a calm visual-first homepage with six working destin
   await page.locator('.primary-nav [data-nav=components]').click();
   await expect(page.locator('.component-card')).toHaveCount(8);
   await page.locator('.primary-nav [data-nav=skills]').click();
-  await expect(page.locator('.resource-item')).toHaveCount(25);
+  await expect(page.locator('.resource-item')).toHaveCount(36);
   await page.locator('.primary-nav [data-nav=archive]').click();
   await expect(page.locator('#view')).toContainText('作品');
   expect(errors).toEqual([]);
@@ -67,7 +67,7 @@ test('DesignOS 3.0 associates public Skill metadata without claiming external ex
   await page.goto(homepage);
   await page.locator('.primary-nav [data-nav=skills]').click();
   await page.locator('button[data-action=skill-type][data-type=skill]').click();
-  await expect(page.locator('.resource-item')).toHaveCount(22);
+  await expect(page.locator('.resource-item')).toHaveCount(28);
   await page.locator('.resource-item').first().click();
   await expect(page.locator('#resourceDetail')).toContainText('仅关联能力元数据');
   await page.locator('button[data-action=toggle-skill]').click();

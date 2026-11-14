@@ -10,11 +10,11 @@ const privateFunction = await readFile(new URL('../functions/resources/private-r
 
 test('public registry contains only public and reference resources', () => {
   assert.equal(registry.schemaVersion, '1.0.0');
-  assert.ok(registry.registryVersion.startsWith('2026.11.04.'));
+  assert.ok(registry.registryVersion.startsWith('2026.11.14.'));
   const ids = registry.resources.map(item => item.id);
   assert.equal(new Set(ids).size, ids.length);
-  assert.equal(registry.resources.length, 25);
-  assert.equal(registry.resources.filter(item => item.type === 'skill').length, 22);
+  assert.equal(registry.resources.length, 36);
+  assert.equal(registry.resources.filter(item => item.type === 'skill').length, 28);
   assert.equal(registry.inventoryScope.catalog, 'public-and-reference-only');
   const serialized = JSON.stringify(registry);
   assert.equal(serialized.includes('workbuddy-workspace'), false);

@@ -1,15 +1,15 @@
 {
   "schemaVersion": "1.0.0",
-  "registryVersion": "2026.11.04.3",
+  "registryVersion": "2026.11.14.1",
   "title": "DAVYLAB Skill & Resource Registry",
   "matching": {
     "mode": "weighted-keyword",
-    "note": "Deterministic lexical matching over verified registry metadata; it is not an LLM semantic judgment."
+    "note": "Deterministic lexical matching over catalog metadata; reference-only upstream sources are not installed or verified integrations."
   },
   "inventoryScope": {
     "catalog": "public-and-reference-only",
     "privateEntries": "served only by the authenticated private registry endpoint",
-    "publicResourceCount": 25
+    "publicResourceCount": 36
   },
   "resources": [
     {
@@ -2192,6 +2192,831 @@
           "读取完整 SKILL.md 及其引用文件",
           "核对当前项目、工具依赖和使用边界",
           "按技能工作流实施并验证结果"
+        ]
+      },
+      "alternateSources": []
+    },
+    {
+      "id": "awesome-design-md",
+      "name": "Awesome DESIGN.md",
+      "englishName": "Awesome DESIGN.md",
+      "type": "profile-library",
+      "category": "design",
+      "categoryLabel": "设计系统参考库",
+      "version": null,
+      "status": "reference",
+      "maturity": "public-upstream-reference-not-installed",
+      "summary": "可参考多个网站的设计语言文档，形成项目自己的 DESIGN.md，不照搬商业品牌。",
+      "whenToUse": [
+        "沉淀品牌 DESIGN.md 与基础设计变量"
+      ],
+      "notFor": [
+        "未经项目评估就自动安装、执行第三方代码或部署付费依赖"
+      ],
+      "triggers": [
+        "Awesome DESIGN.md",
+        "awesome-design-md",
+        "设计系统参考库"
+      ],
+      "tags": [
+        "设计系统参考库",
+        "开源参考",
+        "Design Agent"
+      ],
+      "capabilities": [
+        "可参考多个网站的设计语言文档，形成项目自己的 DESIGN.md，不照搬商业品牌。"
+      ],
+      "inputs": [
+        "产品需求",
+        "既有代码或设计稿",
+        "用户授权的设计参考"
+      ],
+      "outputs": [
+        "资源评估",
+        "适配建议",
+        "必要时的接入测试与验收报告"
+      ],
+      "requirements": [
+        "完整读取上游源码及许可证",
+        "确认目标运行环境与授权",
+        "先在隔离环境执行最小验证"
+      ],
+      "guardrails": [
+        "仿站素材并不授予原品牌商标或视觉资产授权",
+        "仅登记来源元数据；本资源没有安装、没有执行、没有访问私有数据"
+      ],
+      "agentSupport": [
+        "Codex",
+        "Claude Code",
+        "Cursor",
+        "WorkBuddy",
+        "Generic"
+      ],
+      "source": {
+        "repository": "VoltAgent/awesome-design-md",
+        "visibility": "public",
+        "ref": "main",
+        "path": "README.md",
+        "url": "https://github.com/VoltAgent/awesome-design-md/blob/main/README.md",
+        "access": "public-github"
+      },
+      "activation": {
+        "mode": "reference-only",
+        "steps": [
+          "查看上游 README、LICENSE 和适用前置条件",
+          "检查现有 DAVYLAB 能力，避免重复接入",
+          "隔离环境实施最小兼容性验证并记录版本",
+          "测试与人工审核通过后才能升级为 integrated"
+        ]
+      },
+      "alternateSources": []
+    },
+    {
+      "id": "design-extract",
+      "name": "Design Extract / designlang",
+      "englishName": "Design Extract / designlang",
+      "type": "skill",
+      "category": "design",
+      "categoryLabel": "设计变量提取",
+      "version": null,
+      "status": "reference",
+      "maturity": "public-upstream-reference-not-installed",
+      "summary": "从授权网页提取颜色、字体、布局与 DTCG Token；需要 Node 20+ 与浏览器环境。",
+      "whenToUse": [
+        "读取合法参考网站并提取 DTCG Tokens"
+      ],
+      "notFor": [
+        "未经项目评估就自动安装、执行第三方代码或部署付费依赖"
+      ],
+      "triggers": [
+        "Design Extract / designlang",
+        "design-extract",
+        "设计变量提取"
+      ],
+      "tags": [
+        "设计变量提取",
+        "开源参考",
+        "Design Agent"
+      ],
+      "capabilities": [
+        "从授权网页提取颜色、字体、布局与 DTCG Token；需要 Node 20+ 与浏览器环境。"
+      ],
+      "inputs": [
+        "产品需求",
+        "既有代码或设计稿",
+        "用户授权的设计参考"
+      ],
+      "outputs": [
+        "资源评估",
+        "适配建议",
+        "必要时的接入测试与验收报告"
+      ],
+      "requirements": [
+        "完整读取上游源码及许可证",
+        "确认目标运行环境与授权",
+        "先在隔离环境执行最小验证"
+      ],
+      "guardrails": [
+        "跨站采集需先核查使用权限、依赖、性能及隐私边界",
+        "仅登记来源元数据；本资源没有安装、没有执行、没有访问私有数据"
+      ],
+      "agentSupport": [
+        "Codex",
+        "Claude Code",
+        "Cursor",
+        "WorkBuddy",
+        "Generic"
+      ],
+      "source": {
+        "repository": "Manavarya09/design-extract",
+        "visibility": "public",
+        "ref": "main",
+        "path": "README.md",
+        "url": "https://github.com/Manavarya09/design-extract/blob/main/README.md",
+        "access": "public-github"
+      },
+      "activation": {
+        "mode": "reference-only",
+        "steps": [
+          "查看上游 README、LICENSE 和适用前置条件",
+          "检查现有 DAVYLAB 能力，避免重复接入",
+          "隔离环境实施最小兼容性验证并记录版本",
+          "测试与人工审核通过后才能升级为 integrated"
+        ]
+      },
+      "alternateSources": []
+    },
+    {
+      "id": "designer-skills",
+      "name": "Designer Skills Pack",
+      "englishName": "Designer Skills Pack",
+      "type": "skill",
+      "category": "design",
+      "categoryLabel": "设计流程技能库",
+      "version": null,
+      "status": "reference",
+      "maturity": "public-upstream-reference-not-installed",
+      "summary": "从用户研究、信息架构、UI 设计到交付的工作流参考，优先按任务路由而非全量安装。",
+      "whenToUse": [
+        "组织需求洞察与用户任务优先级"
+      ],
+      "notFor": [
+        "未经项目评估就自动安装、执行第三方代码或部署付费依赖"
+      ],
+      "triggers": [
+        "Designer Skills Pack",
+        "designer-skills",
+        "设计流程技能库"
+      ],
+      "tags": [
+        "设计流程技能库",
+        "开源参考",
+        "Design Agent"
+      ],
+      "capabilities": [
+        "从用户研究、信息架构、UI 设计到交付的工作流参考，优先按任务路由而非全量安装。"
+      ],
+      "inputs": [
+        "产品需求",
+        "既有代码或设计稿",
+        "用户授权的设计参考"
+      ],
+      "outputs": [
+        "资源评估",
+        "适配建议",
+        "必要时的接入测试与验收报告"
+      ],
+      "requirements": [
+        "完整读取上游源码及许可证",
+        "确认目标运行环境与授权",
+        "先在隔离环境执行最小验证"
+      ],
+      "guardrails": [
+        "技能目录不是已经运行的 Agent，也不等于完成了用户研究",
+        "仅登记来源元数据；本资源没有安装、没有执行、没有访问私有数据"
+      ],
+      "agentSupport": [
+        "Codex",
+        "Claude Code",
+        "Cursor",
+        "WorkBuddy",
+        "Generic"
+      ],
+      "source": {
+        "repository": "Owl-Listener/designer-skills",
+        "visibility": "public",
+        "ref": "main",
+        "path": "README.md",
+        "url": "https://github.com/Owl-Listener/designer-skills/blob/main/README.md",
+        "access": "public-github"
+      },
+      "activation": {
+        "mode": "reference-only",
+        "steps": [
+          "查看上游 README、LICENSE 和适用前置条件",
+          "检查现有 DAVYLAB 能力，避免重复接入",
+          "隔离环境实施最小兼容性验证并记录版本",
+          "测试与人工审核通过后才能升级为 integrated"
+        ]
+      },
+      "alternateSources": []
+    },
+    {
+      "id": "graphify",
+      "name": "Graphify",
+      "englishName": "Graphify",
+      "type": "skill",
+      "category": "workspace",
+      "categoryLabel": "代码与文档知识图谱",
+      "version": null,
+      "status": "reference",
+      "maturity": "public-upstream-reference-not-installed",
+      "summary": "主要将代码、文档与 PDF 的结构关系变成可查询图谱，品牌风格记忆属于需单独验证的扩展场景。",
+      "whenToUse": [
+        "跨项目源码依赖与设计文档关联检索"
+      ],
+      "notFor": [
+        "未经项目评估就自动安装、执行第三方代码或部署付费依赖"
+      ],
+      "triggers": [
+        "Graphify",
+        "graphify",
+        "代码与文档知识图谱"
+      ],
+      "tags": [
+        "代码与文档知识图谱",
+        "开源参考",
+        "Design Agent"
+      ],
+      "capabilities": [
+        "主要将代码、文档与 PDF 的结构关系变成可查询图谱，品牌风格记忆属于需单独验证的扩展场景。"
+      ],
+      "inputs": [
+        "产品需求",
+        "既有代码或设计稿",
+        "用户授权的设计参考"
+      ],
+      "outputs": [
+        "资源评估",
+        "适配建议",
+        "必要时的接入测试与验收报告"
+      ],
+      "requirements": [
+        "完整读取上游源码及许可证",
+        "确认目标运行环境与授权",
+        "先在隔离环境执行最小验证"
+      ],
+      "guardrails": [
+        "不要把它宣称为已实现的品牌长期记忆或云端知识库",
+        "仅登记来源元数据；本资源没有安装、没有执行、没有访问私有数据"
+      ],
+      "agentSupport": [
+        "Codex",
+        "Claude Code",
+        "Cursor",
+        "WorkBuddy",
+        "Generic"
+      ],
+      "source": {
+        "repository": "Graphify-Labs/graphify",
+        "visibility": "public",
+        "ref": "main",
+        "path": "README.md",
+        "url": "https://github.com/Graphify-Labs/graphify/blob/main/README.md",
+        "access": "public-github"
+      },
+      "activation": {
+        "mode": "reference-only",
+        "steps": [
+          "查看上游 README、LICENSE 和适用前置条件",
+          "检查现有 DAVYLAB 能力，避免重复接入",
+          "隔离环境实施最小兼容性验证并记录版本",
+          "测试与人工审核通过后才能升级为 integrated"
+        ]
+      },
+      "alternateSources": []
+    },
+    {
+      "id": "impeccable",
+      "name": "Impeccable",
+      "englishName": "Impeccable",
+      "type": "skill",
+      "category": "quality",
+      "categoryLabel": "界面设计质检",
+      "version": null,
+      "status": "reference",
+      "maturity": "public-upstream-reference-not-installed",
+      "summary": "提供 critique、polish、audit 等设计与无障碍审视；可用规则作为质量门禁候选。",
+      "whenToUse": [
+        "审视现有页面的视觉层级、适配与无障碍"
+      ],
+      "notFor": [
+        "未经项目评估就自动安装、执行第三方代码或部署付费依赖"
+      ],
+      "triggers": [
+        "Impeccable",
+        "impeccable",
+        "界面设计质检"
+      ],
+      "tags": [
+        "界面设计质检",
+        "开源参考",
+        "Design Agent"
+      ],
+      "capabilities": [
+        "提供 critique、polish、audit 等设计与无障碍审视；可用规则作为质量门禁候选。"
+      ],
+      "inputs": [
+        "产品需求",
+        "既有代码或设计稿",
+        "用户授权的设计参考"
+      ],
+      "outputs": [
+        "资源评估",
+        "适配建议",
+        "必要时的接入测试与验收报告"
+      ],
+      "requirements": [
+        "完整读取上游源码及许可证",
+        "确认目标运行环境与授权",
+        "先在隔离环境执行最小验证"
+      ],
+      "guardrails": [
+        "不要把静态规则检查当作真实浏览器验收；第三方程序须先审查",
+        "仅登记来源元数据；本资源没有安装、没有执行、没有访问私有数据"
+      ],
+      "agentSupport": [
+        "Codex",
+        "Claude Code",
+        "Cursor",
+        "WorkBuddy",
+        "Generic"
+      ],
+      "source": {
+        "repository": "pbakaus/impeccable",
+        "visibility": "public",
+        "ref": "main",
+        "path": "README.md",
+        "url": "https://github.com/pbakaus/impeccable/blob/main/README.md",
+        "access": "public-github"
+      },
+      "activation": {
+        "mode": "reference-only",
+        "steps": [
+          "查看上游 README、LICENSE 和适用前置条件",
+          "检查现有 DAVYLAB 能力，避免重复接入",
+          "隔离环境实施最小兼容性验证并记录版本",
+          "测试与人工审核通过后才能升级为 integrated"
+        ]
+      },
+      "alternateSources": []
+    },
+    {
+      "id": "hallmark",
+      "name": "Hallmark",
+      "englishName": "Hallmark",
+      "type": "skill",
+      "category": "quality",
+      "categoryLabel": "反模板化设计质检",
+      "version": null,
+      "status": "reference",
+      "maturity": "public-upstream-reference-not-installed",
+      "summary": "辅助检测 AI 风格套路、交互缺陷与移动端问题，重视真实浏览器和独立评审。",
+      "whenToUse": [
+        "反 AI 模板化、真实用户路径复核"
+      ],
+      "notFor": [
+        "未经项目评估就自动安装、执行第三方代码或部署付费依赖"
+      ],
+      "triggers": [
+        "Hallmark",
+        "hallmark",
+        "反模板化设计质检"
+      ],
+      "tags": [
+        "反模板化设计质检",
+        "开源参考",
+        "Design Agent"
+      ],
+      "capabilities": [
+        "辅助检测 AI 风格套路、交互缺陷与移动端问题，重视真实浏览器和独立评审。"
+      ],
+      "inputs": [
+        "产品需求",
+        "既有代码或设计稿",
+        "用户授权的设计参考"
+      ],
+      "outputs": [
+        "资源评估",
+        "适配建议",
+        "必要时的接入测试与验收报告"
+      ],
+      "requirements": [
+        "完整读取上游源码及许可证",
+        "确认目标运行环境与授权",
+        "先在隔离环境执行最小验证"
+      ],
+      "guardrails": [
+        "自动评分不是上线证明；真实移动端与可用性测试不可省略",
+        "仅登记来源元数据；本资源没有安装、没有执行、没有访问私有数据"
+      ],
+      "agentSupport": [
+        "Codex",
+        "Claude Code",
+        "Cursor",
+        "WorkBuddy",
+        "Generic"
+      ],
+      "source": {
+        "repository": "Nutlope/hallmark",
+        "visibility": "public",
+        "ref": "main",
+        "path": "README.md",
+        "url": "https://github.com/Nutlope/hallmark/blob/main/README.md",
+        "access": "public-github"
+      },
+      "activation": {
+        "mode": "reference-only",
+        "steps": [
+          "查看上游 README、LICENSE 和适用前置条件",
+          "检查现有 DAVYLAB 能力，避免重复接入",
+          "隔离环境实施最小兼容性验证并记录版本",
+          "测试与人工审核通过后才能升级为 integrated"
+        ]
+      },
+      "alternateSources": []
+    },
+    {
+      "id": "huashu-design",
+      "name": "Huashu Design 花叔",
+      "englishName": "Huashu Design 花叔",
+      "type": "skill",
+      "category": "design",
+      "categoryLabel": "一句话多形态设计",
+      "version": null,
+      "status": "reference",
+      "maturity": "public-upstream-reference-not-installed",
+      "summary": "从自然语言提炼视觉方向并生成网页、动画、原型、可编辑 PPT 等设计资产。",
+      "whenToUse": [
+        "从需求快速探索多套可编辑视觉方案"
+      ],
+      "notFor": [
+        "未经项目评估就自动安装、执行第三方代码或部署付费依赖"
+      ],
+      "triggers": [
+        "Huashu Design 花叔",
+        "huashu-design",
+        "一句话多形态设计"
+      ],
+      "tags": [
+        "一句话多形态设计",
+        "开源参考",
+        "Design Agent"
+      ],
+      "capabilities": [
+        "从自然语言提炼视觉方向并生成网页、动画、原型、可编辑 PPT 等设计资产。"
+      ],
+      "inputs": [
+        "产品需求",
+        "既有代码或设计稿",
+        "用户授权的设计参考"
+      ],
+      "outputs": [
+        "资源评估",
+        "适配建议",
+        "必要时的接入测试与验收报告"
+      ],
+      "requirements": [
+        "完整读取上游源码及许可证",
+        "确认目标运行环境与授权",
+        "先在隔离环境执行最小验证"
+      ],
+      "guardrails": [
+        "不能用示例素材冒充可交付成品；需检查附属脚本及素材的单独许可",
+        "仅登记来源元数据；本资源没有安装、没有执行、没有访问私有数据"
+      ],
+      "agentSupport": [
+        "Codex",
+        "Claude Code",
+        "Cursor",
+        "WorkBuddy",
+        "Generic"
+      ],
+      "source": {
+        "repository": "alchaincyf/huashu-design",
+        "visibility": "public",
+        "ref": "master",
+        "path": "README.md",
+        "url": "https://github.com/alchaincyf/huashu-design/blob/master/README.md",
+        "access": "public-github"
+      },
+      "activation": {
+        "mode": "reference-only",
+        "steps": [
+          "查看上游 README、LICENSE 和适用前置条件",
+          "检查现有 DAVYLAB 能力，避免重复接入",
+          "隔离环境实施最小兼容性验证并记录版本",
+          "测试与人工审核通过后才能升级为 integrated"
+        ]
+      },
+      "alternateSources": []
+    },
+    {
+      "id": "figma-context-mcp",
+      "name": "Figma Context MCP",
+      "englishName": "Figma Context MCP",
+      "type": "engine",
+      "category": "design",
+      "categoryLabel": "Figma 设计上下文",
+      "version": null,
+      "status": "reference",
+      "maturity": "public-upstream-reference-not-installed",
+      "summary": "面向 Figma 节点、布局与设计到代码的上下文获取；需要授权及适配调用。",
+      "whenToUse": [
+        "把现有 Figma 设计上下文带入实现"
+      ],
+      "notFor": [
+        "未经项目评估就自动安装、执行第三方代码或部署付费依赖"
+      ],
+      "triggers": [
+        "Figma Context MCP",
+        "figma-context-mcp",
+        "Figma 设计上下文"
+      ],
+      "tags": [
+        "Figma 设计上下文",
+        "开源参考",
+        "Design Agent"
+      ],
+      "capabilities": [
+        "面向 Figma 节点、布局与设计到代码的上下文获取；需要授权及适配调用。"
+      ],
+      "inputs": [
+        "产品需求",
+        "既有代码或设计稿",
+        "用户授权的设计参考"
+      ],
+      "outputs": [
+        "资源评估",
+        "适配建议",
+        "必要时的接入测试与验收报告"
+      ],
+      "requirements": [
+        "完整读取上游源码及许可证",
+        "确认目标运行环境与授权",
+        "先在隔离环境执行最小验证"
+      ],
+      "guardrails": [
+        "未获得用户授权前不能读取私人 Figma 文件；未部署 MCP 服务",
+        "仅登记来源元数据；本资源没有安装、没有执行、没有访问私有数据"
+      ],
+      "agentSupport": [
+        "Codex",
+        "Claude Code",
+        "Cursor",
+        "WorkBuddy",
+        "Generic"
+      ],
+      "source": {
+        "repository": "GLips/Figma-Context-MCP",
+        "visibility": "public",
+        "ref": "main",
+        "path": "README.md",
+        "url": "https://github.com/GLips/Figma-Context-MCP/blob/main/README.md",
+        "access": "public-github"
+      },
+      "activation": {
+        "mode": "reference-only",
+        "steps": [
+          "查看上游 README、LICENSE 和适用前置条件",
+          "检查现有 DAVYLAB 能力，避免重复接入",
+          "隔离环境实施最小兼容性验证并记录版本",
+          "测试与人工审核通过后才能升级为 integrated"
+        ]
+      },
+      "alternateSources": []
+    },
+    {
+      "id": "open-pencil",
+      "name": "OpenPencil",
+      "englishName": "OpenPencil",
+      "type": "engine",
+      "category": "design",
+      "categoryLabel": "可编辑设计编辑器",
+      "version": null,
+      "status": "reference",
+      "maturity": "public-upstream-reference-not-installed",
+      "summary": "开源设计编辑器候选，可评估 .fig 导入及设计元素编辑能力。",
+      "whenToUse": [
+        "评估可编辑设计资产的替代编辑流程"
+      ],
+      "notFor": [
+        "未经项目评估就自动安装、执行第三方代码或部署付费依赖"
+      ],
+      "triggers": [
+        "OpenPencil",
+        "open-pencil",
+        "可编辑设计编辑器"
+      ],
+      "tags": [
+        "可编辑设计编辑器",
+        "开源参考",
+        "Design Agent"
+      ],
+      "capabilities": [
+        "开源设计编辑器候选，可评估 .fig 导入及设计元素编辑能力。"
+      ],
+      "inputs": [
+        "产品需求",
+        "既有代码或设计稿",
+        "用户授权的设计参考"
+      ],
+      "outputs": [
+        "资源评估",
+        "适配建议",
+        "必要时的接入测试与验收报告"
+      ],
+      "requirements": [
+        "完整读取上游源码及许可证",
+        "确认目标运行环境与授权",
+        "先在隔离环境执行最小验证"
+      ],
+      "guardrails": [
+        "不得声称已支持无损 .fig 往返；须逐项测试导入导出兼容性",
+        "仅登记来源元数据；本资源没有安装、没有执行、没有访问私有数据"
+      ],
+      "agentSupport": [
+        "Codex",
+        "Claude Code",
+        "Cursor",
+        "WorkBuddy",
+        "Generic"
+      ],
+      "source": {
+        "repository": "open-pencil/open-pencil",
+        "visibility": "public",
+        "ref": "main",
+        "path": "README.md",
+        "url": "https://github.com/open-pencil/open-pencil/blob/main/README.md",
+        "access": "public-github"
+      },
+      "activation": {
+        "mode": "reference-only",
+        "steps": [
+          "查看上游 README、LICENSE 和适用前置条件",
+          "检查现有 DAVYLAB 能力，避免重复接入",
+          "隔离环境实施最小兼容性验证并记录版本",
+          "测试与人工审核通过后才能升级为 integrated"
+        ]
+      },
+      "alternateSources": []
+    },
+    {
+      "id": "react-bits",
+      "name": "React Bits",
+      "englishName": "React Bits",
+      "type": "visual-pack",
+      "category": "motion-design",
+      "categoryLabel": "交互动效组件参考",
+      "version": null,
+      "status": "reference",
+      "maturity": "public-upstream-reference-not-installed",
+      "summary": "可复用 React 动画与互动组件的参考集合；按需引入，避免影响页面性能。",
+      "whenToUse": [
+        "选取必要的动效组件并适配 DAVYLAB Motion Token"
+      ],
+      "notFor": [
+        "未经项目评估就自动安装、执行第三方代码或部署付费依赖"
+      ],
+      "triggers": [
+        "React Bits",
+        "react-bits",
+        "交互动效组件参考"
+      ],
+      "tags": [
+        "交互动效组件参考",
+        "开源参考",
+        "Design Agent"
+      ],
+      "capabilities": [
+        "可复用 React 动画与互动组件的参考集合；按需引入，避免影响页面性能。"
+      ],
+      "inputs": [
+        "产品需求",
+        "既有代码或设计稿",
+        "用户授权的设计参考"
+      ],
+      "outputs": [
+        "资源评估",
+        "适配建议",
+        "必要时的接入测试与验收报告"
+      ],
+      "requirements": [
+        "完整读取上游源码及许可证",
+        "确认目标运行环境与授权",
+        "先在隔离环境执行最小验证"
+      ],
+      "guardrails": [
+        "需逐组件检查许可证、依赖、移动端性能与 reduced motion",
+        "仅登记来源元数据；本资源没有安装、没有执行、没有访问私有数据"
+      ],
+      "agentSupport": [
+        "Codex",
+        "Claude Code",
+        "Cursor",
+        "WorkBuddy",
+        "Generic"
+      ],
+      "source": {
+        "repository": "DavidHDev/react-bits",
+        "visibility": "public",
+        "ref": "main",
+        "path": "README.md",
+        "url": "https://github.com/DavidHDev/react-bits/blob/main/README.md",
+        "access": "public-github"
+      },
+      "activation": {
+        "mode": "reference-only",
+        "steps": [
+          "查看上游 README、LICENSE 和适用前置条件",
+          "检查现有 DAVYLAB 能力，避免重复接入",
+          "隔离环境实施最小兼容性验证并记录版本",
+          "测试与人工审核通过后才能升级为 integrated"
+        ]
+      },
+      "alternateSources": []
+    },
+    {
+      "id": "transitions-dev",
+      "name": "transitions.dev",
+      "englishName": "transitions.dev",
+      "type": "visual-pack",
+      "category": "motion-design",
+      "categoryLabel": "转场与交互节奏",
+      "version": null,
+      "status": "reference",
+      "maturity": "public-upstream-reference-not-installed",
+      "summary": "供参考的转场、缓动与交互配方；与 DAVYLAB Motion Lab 适配后按需采用。",
+      "whenToUse": [
+        "设计真实状态转场与微交互"
+      ],
+      "notFor": [
+        "未经项目评估就自动安装、执行第三方代码或部署付费依赖"
+      ],
+      "triggers": [
+        "transitions.dev",
+        "transitions-dev",
+        "转场与交互节奏"
+      ],
+      "tags": [
+        "转场与交互节奏",
+        "开源参考",
+        "Design Agent"
+      ],
+      "capabilities": [
+        "供参考的转场、缓动与交互配方；与 DAVYLAB Motion Lab 适配后按需采用。"
+      ],
+      "inputs": [
+        "产品需求",
+        "既有代码或设计稿",
+        "用户授权的设计参考"
+      ],
+      "outputs": [
+        "资源评估",
+        "适配建议",
+        "必要时的接入测试与验收报告"
+      ],
+      "requirements": [
+        "完整读取上游源码及许可证",
+        "确认目标运行环境与授权",
+        "先在隔离环境执行最小验证"
+      ],
+      "guardrails": [
+        "上游对整体组件库再分发存在限制；不能整体复制并作为竞品组件库",
+        "仅登记来源元数据；本资源没有安装、没有执行、没有访问私有数据"
+      ],
+      "agentSupport": [
+        "Codex",
+        "Claude Code",
+        "Cursor",
+        "WorkBuddy",
+        "Generic"
+      ],
+      "source": {
+        "repository": "Jakubantalik/transitions.dev",
+        "visibility": "public",
+        "ref": "main",
+        "path": "README.md",
+        "url": "https://github.com/Jakubantalik/transitions.dev/blob/main/README.md",
+        "access": "public-github"
+      },
+      "activation": {
+        "mode": "reference-only",
+        "steps": [
+          "查看上游 README、LICENSE 和适用前置条件",
+          "检查现有 DAVYLAB 能力，避免重复接入",
+          "隔离环境实施最小兼容性验证并记录版本",
+          "测试与人工审核通过后才能升级为 integrated"
         ]
       },
       "alternateSources": []

@@ -78,6 +78,56 @@ jobs:
           retention-days: 14
       - name: Run desktop and mobile end-to-end tests
         run: npx playwright test
+      - name: Verify Design Agent browser evidence is complete
+        run: |
+          for width in 375 390 430 768 1440; do
+            test -s "artifacts/design-agent-p1/design-agent-${width}.png"
+            test -s "artifacts/design-agent-p1/rendered-layout-${width}.json"
+          done
+          echo "Five screenshots and five layout JSON reports verified."
+      - name: Preserve Design Agent rendered screenshot and layout evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: design-agent-p1-browser-evidence
+          path: artifacts/design-agent-p1/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Verify P2 before-after browser evidence
+        run: |
+          test -s artifacts/design-agent-p2/remediation-before-390.png
+          test -s artifacts/design-agent-p2/remediation-after-390.png
+          test -s artifacts/design-agent-p2/remediation-comparison-390.json
+          python3 - <<'PY'
+          import json
+          with open('artifacts/design-agent-p2/remediation-comparison-390.json',encoding='utf-8') as f:
+              data=json.load(f)
+          assert data['before_color'] != data['after_color']
+          assert data['before_contrast_ratio'] < 4.5 <= data['after_contrast_ratio']
+          assert data['manual_visual_approval'] is False
+          PY
+      - name: Preserve P2 remediation screenshots and comparison
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: design-agent-p2-remediation-evidence
+          path: artifacts/design-agent-p2/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Verify Design Agent P2 before-after evidence
+        run: |
+          test -s artifacts/design-agent-p2/remediation-before-390.png
+          test -s artifacts/design-agent-p2/remediation-after-390.png
+          test -s artifacts/design-agent-p2/remediation-before-after-390.json
+          echo "P2 rendered remediation evidence verified."
+      - name: Preserve Design Agent P2 remediation visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: design-agent-p2-remediation-evidence
+          path: artifacts/design-agent-p2/
+          if-no-files-found: warn
+          retention-days: 14
       - name: Preserve DesignOS 3.0 visual QA screenshots
         if: always()
         uses: actions/upload-artifact@v4

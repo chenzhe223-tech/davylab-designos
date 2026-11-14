@@ -1,3 +1,4 @@
+import {auditBrandProject,buildRemediationPlan} from './quality.js';
 // DAVYLAB Design Agent 4.0 P0 — browser-local project state, live model strategy and SVG concepts.
 const $=id=>document.getElementById(id);
 const STORAGE='davylab-design-agent-projects-p0';
@@ -27,6 +28,13 @@ function validSVG(s){
 }
 function phaseIndex(){if(p.selected!==null)return p.vectors?5:4;if(p.vectors)return 3;if(p.directions.length)return 3;if(p.strategy)return 2;return 1}
 function render(){
+  // Any project mutation or navigation invalidates previously exported QA evidence.
+  if(typeof latestQA!=='undefined'){
+    latestQA=null;
+    $('exportDesignQA').disabled=true;
+    $('qaSummary').textContent='设计已变化，请重新检查';
+    $('qaFindings').replaceChildren();
+  }
   $('brief').value=p.brief||'';
   $('model').value=p.model||'deepseek-flash';
   $('projectLabel').textContent=p.strategy?.brand_name||'新品牌项目';
@@ -173,6 +181,71 @@ function exportProject(){
   const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='DAVYLAB-brand-'+(p.strategy?.brand_name||'project').replace(/[^a-zA-Z0-9_-]/g,'-')+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),4000);
 }
 
+let latestQA=null;
+function runDesignQA(){
+  applyPendingInputs();
+  latestQA=auditBrandProject(p);
+  const blockers=latestQA.issues.filter(i=>i.severity==='blocker').length;
+  const major=latestQA.issues.filter(i=>i.severity==='major').length;
+  $('qaSummary').textContent=(latestQA.passed?'策划基础检查通过':'需要修正')+(latestQA.automated_asset_gate_passed?' · 资产静态检查通过（仍待人工审核）':' · 尚未满足资产静态交付门槛')+' · 阻断 '+blockers+' · 重要 '+major+' · 共 '+latestQA.issues.length+' 项发现';
+  const list=$('qaFindings');list.replaceChildren();
+  for(const finding of latestQA.issues){
+    const li=document.createElement('li');
+    li.textContent='['+finding.severity+'] '+finding.message+' — '+finding.action;
+    list.append(li);
+  }
+  if(!latestQA.issues.length){const li=document.createElement('li');li.textContent='基础静态检查无发现。仍需完成真实视觉、可访问性与授权验收。';list.append(li)}
+  $('exportDesignQA').disabled=false;
+}
+// An exported QA result must never silently describe a different, unsaved form state.
+document.addEventListener('input',event=>{
+  if(!latestQA)return;
+  if(!event.target.closest('#briefPanel,#strategyEditor,#directionDialog'))return;
+  latestQA=null;
+  $('exportDesignQA').disabled=true;
+  $('qaSummary').textContent='输入内容已修改，请重新检查';
+  $('qaFindings').replaceChildren();
+});
+function applyRemediation(){
+ applyPendingInputs();
+ const plan=buildRemediationPlan(p);
+ if(!plan.steps.length){feedback('qaSummary','当前没有可自动建议的对比度整改项；其他问题仍需人工处理');return}
+ const summary=plan.steps.map(s=>s.direction_id+': '+s.before+' → '+s.after+' ('+s.before_ratio+':1 → '+s.after_ratio+':1)').join('\\n');
+ if(!confirm('将修改 '+plan.steps.length+' 处预览前景色。此操作会使已生成 SVG 失效，且需要重新审核：\\n'+summary+'\\n确认应用吗？'))return;
+ const before=auditBrandProject(p);
+ const snapshot=structuredClone(p);
+ for(const s of plan.steps){
+  if(!p.directions[s.index]||p.directions[s.index].palette?.[1]!==s.before){feedback('qaSummary','项目已变化，请重新生成整改建议','error');return}
+ }
+ for(const s of plan.steps)p.directions[s.index].palette[1]=s.after;
+ if(p.vectors){p.vectors=false;for(const d of p.directions)delete d.svg}
+ const after=auditBrandProject(p);
+ const evidence={schema:'davylab-remediation-evidence-v1',project_id:p.id,applied_at:new Date().toISOString(),steps:plan.steps,before_issues:before.issues,after_issues:after.issues,svg_invalidated:!!snapshot.vectors,manual_review_required:true};
+ save(true);render();
+ const blob=new Blob([JSON.stringify(evidence,null,2)],{type:'application/json'});
+ const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='DAVYLAB-remediation-evidence-'+p.id+'.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),4000);
+ feedback('qaSummary','已应用 '+plan.steps.length+' 处色彩整改，重新检测并导出前后问题对比。SVG 若存在已解除关联，仍需人工视觉审核。');
+}
+function exportRemediationPlan(){
+ applyPendingInputs();
+ const plan=buildRemediationPlan(p);
+ const blob=new Blob([JSON.stringify({...plan,created_at:new Date().toISOString()},null,2)],{type:'application/json'});
+ const url=URL.createObjectURL(blob);
+ const link=document.createElement('a');link.href=url;link.download='DAVYLAB-remediation-'+p.id+'.json';link.click();
+ setTimeout(()=>URL.revokeObjectURL(url),4000);
+ $('qaSummary').textContent='已导出 '+plan.steps.length+' 项可复核色彩整改建议；不会自动修改设计';
+}
+function exportDesignQA(){
+  if(!latestQA)return;
+  const report={...latestQA,project_id:p.id,project_updated:p.updated,checked_at:new Date().toISOString()};
+  const url=URL.createObjectURL(new Blob([JSON.stringify(report,null,2)],{type:'application/json'}));
+  const link=document.createElement('a');link.href=url;link.download='DAVYLAB-design-QA-'+p.id+'.json';link.click();
+  setTimeout(()=>URL.revokeObjectURL(url),4000);
+}
+$('runDesignQA').addEventListener('click',runDesignQA);
+$('exportDesignQA').addEventListener('click',exportDesignQA);
+$('exportRemediation').addEventListener('click',exportRemediationPlan);
+$('applyRemediation').addEventListener('click',applyRemediation);
 let editingIndex=-1;
 function openDirectionEditor(index){
   if(!p.directions[index])return;

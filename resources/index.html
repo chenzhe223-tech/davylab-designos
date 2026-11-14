@@ -92,13 +92,13 @@ body[data-low-motion="true"] .resource-card,body[data-low-motion="true"] .ui-pre
  <p>你的 Skill、设计系统和集成引擎，都有自己的位置。先看清它能做什么、何时使用、有哪些边界；需要时，让 Agent 按任务找到合适的能力。</p>
  <div class="hero-bottom">
   <div class="stats">
-   <div class="stat"><strong id="skillCount">—</strong><span>可复用 Skills</span></div>
+   <div class="stat"><strong id="skillCount">—</strong><span>Skill 目录项</span></div>
    <div class="stat"><strong id="engineCount">—</strong><span>集成引擎</span></div>
-   <div class="stat"><strong id="assetCount">—</strong><span>视觉 / 设计资产</span></div>
+   <div class="stat"><strong id="assetCount">—</strong><span>视觉 / 设计参考</span></div>
    <div class="stat"><strong id="privateCount">—</strong><span>私有仓库资源</span></div>
    <div class="stat"><strong id="publicCount">—</strong><span>公开仓库资源</span></div>
   </div>
-  <div class="hero-note"><b>一份登记 · 多个 Agent 使用</b><br>资源摘要公开展示；私有 Skill 原文仍由原仓库权限控制。</div>
+  <div class="hero-note"><b>一份目录 · 按需验证再接入</b><br>资源摘要公开展示；私有 Skill 原文仍由原仓库权限控制。</div>
  </div>
 </section>
 <div class="workspace">
@@ -185,14 +185,14 @@ POST /api/skills/match</div><button class="btn small" id="copyApi">复制 API �
   if(state.type!=="all")list=list.filter(r=>r.type===state.type);
   if(state.category!=="all")list=list.filter(r=>r.category===state.category);
   if(state.agent!=="all")list=list.filter(r=>(r.agentSupport||[]).includes(state.agent));
-  if(state.visibility!=="all")list=list.filter(r=>{const sources=[r.source,...(r.alternateSources||[])].filter(Boolean);return sources.some(s=>state.visibility==="reference"?s.visibility==="reference":s.visibility===state.visibility);});
+  if(state.visibility!=="all")list=list.filter(r=>{const sources=[r.source,...(r.alternateSources||[])].filter(Boolean);return state.visibility==="reference" ? (r.status==="reference"||sources.some(s=>s.visibility==="reference")) : sources.some(s=>s.visibility===state.visibility);});
   if(state.query){list=list.map(r=>({...r,_score:score(r,state.query)})).filter(r=>r._score>0).sort((a,b)=>state.matchedOrder.length?(state.matchedOrder.indexOf(a.id)<0?999:state.matchedOrder.indexOf(a.id))-(state.matchedOrder.indexOf(b.id)<0?999:state.matchedOrder.indexOf(b.id)):b._score-a._score);}
   else list.sort((a,b)=>state.order.indexOf(a.id)-state.order.indexOf(b.id));
   return list;
  };
  const li = (items) => {const ul=document.createElement("ul");(items||[]).forEach(item=>{const e=document.createElement("li");e.textContent=String(item);ul.append(e)});return ul;};
  const section = (host,title,content,full=false) => {const box=document.createElement("section");box.className="detail-section"+(full?" full":"");const h=document.createElement("h3");h.textContent=title;box.append(h);if(Array.isArray(content))box.append(li(content));else{const p=document.createElement("p");p.textContent=content||"未登记";box.append(p);}host.append(box);};
- const statusLabel = r => r.type==="visual-pack"?"参考包":r.type==="engine"?"已集成":r.type==="profile-library"?"档案库":r.status==="active"?"可用":"已集成";
+ const statusLabel = r => r.status==="reference"?"仅供参考 · 未接入":r.type==="visual-pack"?"参考包":r.type==="engine"?"已集成":r.type==="profile-library"?"档案库":r.status==="active"?"可用":"已集成";
  function renderDetail(){
   const r=resources.find(x=>x.id===state.chosen);const host=$("resourceDetail");host.replaceChildren();if(!r){host.hidden=true;return;}host.hidden=false;
   const head=document.createElement("div");head.className="detail-head";const titleWrap=document.createElement("div");
@@ -220,7 +220,7 @@ POST /api/skills/match</div><button class="btn small" id="copyApi">复制 API �
   if(r.source?.access?.includes("authorized")||r.source?.visibility==="private"){const note=document.createElement("p");note.style.marginTop="10px";note.textContent="这是私有资源。链接本身不会授予访问权；Agent 必须使用已授权的 GitHub 连接或本地工作区读取原文。";source.append(note);}
   grid.append(source);body.append(grid);
   const actions=document.createElement("div");actions.className="detail-actions";
-  const use=document.createElement("button");use.className="btn primary";use.textContent="生成此 Skill 的 Agent 调用指令";use.addEventListener("click",()=>makePrompt(r));
+  const use=document.createElement("button");use.className="btn primary";use.textContent=r.status==="reference"?"生成资源评估指令":"生成此 Skill 的 Agent 调用指令";use.addEventListener("click",()=>makePrompt(r));
   const copySource=document.createElement("button");copySource.className="btn";copySource.textContent="复制来源路径";copySource.addEventListener("click",()=>copy(r.source?.repository ? r.source.repository+"/"+r.source.path : r.source?.url||""));
   const sourceRepo=String(r.source?.repository||"");
   const sourceVisibility=r.source?.visibility||"";
@@ -249,7 +249,7 @@ POST /api/skills/match</div><button class="btn small" id="copyApi">复制 API �
    card.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();card.click();}});
    const top=document.createElement("div");top.className="card-top";const symbol=document.createElement("div");symbol.className="resource-symbol";symbol.textContent=symbols[r.type]||"✳";
    const title=document.createElement("div");title.className="card-title";const h=document.createElement("h3");h.textContent=r.name;const small=document.createElement("small");small.textContent=(r.englishName||r.id)+" · "+(r.version||"版本未注明");title.append(h,small);
-   const pill=document.createElement("span");pill.className="status-pill"+(r.type==="visual-pack"?" reference":r.type==="engine"?" engine":"");pill.textContent=statusLabel(r);top.append(symbol,title,pill);
+   const pill=document.createElement("span");pill.className="status-pill"+(r.status==="reference"?" reference":r.type==="visual-pack"?" reference":r.type==="engine"?" engine":"");pill.textContent=statusLabel(r);top.append(symbol,title,pill);
    const sum=document.createElement("p");sum.className="card-summary";sum.textContent=r.summary;
    const best=document.createElement("div");best.className="best-use";const b=document.createElement("b");b.textContent="适合：";best.append(b,document.createTextNode((r.whenToUse||[]).slice(0,2).join("；")||"查看详情"));
    const tags=document.createElement("div");tags.className="tags";(r.tags||[]).slice(0,4).forEach(t=>{const x=document.createElement("span");x.className="tag";x.textContent=t;tags.append(x);});
@@ -259,7 +259,7 @@ POST /api/skills/match</div><button class="btn small" id="copyApi">复制 API �
  }
  function updateStats(){
   $("skillCount").textContent=resources.filter(r=>r.type==="skill").length;
-  $("engineCount").textContent=resources.filter(r=>r.type==="engine").length;
+  $("engineCount").textContent=resources.filter(r=>r.type==="engine"&&r.status==="integrated").length;
   $("assetCount").textContent=resources.filter(r=>["visual-pack","profile-library"].includes(r.type)).length;
   $("privateCount").textContent=resources.filter(r=>[r.source,...(r.alternateSources||[])].some(s=>s.visibility==="private")).length;
   $("publicCount").textContent=resources.filter(r=>[r.source,...(r.alternateSources||[])].some(s=>s.visibility==="public")).length;
@@ -325,7 +325,7 @@ POST /api/skills/match</div><button class="btn small" id="copyApi">复制 API �
   const agent=state.agent==="all"?"当前 Agent":state.agent;
   const source=r.source||{};
   const prompt=[
-   "# DAVYLAB Skill Resource — Agent Activation Brief",
+   r.status==="reference"?"# DAVYLAB Skill Resource — Reference Evaluation Brief":"# DAVYLAB Skill Resource — Agent Activation Brief",
    "",
    "Agent: "+agent,
    "Task context: "+($("intentInput").value.trim()||"请根据当前用户任务判断是否适用。"),
@@ -347,6 +347,7 @@ POST /api/skills/match</div><button class="btn small" id="copyApi">复制 API �
    "- URL: "+(source.url||"not available"),
    "",
    "## Required activation workflow",
+   ...(r.status==="reference"?["**REFERENCE ONLY: This resource is NOT installed, NOT invoked and NOT validated. First evaluate license, source and isolated tests; do not execute from this brief.**",""]:[]),
    ...(r.activation?.steps||["Read the complete resource and validate that it applies to the current task."]).map((x,i)=>(i+1)+". "+x),
    "1. Before use, retrieve the complete source text from the source repository or the authorized local workspace. If it is private and your current credentials do not grant access, stop and report the permission blocker; do not guess or use an unrelated copy.",
    "2. Verify the source revision/blob SHA against the registry. If the SHA has changed, re-read and reconcile the latest content rather than treating this metadata as current instructions.",

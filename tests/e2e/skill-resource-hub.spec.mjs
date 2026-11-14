@@ -60,10 +60,11 @@ test('resource hub: public and authenticated private catalogues merge with filte
   page.on('pageerror', error => errors.push(error.message));
   await page.setViewportSize({ width: 1440, height: 1000 });
   await openHub(page);
-  await expect(page.locator('#resourceCards .resource-card')).toHaveCount(26);
-  await expect(page.locator('#skillCount')).toHaveText('23');
+  await expect(page.locator('#resourceCards .resource-card')).toHaveCount(37);
+  await expect(page.locator('#skillCount')).toHaveText('29');
+  await expect(page.locator('#engineCount')).toHaveText('1');
   await expect(page.locator('#privateCount')).toHaveText('1');
-  await expect(page.locator('#publicCount')).toHaveText('24');
+  await expect(page.locator('#publicCount')).toHaveText('35');
   await page.locator('#visibilityFilter').selectOption('private');
   await expect(page.locator('#resourceCards .resource-card')).toHaveCount(1);
   await expect(page.locator('#resourceCards .resource-card').first()).toContainText('私有采购 Skill 测试项');
@@ -71,7 +72,7 @@ test('resource hub: public and authenticated private catalogues merge with filte
   await expect(page.locator('#resourceDetail')).toContainText('skills/private-procurement-sample/SKILL.md');
   await page.locator('#visibilityFilter').selectOption('all');
   await page.locator('[data-type="skill"]').click();
-  await expect(page.locator('#resourceCards .resource-card')).toHaveCount(23);
+  await expect(page.locator('#resourceCards .resource-card')).toHaveCount(29);
   await page.locator('#searchInput').fill('文章插图');
   await expect(page.locator('#resourceCards .resource-card').first()).toContainText('文章插图规划与生成');
   expect(errors).toEqual([]);
@@ -88,4 +89,19 @@ test('resource hub: private resources participate in local task matching and mob
   const size = await page.evaluate(() => ({ body: document.body.scrollWidth, viewport: document.documentElement.clientWidth }));
   expect(size.body).toBeLessThanOrEqual(size.viewport + 1);
   expect(errors).toEqual([]);
+});
+
+test('new design references are visibly uninstalled and source-linked', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openHub(page);
+  await page.locator('#visibilityFilter').selectOption('reference');
+  await page.locator('#searchInput').fill('Impeccable');
+  const card = page.locator('#resourceCards .resource-card').first();
+  await expect(card).toBeVisible();
+  await expect(card).toContainText('仅供参考 · 未接入');
+  await card.click();
+  await expect(page.locator('#resourceDetail')).toContainText('reference');
+  await expect(page.getByRole('button',{name:'生成资源评估指令'})).toBeVisible();
+  await expect(page.locator('#resourceDetail')).toContainText('没有安装');
+  await expect(page.locator('#resourceDetail a[href*="pbakaus/impeccable"]')).toHaveAttribute('target','_blank');
 });
