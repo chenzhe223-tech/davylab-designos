@@ -133,3 +133,17 @@ test('QA report cannot be exported after a user changes unsaved brand inputs',as
  await expect(page.locator('#exportDesignQA')).toBeDisabled();
  await expect(page.locator('#qaSummary')).toContainText('重新检查');
 });
+
+test('P2 remediation plan exports actual before-after contrast without changing design',async({page})=>{
+ await page.goto('/design-agent/');
+ await page.locator('#loadDemo').click();
+ await page.locator('[data-edit="0"]').click();
+ await page.locator('#d_palette').fill('#FFFFFF, #EEEEEE, #DEAC62, #C7D0B8');
+ await page.locator('#directionForm button[type="submit"]').click();
+ const downloadPromise=page.waitForEvent('download');
+ await page.locator('#exportRemediation').click();
+ const download=await downloadPromise;
+ expect(download.suggestedFilename()).toMatch(/^DAVYLAB-remediation-/);
+ await expect(page.locator('#qaSummary')).toContainText('1 项');
+ await expect(page.locator('#conceptGrid .swatches').first().locator('i').nth(1)).toHaveAttribute('style',/EEEEEE/i);
+});
