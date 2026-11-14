@@ -21,10 +21,11 @@ export async function onRequestPost({request,env}){
  const prompt=typeof input?.prompt==='string'?input.prompt.trim():'';
  const duration=Number(input?.duration??30);
  const aspectRatio=input?.aspectRatio??'9:16';
- if(prompt.length<3||prompt.length>4000||!Number.isInteger(duration)||duration<15||duration>120||!['9:16','16:9','1:1'].includes(aspectRatio))return json({error:'创意、时长或画幅参数无效'},400);
+ const mode=input?.mode??'animation';
+ if(prompt.length<3||prompt.length>4000||!Number.isInteger(duration)||duration<15||duration>120||!['9:16','16:9','1:1'].includes(aspectRatio)||!['animation','knowledge','story','brand'].includes(mode))return json({error:'创意、时长或画幅参数无效'},400);
  const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),45000);
  try{
-  const payload=deepseekStoryboardRequest(prompt,{duration,aspectRatio});
+  const payload=deepseekStoryboardRequest(prompt,{duration,aspectRatio,mode});
   const upstream=await fetch('https://api.deepseek.com/chat/completions',{method:'POST',signal:controller.signal,headers:{Authorization:'Bearer '+env.DEEPSEEK_API_KEY,'Content-Type':'application/json'},body:JSON.stringify({...payload,max_tokens:2000})});
   if(!upstream.ok)return json({error:upstream.status===429?'模型服务请求过于频繁':'模型服务调用失败',code:'UPSTREAM_ERROR'},502);
   const data=await upstream.json();
