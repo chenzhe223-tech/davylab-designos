@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {auditBrandProject,contrastRatio,luminance,inspectSVGSource} from '../design-agent/quality.js';
+import {auditBrandProject,contrastRatio,luminance,inspectSVGSource,recommendContrastForeground,buildRemediationPlan} from '../design-agent/quality.js';
 const project={
  source:'live-deepseek',vectors:false,
  strategy:{brand_name:'ISLAND DAYS',positioning:'亲子海岛度假'},
@@ -67,4 +67,23 @@ test('SVG security source checks reject active content and missing viewBox',()=>
  const result=auditBrandProject(p);
  assert.equal(result.automated_asset_gate_passed,false);
  assert.ok(result.issues.some(x=>x.code==='SVG_UNSAFE'));
+});
+
+test('P2 remediation proposal is deterministic, reviewable and non-mutating',()=>{
+ const p=structuredClone(project);
+ p.id='test-remediation';
+ p.directions[0].palette[0]='#FFFFFF';
+ p.directions[0].palette[1]='#EEEEEE';
+ const original=structuredClone(p);
+ const plan=buildRemediationPlan(p);
+ assert.equal(plan.project_id,'test-remediation');
+ assert.equal(plan.manual_review_required,true);
+ assert.equal(plan.steps.length,1);
+ assert.equal(plan.steps[0].before,'#EEEEEE');
+ assert.equal(plan.steps[0].after,'#000000');
+ assert.ok(plan.steps[0].before_ratio<4.5);
+ assert.ok(plan.steps[0].after_ratio>=4.5);
+ assert.deepEqual(p,original);
+ assert.equal(recommendContrastForeground('#FFFFFF','#111111').status,'already-passes');
+ assert.equal(recommendContrastForeground('invalid','#111111').status,'invalid');
 });
