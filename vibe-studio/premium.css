@@ -30,3 +30,10 @@
 [hidden]{display:none!important}
 .preview video{width:100%;max-height:420px;aspect-ratio:16/9;object-fit:contain;background:#091827;border-radius:15px}
 @media(max-width:750px){.preview video{max-height:340px}}
+
+/* Keep imported MP4 as an actual browser media player, never a concept preview. */
+.preview video{display:block;width:100%;max-height:420px;object-fit:contain;aspect-ratio:16/9;background:#071729;border-radius:14px}
+.preview video[hidden],.preview canvas[hidden]{display:none!important}
+.timeline-shot{cursor:pointer;border:1px solid rgba(174,214,255,.35);font:inherit;min-height:43px}
+.timeline-shot:focus-visible{outline:3px solid #cce5ff;outline-offset:-3px}
+@media(max-width:750px){.preview video{max-height:370px}.timeline-shot{min-height:42px}}
