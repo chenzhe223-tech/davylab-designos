@@ -4,12 +4,12 @@
   "title": "DAVYLAB Skill & Resource Registry",
   "matching": {
     "mode": "weighted-keyword",
-    "note": "Deterministic lexical matching over verified registry metadata; it is not an LLM semantic judgment."
+    "note": "Deterministic lexical matching over catalog metadata; reference-only upstream sources are not installed or verified integrations."
   },
   "inventoryScope": {
     "catalog": "public-and-reference-only",
     "privateEntries": "served only by the authenticated private registry endpoint",
-    "publicResourceCount": 25
+    "publicResourceCount": 36
   },
   "resources": [
     {
