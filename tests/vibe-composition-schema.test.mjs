@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
+import {runInNewContext} from 'node:vm';
 import {prepareRenderProject} from '../vibe-renderer/render-input.mjs';
 
 const sample=(durations=[5,5,5],format='landscape')=>({
@@ -16,6 +17,17 @@ test('Remotion Composition imports exactly the same production validator as rend
   assert.match(source,/prepareRenderProject\(props\.project\?\?DEFAULT\)/);
   assert.match(source,/const DEFAULT=\{[^\n]*prompt:/,'default props must include a valid prompt');
   assert.doesNotMatch(source,/seconds<1\|\|seconds>600/);
+});
+
+test('actual default Composition props are accepted by renderer without fallback',async()=>{
+  const source=await readFile(new URL('../vibe-renderer/src/root.tsx',import.meta.url),'utf8');
+  const literal=source.match(/^const DEFAULT=(\\{.*\\});$/m)?.[1];
+  assert.ok(literal,'default project literal missing');
+  const defaults=runInNewContext('('+literal+')',Object.create(null),{timeout:1000});
+  const render=prepareRenderProject(defaults);
+  assert.equal(render.durationSeconds,15);
+  assert.equal(render.project.mode,'animation');
+  assert.equal(render.project.prompt,'星光构成一座未来城市');
 });
 
 test('shared composition input resolves 15-second, 450-frame landscape video',()=>{
