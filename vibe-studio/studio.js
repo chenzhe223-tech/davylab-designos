@@ -39,6 +39,7 @@ $('import-file').addEventListener('change',async()=>{const file=$('import-file')
 $('export').onclick=()=>{try{download('vibe-project.json',JSON.stringify(synchronize(),null,2))}catch(e){status('项目导出失败：'+e.message)}};
 $('handoff').onclick=()=>{try{const snapshot=synchronize();download('vibe-agent-handoff.md','# Vibe Studio 任务交接\n\n创意：'+snapshot.prompt+'\n\n画幅：'+snapshot.format+'\n\n总时长：'+totalDuration(snapshot.shots)+' 秒\n\n分镜：\n'+snapshot.shots.map(s=>'- '+s.start+'–'+s.end+'s '+s.title+'：'+s.visual).join('\n')+'\n\n执行：WorkBuddy 根据分镜实现 Remotion 合成与渲染，回传实际文件及测试证据。\n验收：时长、尺寸、播放、无黑帧。此交接单不代表 MP4 已生成。','text/markdown')}catch(e){status('交接导出失败：'+e.message)}};
 const c=$('scene'),ctx=c.getContext('2d');let start=performance.now();
+let lastQuarter=-1;
 const particles=Array.from({length:90},(_,i)=>({x:(i*97%540)/540,y:(i*137%720)/720,r:1+(i%3)}));
 function fitCanvas(){const landscape=$('format').value==='landscape';const w=landscape?960:540,h=landscape?540:960;if(c.width!==w||c.height!==h){c.width=w;c.height=h}c.style.aspectRatio=landscape?'16 / 9':'9 / 16'}
 $('format').addEventListener('change',fitCanvas);
@@ -46,6 +47,16 @@ function draw(now){
  requestAnimationFrame(draw);fitCanvas();
  const elapsed=Math.max(0,(now-start)/1000),selected=resolvePreviewFrame(project.shots,elapsed);
  const {shot,family,localSeconds}=selected,w=c.width,h=c.height;
+ const quarter=Math.floor(elapsed*4);
+ if(quarter!==lastQuarter){
+  lastQuarter=quarter;
+  const formatTime=n=>{const sec=Math.max(0,Math.floor(n));return String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0')};
+  const displayAt=elapsed%selected.duration;
+  $('preview-clock').textContent=formatTime(displayAt)+' / '+formatTime(selected.duration);
+  $('preview-shot-name').textContent=(project.shots?.length?'镜头 '+(selected.index+1)+' · ':'')+String(shot.title||'本地预览动画');
+  document.querySelectorAll('.timeline-shot').forEach((element,index)=>element.classList.toggle('is-active',index===selected.index));
+ }
+
  const shotDuration=Number(shot.duration??Number(shot.end)-Number(shot.start))||10;
  const progress=Math.min(1,Math.max(0,localSeconds/shotDuration));
  ctx.fillStyle='#071729';ctx.fillRect(0,0,w,h);
