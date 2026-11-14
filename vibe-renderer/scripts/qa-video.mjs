@@ -2,12 +2,22 @@ import {spawn} from 'node:child_process';
 import {resolve} from 'node:path';
 import {stat} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
-const run=(command,args)=>new Promise((ok,bad)=>{const p=spawn(command,args,{shell:false,windowsHide:true});let out='',err='';p.stdout.on('data',b=>out+=b.toString());p.stderr.on('data',b=>err+=b.toString());p.on('error',bad);p.on('close',code=>code===0?ok({stdout:out,stderr:err}):bad(new Error(command+' exited '+code+': '+err.slice(-800))))});
+export const runMediaCommand=(command,args,{timeoutMs=300000,maxOutputBytes=524288}={})=>new Promise((ok,bad)=>{
+ if(!Number.isFinite(timeoutMs)||timeoutMs<100||timeoutMs>600000||!Number.isInteger(maxOutputBytes)||maxOutputBytes<1024) return bad(new Error('Invalid media command limits'));
+ const p=spawn(command,args,{shell:false,windowsHide:true});
+ let out='',err='',completed=false,timedOut=false;
+ const finish=(error,result)=>{if(completed)return;completed=true;clearTimeout(timer);error?bad(error):ok(result)};
+ p.stdout.on('data',chunk=>{out=(out+chunk.toString()).slice(-maxOutputBytes)});
+ p.stderr.on('data',chunk=>{err=(err+chunk.toString()).slice(-maxOutputBytes)});
+ p.on('error',error=>finish(error));
+ p.on('close',code=>{if(timedOut)return finish(new Error(command+' timed out after '+timeoutMs+' ms'));if(code!==0)return finish(new Error(command+' exited '+code+': '+err.slice(-800)));finish(null,{stdout:out,stderr:err})});
+ const timer=setTimeout(()=>{timedOut=true;p.kill('SIGKILL')},timeoutMs);
+});
 export async function inspectMp4(path,{expectedSeconds,minBytes=10000}={}){
  const filename=resolve(path);
  const file=await stat(filename);
  if(file.size<minBytes)throw new Error('MP4 is unexpectedly small');
- const probe=await run('ffprobe',['-v','error','-show_streams','-show_format','-of','json',filename]);
+ const probe=await runMediaCommand('ffprobe',['-v','error','-show_streams','-show_format','-of','json',filename]);
  const media=JSON.parse(probe.stdout);
  const video=media.streams?.find(s=>s.codec_type==='video');
  if(!video)throw new Error('No video stream');
@@ -16,7 +26,7 @@ export async function inspectMp4(path,{expectedSeconds,minBytes=10000}={}){
  if(!Number.isFinite(duration)||duration<=0)throw new Error('Invalid duration');
  if(Number.isFinite(expectedSeconds)&&Math.abs(duration-expectedSeconds)>.5)throw new Error('Duration mismatch: '+duration+' vs '+expectedSeconds);
  if(!Number.isInteger(video.width)||!Number.isInteger(video.height)||video.width<320||video.height<320)throw new Error('Resolution is invalid');
- const scan=await run('ffmpeg',['-hide_banner','-nostdin','-i',filename,'-vf','blackdetect=d=0.15:pix_th=0.05:pic_th=0.98','-an','-f','null','-']);
+ const scan=await runMediaCommand('ffmpeg',['-hide_banner','-nostdin','-i',filename,'-vf','blackdetect=d=0.15:pix_th=0.05:pic_th=0.98','-an','-f','null','-']);
  const blackMatches=[...scan.stderr.matchAll(/black_start:([\d.]+)\s+black_end:([\d.]+)/g)];
  if(blackMatches.length)throw new Error('Black frame region(s) detected: '+blackMatches.map(x=>x[0]).join('; '));
  return {verified:true,codec:video.codec_name,width:video.width,height:video.height,durationSeconds:duration,bytes:file.size,blackRegions:0};
