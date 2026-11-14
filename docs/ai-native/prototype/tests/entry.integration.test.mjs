@@ -1,0 +1,10 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {buildHandler} from '../gateway/entry.mjs';
+const origin='https://worldtoon.example',token='x'.repeat(30);
+const env={SUPABASE_URL:'https://project.supabase.co',SUPABASE_PUBLISHABLE_KEY:'public',DEEPSEEK_API_KEY:'mock-key',ALLOWED_ORIGINS:origin,DB:{prepare(sql){return {bind(...args){return {async first(){if(sql.startsWith('SELECT'))return args[2]==='p1'?{allowed:1}:null;return {uses:1}}}}}}}};
+const fetchImpl=async(url,options)=>String(url).includes('/auth/v1/user')?Response.json({id:'u1'}):new Response('data: {"choices":[{"delta":{"content":"OK"}}]}\n\ndata: [DONE]\n\n',{headers:{'content-type':'text/event-stream'}});
+const req=(projectId='p1',authorization='Bearer '+token)=>new Request('https://gateway.example/v1/chat',{method:'POST',headers:{origin,'content-type':'application/json',authorization},body:JSON.stringify({appId:'worldtoon',projectId,messages:[{role:'user',content:'hello'}]})});
+test('full mocked flow streams after auth, scope, quota',async()=>{const r=await buildHandler(env,{fetchImpl})(req());assert.equal(r.status,200);assert.match(await r.text(),/OK/)});
+test('wrong project denied before paid model',async()=>{const r=await buildHandler(env,{fetchImpl})(req('p2'));assert.equal(r.status,403)});
+test('missing token denied',async()=>{const r=await buildHandler(env,{fetchImpl})(req('p1',''));assert.equal(r.status,401)});
+test('missing key fail closed',()=>assert.throws(()=>buildHandler({...env,DEEPSEEK_API_KEY:''},{fetchImpl})));
+test('DB failure denies request',async()=>{const bad={...env,DB:{prepare(){throw Error('D1 down')}}};assert.equal((await buildHandler(bad,{fetchImpl})(req())).status,503)});
