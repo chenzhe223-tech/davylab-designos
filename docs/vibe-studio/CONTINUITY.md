@@ -218,3 +218,11 @@ READ FIRST: `docs/vibe-studio/DELIVERY_STATUS.md` is the current P0–P3 accepta
 - GitHub readback verified the import, check call and ordering ahead of verified job persistence. **This is source-level verification only**; no full fresh checkout tests, renderer typecheck, Remotion runtime, video playback, browser E2E or deployment were performed in this increment.
 - GitHub manual acceptance workflow remains opt-in and unexecuted. Render licensing and cloud job costs need separate approval; no cloud workflow was launched.
 - Next: run actual `npm run check`; renderer `npm install && npm test && npm run typecheck` and 15s/17s Remotion render + receipt/visual QA in licensed authorized runner, without counting FFmpeg proof as Remotion evidence.
+
+## 2026-11-15 · P0 decoded-frame edit verification (Chat-only)
+
+- Inspected current feature-branch HEAD, standalone renderer, source examples, P0 manual workflow and local QA utilities. Remotion remains unavailable in the current container, and license-gated CI rendering was not triggered.
+- New `vibe-renderer/frame-qa.mjs` and `tests/frame-qa.test.mjs`: compare an actual FFmpeg-decoded frame MD5 at the same 6-second timestamp in original/edited videos, rejecting empty/identical decoded frames. This supplements different project/MP4 SHA-256 and changed duration; it does not establish artistic quality or character consistency.
+- Manual `.github/workflows/vibe-p0-render-acceptance.yml` now requires a decoded pixel difference before acceptance and records the two frame fingerprints in output.
+- **Actually executed locally:** 3/3 targeted Node unit tests passed using a locally reproduced implementation. FFmpeg H.264 8-second red and blue fixtures decoded successfully; different visual content passed and identical-file comparison failed closed. These are controlled **QA fixtures, not Remotion or Vibe Studio videos**. GitHub source readback still required for this increment.
+- Next: obtain a licensed authorized runner with npm access; run fresh-checkout root and renderer tests, typecheck, actual 15s/17s Remotion render and check the enhanced decoded-frame gate. No production or phase-gate promotion justified by the fixture tests.
