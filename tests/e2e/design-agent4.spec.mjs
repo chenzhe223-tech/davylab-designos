@@ -147,3 +147,33 @@ test('P2 remediation plan exports actual before-after contrast without changing 
  await expect(page.locator('#qaSummary')).toContainText('1 项');
  await expect(page.locator('#conceptGrid .swatches').first().locator('i').nth(1)).toHaveAttribute('style',/EEEEEE/i);
 });
+
+test('P2 user-approved remediation applies change and exports before-after evidence',async({page})=>{
+ await page.goto('/design-agent/');
+ await page.locator('#loadDemo').click();
+ await page.locator('[data-edit="0"]').click();
+ await page.locator('#d_palette').fill('#FFFFFF, #EEEEEE, #DEAC62, #C7D0B8');
+ await page.locator('#directionForm button[type="submit"]').click();
+ await page.locator('#runDesignQA').click();
+ await expect(page.locator('#qaFindings')).toContainText('预览主色对比不足');
+ page.once('dialog',dialog=>dialog.accept());
+ const downloadPromise=page.waitForEvent('download');
+ await page.locator('#applyRemediation').click();
+ const download=await downloadPromise;
+ expect(download.suggestedFilename()).toMatch(/^DAVYLAB-remediation-evidence-/);
+ await expect(page.locator('#conceptGrid .swatches').first().locator('i').nth(1)).toHaveAttribute('style',/000000/i);
+ await page.locator('#runDesignQA').click();
+ await expect(page.locator('#qaFindings')).not.toContainText('预览主色对比不足');
+ await page.reload();
+ await expect(page.locator('#conceptGrid .swatches').first().locator('i').nth(1)).toHaveAttribute('style',/000000/i);
+});
+test('P2 remediation respects cancellation and does not alter project',async({page})=>{
+ await page.goto('/design-agent/');
+ await page.locator('#loadDemo').click();
+ await page.locator('[data-edit="0"]').click();
+ await page.locator('#d_palette').fill('#FFFFFF, #EEEEEE, #DEAC62, #C7D0B8');
+ await page.locator('#directionForm button[type="submit"]').click();
+ page.once('dialog',dialog=>dialog.dismiss());
+ await page.locator('#applyRemediation').click();
+ await expect(page.locator('#conceptGrid .swatches').first().locator('i').nth(1)).toHaveAttribute('style',/EEEEEE/i);
+});
