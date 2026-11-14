@@ -1,0 +1,12 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {handle} from '../gateway/worker.mjs';
+const env={DAVYLAB_GATEWAY_TOKEN:'test-secret',ALLOWED_ORIGIN:'https://example.test'};
+const req=(path,method='GET',body,headers={})=>new Request('https://gateway.test'+path,{method,headers:{...(body?{'content-type':'application/json'}:{}),...headers},...(body?{body:typeof body==='string'?body:JSON.stringify(body)}:{})});
+test('health',async()=>assert.equal((await handle(req('/health'),env)).status,200));
+test('capabilities advertise unavailable features honestly',async()=>{const r=await handle(req('/v1/capabilities'),env);assert.equal((await r.json()).actions,false)});
+test('missing authentication rejected',async()=>assert.equal((await handle(req('/v1/chat','POST',{messages:[{role:'user',content:'hi'}]}),env)).status,401));
+test('origin rejected',async()=>assert.equal((await handle(req('/v1/chat','POST',{messages:[{role:'user',content:'hi'}]},{authorization:'Bearer test-secret',origin:'https://evil.test'}),env)).status,403));
+test('invalid messages rejected',async()=>assert.equal((await handle(req('/v1/chat','POST',{messages:[{role:'tool',content:'hi'}]},{authorization:'Bearer test-secret'}),env)).status,400));
+test('no upstream key is explicit',async()=>assert.equal((await handle(req('/v1/chat','POST',{messages:[{role:'user',content:'hi'}]},{authorization:'Bearer test-secret'}),env)).status,503));
+test('unknown endpoint',async()=>assert.equal((await handle(req('/v1/actions/commit'),env)).status,404));
