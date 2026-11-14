@@ -58,3 +58,9 @@ Local FFmpeg proof rendered two **real playable videos**, not static concept scr
 - Source fix: renderer now independently reopens the persisted receipt and hashes the final MP4 before publishing a `verified` job. Commit: `d72b7c3a9a2a208ec0f31776323a300e4f88079b`.
 - **Validation performed:** GitHub source readback confirmed the receipt verification executes before verified job persistence, with the existing failure cleanup preserved. **Not performed:** fresh-checkout executable tests, Remotion installation, typecheck, actual Remotion MP4 render, browser device QA, cloud job/deploy.
 - Delivery gates unchanged: **Code Completed (incremental only)**; **Build Passed: NO**; **Runtime Verified: only previous targeted utilities**; **Functional Tested: no Remotion E2E**; **Production Deployed: NO**.
+
+## 2026-11-15 · Visual edit-and-rerender QA increment
+
+- Added a real decoded-frame comparison gate at 6 seconds to the **manual-only** P0 acceptance workflow, using FFmpeg frame MD5; source implementation in `vibe-renderer/frame-qa.mjs`.
+- Local reproduced-code verification: **3/3 Node unit tests passed**; separate actual FFmpeg H.264 fixtures demonstrated differing colors pass and identical decoded frames reject. Fixture videos are not Remotion outputs.
+- P0 has **NOT** passed: no Remotion install, real Remotion MP4 or browser E2E in this increment. Build Passed NO; full Runtime Verified NO; full Functional Tested NO; Production Deployed NO. No CI workflow run or charge was initiated.
