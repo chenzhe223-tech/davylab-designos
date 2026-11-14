@@ -7,6 +7,7 @@ import {runRendererCommand} from './process-runner.mjs';
 import {prepareRenderProject} from '../render-input.mjs';
 import {inspectMp4} from './qa-video.mjs';
 import {createRenderJob,transitionRenderJob} from '../job-state.mjs';
+import {makeRenderReceipt} from '../artifact-receipt.mjs';
 const here=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const hashOutput=path=>new Promise((resolveHash,reject)=>{const hash=createHash('sha256');const stream=createReadStream(path);stream.on('data',chunk=>hash.update(chunk));stream.on('error',reject);stream.on('end',()=>resolveHash(hash.digest('hex')))});
 const input=process.argv[2];if(!input){console.error('Usage: npm run render -- /absolute/path/project.json');process.exit(2)}
@@ -16,8 +17,9 @@ const renderId=randomUUID();
 const output=join(root,'vibe-'+renderId+'.mp4');
 const propsFile=join(root,'.props-'+renderId+'.json');
 const jobFile=join(root,'render-job-'+renderId+'.json');
+const receiptFile=join(root,'render-receipt-'+renderId+'.json');
 let job=createRenderJob({id:renderId,project:prepared.project,output,expectedSeconds:prepared.durationSeconds});
-const persist=async()=>{const temp=jobFile+'.tmp';await writeFile(temp,JSON.stringify(job,null,2));await rename(temp,jobFile)};
+const persist=async(next=job)=>{const temp=jobFile+'.tmp';await writeFile(temp,JSON.stringify(next,null,2));await rename(temp,jobFile)};
 await persist();
 await writeFile(propsFile,JSON.stringify({project:prepared.project}),{mode:0o600});
 const bin=join(here,'node_modules','.bin',process.platform==='win32'?'remotion.cmd':'remotion');
@@ -34,6 +36,12 @@ try{
  const qa=await inspectMp4(output,{expectedSeconds:prepared.durationSeconds});
  if(qa.width!==prepared.width||qa.height!==prepared.height)throw new Error('QA resolution mismatch');
  const outputSha256=await hashOutput(output);
- job=transitionRenderJob(job,'verified',{evidence:{...qa,outputSha256}});await persist();
- console.log(JSON.stringify({jobFile,output,inputSha256:job.inputSha256,outputSha256,bytes:file.size,durationSeconds:qa.durationSeconds,expectedSeconds:prepared.durationSeconds,qa,verified:true}));
-}catch(error){job=transitionRenderJob(job,'failed',{error:error.message});await unlink(output).catch(()=>{});await persist().catch(()=>{});console.error('Render/QA failed: '+error.message);process.exitCode=1}finally{await unlink(propsFile).catch(()=>{})}
+ const verifiedJob=transitionRenderJob(job,'verified',{evidence:{...qa,outputSha256}});
+ const receipt=makeRenderReceipt(verifiedJob);
+ const receiptTemp=receiptFile+'.tmp';
+ await writeFile(receiptTemp,JSON.stringify(receipt,null,2),{mode:0o600});
+ await rename(receiptTemp,receiptFile);
+ await persist(verifiedJob);
+ job=verifiedJob;
+ console.log(JSON.stringify({jobFile,receiptFile,output,inputSha256:job.inputSha256,outputSha256,bytes:file.size,durationSeconds:qa.durationSeconds,expectedSeconds:prepared.durationSeconds,qa,verified:true}));
+}catch(error){job=transitionRenderJob(job,'failed',{error:error.message});await unlink(output).catch(()=>{});await unlink(receiptFile).catch(()=>{});await unlink(receiptFile+'.tmp').catch(()=>{});await persist().catch(()=>{});console.error('Render/QA failed: '+error.message);process.exitCode=1}finally{await unlink(propsFile).catch(()=>{})}
