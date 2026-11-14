@@ -87,3 +87,33 @@ test('P1 native design QA flags example-only output and exports inspectable JSON
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1);
  expect(overflow).toBe(false);
 });
+
+for(const width of [375,390,430,768,1440]){
+ test('P1 rendered layout audit + screenshot evidence at '+width+'px',async({page},testInfo)=>{
+  await page.setViewportSize({width,height:900});
+  await page.goto('/design-agent/');
+  await page.locator('#loadDemo').click();
+  await page.locator('#runDesignQA').click();
+  await expect(page.locator('#qaSummary')).toContainText('需要修正');
+  const evidence=await page.evaluate(()=>{
+   const viewport=window.innerWidth;
+   const roots=['#briefPanel','#concepts','#designQA','#production','#archive'];
+   const selectors=['#runPlan','#loadDemo','#runDesignQA','#exportDesignQA','#generateVectors','#openLogo'];
+   const rect=(el)=>{const b=el.getBoundingClientRect();return {left:b.left,right:b.right,width:b.width,height:b.height}};
+   const panels=roots.map(s=>{const el=document.querySelector(s);return {selector:s,rect:rect(el),visible:getComputedStyle(el).display!=='none'}});
+   const controls=selectors.map(s=>{const el=document.querySelector(s);const b=rect(el);return {selector:s,...b,visible:getComputedStyle(el).display!=='none',disabled:el.disabled}});
+   return {viewport,documentWidth:document.documentElement.scrollWidth,panels,controls};
+  });
+  expect(evidence.documentWidth,'document horizontal overflow').toBeLessThanOrEqual(width+1);
+  for(const panel of evidence.panels.filter(x=>x.visible)){
+   expect(panel.rect.left,panel.selector+' left').toBeGreaterThanOrEqual(-1);
+   expect(panel.rect.right,panel.selector+' right').toBeLessThanOrEqual(width+1);
+  }
+  for(const control of evidence.controls.filter(x=>x.visible)){
+   expect(control.width,control.selector+' touch width').toBeGreaterThanOrEqual(40);
+   expect(control.height,control.selector+' touch height').toBeGreaterThanOrEqual(28);
+  }
+  await testInfo.attach('rendered-layout-'+width+'.json',{body:Buffer.from(JSON.stringify(evidence,null,2)),contentType:'application/json'});
+  await testInfo.attach('design-agent-'+width+'.png',{body:await page.screenshot({fullPage:true,animations:'disabled'}),contentType:'image/png'});
+ });
+}
