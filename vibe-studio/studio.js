@@ -125,16 +125,18 @@ renderShots();draw(performance.now());
 let recording=false;
 $('record').onclick=async()=>{
  if(recording)return;
+ let duration;
+ try{duration=totalDuration(project.shots);if(!Number.isInteger(duration)||duration<15||duration>120)throw new Error('请先准备 15–120 秒的完整分镜')}catch(e){status('录制未开始：'+e.message);return}
  $('rendered-video').pause();$('rendered-video').hidden=true;c.hidden=false;
  if(typeof MediaRecorder==='undefined'||typeof c.captureStream!=='function'){$('status').textContent='当前浏览器不支持 Canvas 视频录制';return}
  const mime=['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'].find(x=>MediaRecorder.isTypeSupported(x));
  if(!mime){$('status').textContent='当前浏览器没有可用的 WebM 编码器';return}
  const stream=c.captureStream(30),chunks=[];let recorder;
  try{recorder=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:2500000})}catch(e){stream.getTracks().forEach(x=>x.stop());$('status').textContent='无法启动录制：'+e.message;return}
- recording=true;$('record').disabled=true;start=performance.now();$('status').textContent='录制中：10 秒真实动画（WebM）';
+ recording=true;$('record').disabled=true;start=performance.now();$('status').textContent='录制中：'+duration+' 秒分镜动画（WebM，非正式 MP4）';
  recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
  recorder.onerror=()=>{$('status').textContent='录制失败，请检查浏览器权限与编码器'};
- recorder.onstop=()=>{stream.getTracks().forEach(x=>x.stop());recording=false;$('record').disabled=false;if(chunks.length){download('davylab-vibe-preview.webm',new Blob(chunks,{type:mime}),mime);$('status').textContent='WebM 已导出；此文件不是 MP4'}else $('status').textContent='未生成有效视频数据'};
+ recorder.onstop=()=>{stream.getTracks().forEach(x=>x.stop());recording=false;$('record').disabled=false;if(chunks.length){download('davylab-vibe-'+duration+'s-preview.webm',new Blob(chunks,{type:mime}),mime);$('status').textContent='WebM 已导出；此文件不是 MP4'}else $('status').textContent='未生成有效视频数据'};
  recorder.start(250);
- setTimeout(()=>{if(recorder.state==='recording')recorder.stop()},10000);
+ setTimeout(()=>{if(recorder.state==='recording')recorder.stop()},duration*1000);
 };
