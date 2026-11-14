@@ -1,6 +1,6 @@
 // DAVYLAB isolated AI Gateway v1 — framework-neutral security boundary
 const reply=(error,status)=>new Response(JSON.stringify({error}),{status,headers:{"content-type":"application/json","cache-control":"no-store"}});
-export function createGateway({verifySession,consumeQuota,callProvider,allowedOrigins=[]}){
+export function createGateway({verifySession,authorizeScope,consumeQuota,callProvider,allowedOrigins=[]}){
  if([verifySession,consumeQuota,callProvider].some(f=>typeof f!=="function"))throw new TypeError("Missing security adapter");
  const origins=new Set(allowedOrigins);
  return async request=>{
@@ -14,10 +14,11 @@ export function createGateway({verifySession,consumeQuota,callProvider,allowedOr
   if(Number(request.headers.get("content-length")||0)>32768)return reply("payload_too_large",413);
   let session;try{session=await verifySession(request)}catch{return reply("auth_unavailable",503)}
   if(!session?.userId)return reply("unauthorized",401);
-  let data;try{data=await request.json()}catch{return reply("invalid_json",400)}
+  let data;try{const raw=await request.text();if(raw.length>32768)return reply("payload_too_large",413);data=JSON.parse(raw)}catch{return reply("invalid_json",400)}
   const {appId,projectId,messages}=data||{};
   if(!/^[a-z][a-z0-9-]{1,63}$/.test(appId||"")||typeof projectId!=="string"||!projectId||projectId.length>128)return reply("invalid_scope",400);
-  if(!Array.isArray(session.scopes)||!session.scopes.includes(appId+":"+projectId+":chat"))return reply("scope_denied",403);
+  try{if(authorizeScope)session=await authorizeScope(session,{appId,projectId})}catch{return reply("scope_unavailable",503)}
+  if(!Array.isArray(session?.scopes)||!session.scopes.includes(appId+":"+projectId+":chat"))return reply("scope_denied",403);
   if(!Array.isArray(messages)||messages.length<1||messages.length>24||messages.some(m=>!m||!["user","assistant"].includes(m.role)||typeof m.content!=="string"||!m.content||m.content.length>8000))return reply("invalid_messages",400);
   if(messages.reduce((n,m)=>n+m.content.length,0)>12000)return reply("input_too_large",413);
   const maxTokens=Math.min(1024,Math.max(1,Number.isInteger(data.max_tokens)?data.max_tokens:512));
