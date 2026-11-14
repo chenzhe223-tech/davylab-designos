@@ -1,0 +1,24 @@
+name: AI Native P0 Tests
+on:
+  push:
+    branches: [feat/ai-native-p0-audit]
+    paths:
+      - 'docs/ai-native/prototype/**'
+      - '.github/workflows/ai-native-p0.yml'
+  pull_request:
+    paths:
+      - 'docs/ai-native/prototype/**'
+      - '.github/workflows/ai-native-p0.yml'
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run committed gateway tests
+        run: node --test docs/ai-native/prototype/tests/*.test.mjs
