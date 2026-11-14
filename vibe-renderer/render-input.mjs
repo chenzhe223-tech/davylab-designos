@@ -2,7 +2,7 @@ import {projectSnapshot} from '../vibe-studio/timeline.mjs';
 export const FPS=30;
 export function prepareRenderProject(raw,{minimumSeconds=15,maximumSeconds=120}={}){
  if(!raw||typeof raw!=='object'||typeof raw.prompt!=='string'||!raw.prompt.trim()||!Array.isArray(raw.shots))throw new Error('Invalid Vibe Studio project');
- if(!['landscape','portrait'].includes(raw.format))throw new Error('Unsupported video aspect ratio');
+ if(raw.format!=null&&!['landscape','portrait'].includes(raw.format))throw new Error('Unsupported video aspect ratio');
  if(raw.shots.some(shot=>!shot||typeof shot!=='object'||!Number.isInteger(Number(shot.duration??(Number(shot.end)-Number(shot.start))))))throw new Error('Shot duration must be whole seconds');
  const project=projectSnapshot(raw);
  if(project.shots.length===0)throw new Error('Storyboard is empty');
