@@ -8,11 +8,13 @@ import {prepareRenderProject} from '../render-input.mjs';
 import {inspectMp4} from './qa-video.mjs';
 import {createRenderJob,transitionRenderJob} from '../job-state.mjs';
 import {makeRenderReceipt} from '../artifact-receipt.mjs';
+import {renderLicenseFlags} from '../render-license.mjs';
 const here=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const hashOutput=path=>new Promise((resolveHash,reject)=>{const hash=createHash('sha256');const stream=createReadStream(path);stream.on('data',chunk=>hash.update(chunk));stream.on('error',reject);stream.on('end',()=>resolveHash(hash.digest('hex')))});
 const input=process.argv[2];if(!input){console.error('Usage: npm run render -- /absolute/path/project.json');process.exit(2)}
 const root=resolve(process.cwd(),'output');await mkdir(root,{recursive:true});
 let prepared;try{prepared=prepareRenderProject(JSON.parse(await readFile(resolve(input),'utf8')))}catch(e){console.error('Invalid input: '+e.message);process.exit(2)}
+let licenseFlags;try{licenseFlags=renderLicenseFlags()}catch(e){console.error('Render licensing not authorized: '+e.message);process.exit(2)}
 const renderId=randomUUID();
 const output=join(root,'vibe-'+renderId+'.mp4');
 const propsFile=join(root,'.props-'+renderId+'.json');
@@ -23,7 +25,7 @@ const persist=async(next=job)=>{const temp=jobFile+'.tmp';await writeFile(temp,J
 await persist();
 await writeFile(propsFile,JSON.stringify({project:prepared.project}),{mode:0o600});
 const bin=join(here,'node_modules','.bin',process.platform==='win32'?'remotion.cmd':'remotion');
-const args=['render','src/index.ts','VibeFilm',output,'--codec=h264','--props='+propsFile,'--log=error'];
+const args=['render','src/index.ts','VibeFilm',output,'--codec=h264','--props='+propsFile,'--log=error',...licenseFlags];
 console.log('Rendering '+prepared.durationSeconds+'s '+prepared.width+'x'+prepared.height+' MP4 via Remotion');
 try{
  job=transitionRenderJob(job,'running');await persist();
