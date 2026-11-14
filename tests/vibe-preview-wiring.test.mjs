@@ -15,5 +15,9 @@ test('production build retains Canvas timeline mapping module and all event cont
  assert.match(js,/fitCanvas\(\)/);
  assert.match(planner,/resolveVisualFamily/);
  assert.match(css,/@media\(max-width:750px\)/);
+ assert.match(html,/id="preview-shot-name"/);
+ assert.match(html,/id="preview-clock"/);
+ assert.match(js,/quarter!==lastQuarter/);
+ assert.match(css,/\.timeline-shot\.is-active/);
  assert.match(html,/MP4 尚未接通/);
 });
