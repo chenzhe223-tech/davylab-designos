@@ -114,6 +114,20 @@ jobs:
           path: artifacts/design-agent-p2/
           if-no-files-found: warn
           retention-days: 14
+      - name: Verify Design Agent P2 before-after evidence
+        run: |
+          test -s artifacts/design-agent-p2/remediation-before-390.png
+          test -s artifacts/design-agent-p2/remediation-after-390.png
+          test -s artifacts/design-agent-p2/remediation-before-after-390.json
+          echo "P2 rendered remediation evidence verified."
+      - name: Preserve Design Agent P2 remediation visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: design-agent-p2-remediation-evidence
+          path: artifacts/design-agent-p2/
+          if-no-files-found: warn
+          retention-days: 14
       - name: Preserve DesignOS 3.0 visual QA screenshots
         if: always()
         uses: actions/upload-artifact@v4
