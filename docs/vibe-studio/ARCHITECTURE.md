@@ -1,15 +1,15 @@
 # DAVYLAB Vibe Studio — Architecture V1.0
 
-Status: Architecture committed; implementation not yet verified.
+Status: **Historical V1 architecture**. Current implemented and unverified states are tracked in [DELIVERY_STATUS.md](DELIVERY_STATUS.md); use the project's newer four-entry P0–P3 requirements for product decisions.
 
 ## Product
 One sentence → storyboard → executable animation → preview → validated MP4 and source package.
 
 ## UX
-Three entry paths: (1) prompt-to-video (2) guided storyboard (3) import DAVYLAB project/news assets. One unified wizard: Brief → Script → Storyboard → Scene/Style → Timeline → Preview/QA → Render/Export. Always show Back/Next, autosave, rendering state, errors.
+Four entry paths: (1) 一句话生成动画 (2) 知识可视化视频 (3) 故事动画导演 (4) 产品与品牌宣传片. All share a unified workbench. Import is an input feature, not an independent creation mode. One unified wizard: Brief → Script → Storyboard → Scene/Style → Timeline → Preview/QA → Render/Export. Always show Back/Next, autosave, rendering state, errors.
 
 ## Components
-- React/TypeScript frontend with responsive mobile-first project dashboard and editor.
+- Current implemented frontend: responsive static HTML/CSS and native JavaScript under `vibe-studio/`. A React/TypeScript editing system may be considered later but has NOT been implemented; Remotion uses React/TSX separately for video composition.
 - AI Gateway: provider adapters for DeepSeek and Claude; secrets server-side only; quotas, cancellation, trace IDs, retry/backoff.
 - Director: structured script, scene plan, duration, shot metadata and editable prompt history.
 - Animation: Motion Lab adapter; Three.js/React Three Fiber for deterministic 3D scenes; constrained generated code sandbox (no arbitrary untrusted execution in main origin).
