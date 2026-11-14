@@ -13,9 +13,9 @@ export function contrastRatio(a,b){
 // Defense-in-depth for project exports; full DOM parsing is enforced separately at render time.
 export function inspectSVGSource(svg){
  if(typeof svg!=='string'||svg.length<140||svg.length>16000)return {safe:false,reason:'size'};
- const normalized=svg.replace(/xmlns\\s*=\\s*["']http:\\/\\/www\\.w3\\.org\\/2000\\/svg["']/gi,'');
- if(!/<svg\\b/i.test(svg)||!/<\\/svg\\s*>/i.test(svg)||!/<svg\\b[^>]*\\bviewBox\\s*=\\s*["'][^"']+["']/i.test(svg))return {safe:false,reason:'structure'};
- if(/<!DOCTYPE|<!ENTITY|<\\s*\\/?\\s*(?:script|style|foreignObject|iframe|object|embed|image|use|animate|set|filter|pattern)\\b|\\bon[a-z-]+\\s*=|(?:href|src)\\s*=|url\\s*\\(|javascript:|data:|@import/i.test(normalized))return {safe:false,reason:'active-content'};
+ const normalized=svg.replace(/xmlns\s*=\s*["']http:\/\/www\.w3\.org\/2000\/svg["']/gi,'');
+ if(!/<svg\b/i.test(svg)||!/<\/svg\s*>/i.test(svg)||!/<svg\b[^>]*\bviewBox\s*=\s*["'][^"']+["']/i.test(svg))return {safe:false,reason:'structure'};
+ if(/<!DOCTYPE|<!ENTITY|<\s*\/?\s*(?:script|style|foreignObject|iframe|object|embed|image|use|animate|set|filter|pattern)\b|\bon[a-z-]+\s*=|(?:href|src)\s*=|url\s*\(|javascript:|data:|@import/i.test(normalized))return {safe:false,reason:'active-content'};
  return {safe:true,reason:'static-source-only'};
 }
 const issue=(code,severity,message,evidence,action)=>({code,severity,message,evidence,action});
