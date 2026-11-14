@@ -96,3 +96,23 @@ The feature branch includes `.github/workflows/vibe-p0-render-acceptance.yml`, a
 This workflow has **not been run**. GitHub may require its workflow file to be available on the default branch before the manual Run workflow control appears. Confirm Remotion licensing eligibility and GitHub Actions usage/cost implications before choosing to run it; feature-branch code creation alone does not authorize any cloud job.
 
 As of 2026-11-15 the current sandbox has Node 22, FFmpeg/FFprobe 7.1.5 but cannot resolve npmjs/GitHub domains. Remotion dependencies and a license declaration are not present, so P0 real Remotion video acceptance remains pending.
+
+## Offline H.264 technical proof (not Remotion P0 acceptance)
+
+If the optional Remotion dependencies cannot be installed, a separate FFmpeg-only Linux technical renderer can validate *real video file creation* without API calls or new infrastructure. This is NOT the Remotion/Skill implementation and MUST NOT be used to mark P0 complete or sold as a polished video.
+
+Prerequisites: Node 20+, `ffmpeg`/`ffprobe` with `libx264`, FFmpeg `gradients` and `drawtext` filters, and `/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc`. Free local computation still uses machine resources.
+
+```bash
+cd vibe-renderer
+npm run render:ffmpeg-proof -- ./examples/p0-city-15s.json ./output/ffmpeg-proof-15s.mp4
+npm run render:ffmpeg-proof -- ./examples/p0-city-edited-17s.json ./output/ffmpeg-proof-17s.mp4
+# Optional explicit integration test; not part of normal fast tests:
+VIBE_RUN_FULL_FFMPEG_PROOF=true node --test tests/ffmpeg-proof.test.mjs
+```
+
+The proof tool validates duration, dimensions and H.264 format using FFprobe, calls the same FFmpeg black-frame QA used elsewhere, removes invalid MP4 outputs, and writes `.qa.json` with project/video SHA-256. Its report **always** includes `remotionVerified:false`.
+
+A local execution on 2026-11-15 separately produced an original 15s 854×480 H.264 MP4 (SHA-256 `d44d74ebf27c1f5c903daff98f396945e1e0c382c86b5cdc842989e5e081295e`) and an edited 17s 854×480 MP4 (`1f453411bafd95ad6fbe5d2741ee41c1af2a02eac79a75371e162da781b57dd4`). Both passed local FFprobe duration/dimensions and FFmpeg blackdetect checks. They were rendered using a locally developed functionally equivalent proof script; the repository version additionally invokes the shared black-frame QA module. **The committed script has not yet been independently executed from a fresh GitHub checkout.**
+
+These clips use simple animated gradient and text scenes, not high-quality anidoodle or professional multi-engine visuals. Actual Remotion 15s MP4 and edit/re-render acceptance remain pending.
