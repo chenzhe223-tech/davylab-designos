@@ -11,6 +11,27 @@ function renderShots(){const shots=project.shots||[];const container=$('shots');
 function renderTimeline(){const shots=project.shots||[];const duration=shots.length?totalDuration(shots):0;$('timeline-duration').textContent=duration+' 秒';const track=$('timeline');track.replaceChildren();if(!duration){const empty=document.createElement('span');empty.textContent='生成分镜后显示镜头时间轴';track.append(empty);return}shots.forEach((shot,i)=>{const block=document.createElement('span');block.className='timeline-shot';block.style.flexGrow=String(shot.duration);block.style.flexBasis='0';block.title=shot.title+'：'+shot.start+'–'+shot.end+' 秒';block.textContent=(i+1)+' · '+shot.duration+'s';track.append(block)})}
 function download(name,content,type='application/json'){const a=document.createElement('a');const u=URL.createObjectURL(content instanceof Blob?content:new Blob([content],{type}));a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
 $('create').onclick=storyboard;
+$('generate-ai').onclick=async()=>{
+ const pass=$('ai-access-key').value;
+ const promptText=$('prompt').value.trim();
+ if(!pass){status('请先输入 AI 服务访问口令（并在服务端启用）');return}
+ if(promptText.length<3){status('创意描述至少需要 3 个字符');return}
+ if(project.shots?.length&&!confirm('生成新分镜将替换当前未保存的镜头列表，是否继续？'))return;
+ const button=$('generate-ai');button.disabled=true;button.textContent='分镜生成中…';
+ const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),55000);
+ try{
+  status('正在通过安全服务请求 DeepSeek，现有动画预览暂不跟随 AI 分镜变化');
+  const response=await fetch('/api/vibe/storyboard',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+pass},body:JSON.stringify({prompt:promptText,duration:30,aspectRatio:$('format').value==='landscape'?'16:9':'9:16'}),signal:controller.signal,credentials:'same-origin'});
+  const data=await response.json();
+  if(!response.ok)throw new Error(data?.error||'服务请求失败');
+  if(data?.source!=='deepseek'||!Array.isArray(data?.storyboard?.scenes))throw new Error('服务响应结构不正确');
+  const shots=normalizeShots(data.storyboard.scenes.map(s=>({title:s.title,duration:s.durationSeconds,visual:s.visual,motion:s.motion,narration:s.narration})));
+  project.shots=shots;project.prompt=promptText;project.format=$('format').value;renderShots();
+  status('DeepSeek 分镜已生成：'+shots.length+' 个镜头，共 '+totalDuration(shots)+' 秒。请检查并保存；当前 Canvas 动画尚未与这些分镜联动。');
+ }catch(e){status(e.name==='AbortError'?'AI 分镜请求超时':('AI 分镜失败：'+e.message))}
+ finally{clearTimeout(timeout);button.disabled=false;button.textContent='DeepSeek 智能分镜'}
+};
+
 $('save').onclick=()=>{try{localStorage.setItem(KEY,JSON.stringify(synchronize()));status('已保存在当前浏览器；尚未跨设备同步')}catch(e){status('本地保存失败：'+e.message)}};
 $('import-trigger').onclick=()=>$('import-file').click();
 $('import-file').addEventListener('change',async()=>{const file=$('import-file').files?.[0];if(!file)return;try{if(file.size>2*1024*1024)throw new Error('工程文件超过 2 MB');const raw=JSON.parse(await file.text());if(!raw||typeof raw!=='object'||typeof raw.prompt!=='string'||!Array.isArray(raw.shots))throw new Error('不是有效的 Vibe Studio 项目');const imported=projectSnapshot(raw);project=imported;$('prompt').value=project.prompt;$('format').value=project.format;renderShots();status('工程已导入（尚未覆盖本地保存，点击「保存项目」才会写入）')}catch(e){status('项目导入失败：'+e.message)}finally{$('import-file').value=''}});
