@@ -52,3 +52,7 @@
 /* Editable procedural visual family: same parameter reaches Canvas and Remotion. */
 .shot-details select.visual-family-select{grid-column:2/4;width:100%;max-width:none;min-height:38px;font-size:12px;color:#f0f8ff;background:#173a53;border:1px solid #88acd04f;border-radius:9px;padding:7px 10px}
 @media(max-width:750px){.shot-details select.visual-family-select{grid-column:1/4}}
+
+/* Director-only motion notes + real editable on-screen subtitle text. */
+.shot-details input.motion-input,.shot-details input.narration-input{grid-column:2/4;min-width:0;width:100%;max-width:none!important}
+@media(max-width:750px){.shot-details input.motion-input,.shot-details input.narration-input{grid-column:1/4}}
