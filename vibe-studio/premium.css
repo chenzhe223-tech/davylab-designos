@@ -48,3 +48,7 @@
 /* Real creation-mode selection, shared across all four entrances. */
 .entry-card.is-selected{outline:2px solid #e2f4ffb8;outline-offset:-3px;box-shadow:0 0 0 1px #badcff5e,0 12px 35px #0d305754}
 .entry-card[aria-current="true"] .entry-arrow{color:#fff;font-weight:800}
+
+/* Editable procedural visual family: same parameter reaches Canvas and Remotion. */
+.shot-details select.visual-family-select{grid-column:2/4;width:100%;max-width:none;min-height:38px;font-size:12px;color:#f0f8ff;background:#173a53;border:1px solid #88acd04f;border-radius:9px;padding:7px 10px}
+@media(max-width:750px){.shot-details select.visual-family-select{grid-column:1/4}}
