@@ -52,3 +52,9 @@ Local FFmpeg proof rendered two **real playable videos**, not static concept scr
 - Additional UI implemented: editable source/claim references, character registry, per-shot engine tags, and local 12-version restore; source-level JS syntax and DOM reference checks passed. Actual full desktop/iPad/mobile browser E2E remains pending.
 
 **Do not downgrade P0 or P1–P3 acceptance criteria** to the FFmpeg technical proof or metadata-only implementations.
+
+## 2026-11-15 · Incremental P0 receipt gate
+
+- Source fix: renderer now independently reopens the persisted receipt and hashes the final MP4 before publishing a `verified` job. Commit: `d72b7c3a9a2a208ec0f31776323a300e4f88079b`.
+- **Validation performed:** GitHub source readback confirmed the receipt verification executes before verified job persistence, with the existing failure cleanup preserved. **Not performed:** fresh-checkout executable tests, Remotion installation, typecheck, actual Remotion MP4 render, browser device QA, cloud job/deploy.
+- Delivery gates unchanged: **Code Completed (incremental only)**; **Build Passed: NO**; **Runtime Verified: only previous targeted utilities**; **Functional Tested: no Remotion E2E**; **Production Deployed: NO**.
