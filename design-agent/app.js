@@ -197,6 +197,15 @@ function runDesignQA(){
   if(!latestQA.issues.length){const li=document.createElement('li');li.textContent='基础静态检查无发现。仍需完成真实视觉、可访问性与授权验收。';list.append(li)}
   $('exportDesignQA').disabled=false;
 }
+// An exported QA result must never silently describe a different, unsaved form state.
+document.addEventListener('input',event=>{
+  if(!latestQA)return;
+  if(!event.target.closest('#briefPanel,#strategyEditor,#directionDialog'))return;
+  latestQA=null;
+  $('exportDesignQA').disabled=true;
+  $('qaSummary').textContent='输入内容已修改，请重新检查';
+  $('qaFindings').replaceChildren();
+});
 function exportDesignQA(){
   if(!latestQA)return;
   const report={...latestQA,project_id:p.id,project_updated:p.updated,checked_at:new Date().toISOString()};
