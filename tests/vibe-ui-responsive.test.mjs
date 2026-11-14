@@ -7,13 +7,13 @@ test('Vibe Studio approved UI ships in distributable with responsive shell',asyn
  const html=await readFile(resolve(root,'dist/vibe-studio/index.html'),'utf8');
  const css=await readFile(resolve(root,'dist/vibe-studio/premium.css'),'utf8');
  const js=await readFile(resolve(root,'dist/vibe-studio/studio.js'),'utf8');
- const ids=[...html.matchAll(/\\bid="([^"]+)"/g)].map(m=>m[1]);
+ const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
  assert.equal(ids.length,new Set(ids).size,'Every HTML id must be unique');
- for(const match of js.matchAll(/\\$\\('([^']+)'\\)/g))assert.ok(ids.includes(match[1]),'Missing script target '+match[1]);
+ for(const match of js.matchAll(/\$\('([^']+)'\)/g))assert.ok(ids.includes(match[1]),'Missing script target '+match[1]);
  assert.equal((html.match(/class="entry-card/g)||[]).length,4,'All four entrances are present');
- assert.match(css,/@media\\(max-width:750px\\)/);
- assert.match(css, /@media\\(min-width:751px\\) and \\(max-width:1024px\\)/);
- assert.match(css, /@media\\(max-width:1180px\\)/);
+ assert.match(css,/@media\(max-width:750px\)/);
+ assert.match(css, /@media\(min-width:751px\) and \(max-width:1024px\)/);
+ assert.match(css, /@media\(max-width:1180px\)/);
  assert.match(html,/WebM/);
  assert.match(html,/MP4 尚未接通/);
  assert.match(html,/本地演示工作区/);
