@@ -22,7 +22,7 @@ Branch: `feat/vibe-studio-architecture-20261114`
 ## Unverified / remaining
 - Full repository `npm run check` was NOT run: the current local container could not resolve github.com to clone repository. Node timeline unit smoke check is not a substitute for full test run.
 - Real desktop/iPad/mobile browser visual and interaction QA pending; no claim of deploy.
-- DeepSeek API integration, Remotion service and real MP4 render not yet implemented; browser WebM is not MP4.
+- DeepSeek server endpoint and opt-in UI wiring exist in branch with mocked API tests; live DeepSeek call, provider credentials and authorization end-to-end are NOT verified. Remotion CLI/composition code exists separately but has NOT produced an actual MP4 in this environment; browser WebM is not MP4.
 - LocalStorage does not provide multi-device persistence; needs later backend integration.
 
 ## Next executable task
@@ -46,3 +46,18 @@ Delivery states: Code Completed (editor increment only); Build Passed: unverifie
 - Limitations: no repository-wide `npm run check` or browser QA yet (GitHub checkout unavailable in local container), no Remotion package installation or real MP4, no real API key / provider call, no online deployment. Add usage rate limits/quotas prior to exposing this endpoint publicly.
 
 Next task: test the existing Remotion CLI with actual Node dependencies in a connected runner, generate and visually inspect ≥15s MP4 plus ffprobe/metadata evidence; validate 3 responsive browser sizes; improve engine adapters after license checks.
+
+## 2026-11-14 · Additional render/QA increment
+- Isolated renderer package `vibe-renderer/` added with pinned Remotion 4.0.543 packages, typed React compositions, sample `examples/p0-city-15s.json`, validated Node render inputs, and a CLI that invokes Remotion + metadata checks + real FFmpeg black-frame QA. This package is **not** installed in the DesignOS root build and is not a Cloudflare Worker.
+- Node tests executed using byte-identical Git blob copies: `vibe-renderer/render-input.mjs` SHA `896f41fd570ad2c36632c7145215423427fda8e8`, `tests/render-input.test.mjs` SHA `cfcbf185c3bc040fb96bfca0235b70c9ef0de7e0`: **4/4 passed** (15-second 450-frame project, portrait dimensions, invalid inputs, legacy project). These test normalization only, **not** video rendering.
+- Media QA implementation `vibe-renderer/scripts/qa-video.mjs` SHA `2566d08becbcf39e7f2b1fae4d343e70d1c1a808` was executed with FFmpeg-generated synthetic H.264 clips: valid 15-second 480×320 sample accepted (2,756,322 bytes, 0 black regions), solid black 2-second clip rejected after black detection. This validates the **checker**, NOT a Remotion-produced final video.
+- Root test `tests/vibe-renderer-contract.test.mjs` added (not yet run as part of full root build). Independent renderer `tsconfig.json` and `.gitignore` added.
+- `npm view remotion@4.0.543` failed with `EAI_AGAIN registry.npmjs.org` in the current sandbox; no dependency install, actual Remotion MP4 rendering, visual frame inspection, or deployed runtime tests have happened.
+- Updated legal note: Remotion is *source-available under a proprietary Remotion License* with eligibility-based free use; check licensing before commercial rollout (https://www.remotion.dev/docs/license/pricing).
+
+### Next minimal executable work
+1. On a checkout with npm registry access: `cd vibe-renderer && npm install && npm test && npm run typecheck && npm run render -- ./examples/p0-city-15s.json`. Check the output file visually; inspect ffprobe logs and black frames; change duration/visual and re-render to validate editability.
+2. In root checkout, `npm run check` and responsive browser tests at desktop/iPad/mobile widths. Fix any failures before deployment.
+3. Only after true video and model API tests: integrate render job queue/status persistence and authenticated upload/download into UI; do not represent standalone sample video as an already completed live user job.
+
+Current statuses: **Code Completed** (renderer skeleton and media QA code); **Build Passed** (unverified for package/root); **Runtime Verified** (QA utility only); **Functional Tested** (Node normalization 4/4 + synthetic QA checker; actual Remotion rendering unverified); **Production Deployed** (no).
