@@ -13,7 +13,7 @@ export const Film=({project}:{project:Project})=>{
  const appear=spring({frame:local,fps,config:{damping:18}});
  const fade=Math.min(1,local/18,Math.max(0,(duration-local)/18));
  const portrait=height>width;
- return <AbsoluteFill style={{overflow:'hidden',background:base,fontFamily:'-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif',color:'white'}}>
+ return <AbsoluteFill style={{overflow:'hidden',background:'#102a4c',fontFamily:'-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif',color:'white'}}>
   <SceneArt frame={local} fps={fps} width={width} height={height} durationFrames={duration} index={shot.index} title={shot.title||''} visual={shot.visual}/>
   <div style={{position:'absolute',left:width*.085,right:width*.085,top:height*.28,opacity:fade,transform:`translateY(${(1-appear)*40}px)`}}>
    <div style={{letterSpacing:8,fontSize:portrait?28:23,opacity:.8}}>DAVYLAB · VIBE STUDIO</div>
