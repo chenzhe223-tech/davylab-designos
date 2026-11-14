@@ -76,7 +76,7 @@ function draw(now){
  ctx.font=Math.max(11,Math.min(17,w*.02))+'px system-ui';ctx.fillStyle='#d1e5f8';ctx.fillText('DAVYLAB VIBE STUDIO · 预览动画',w/2,h-25);
 }
 $('play').onclick=()=>{showCanvas();start=performance.now();status('正在播放分镜对应的程序化 Canvas 动画（不等于最终视频）')};
-const importedVideo=$('rendered-video');let importedVideoUrl=null;
+const importedVideo=$('rendered-video');let importedMp4Url=null;
 function showCanvas(){importedVideo.pause();importedVideo.hidden=true;c.hidden=false}
 $('load-mp4').onclick=()=>$('render-file').click();
 $('render-file').addEventListener('change',()=>{
@@ -86,13 +86,13 @@ $('render-file').addEventListener('change',()=>{
   if(file.type&&file.type!=='video/mp4'&&!file.name.toLowerCase().endsWith('.mp4'))throw new Error('请选择 MP4 视频');
   const url=URL.createObjectURL(file);
   importedVideo.pause();
-  if(importedVideoUrl)URL.revokeObjectURL(importedVideoUrl);
-  importedVideoUrl=url;importedVideo.src=url;importedVideo.hidden=false;c.hidden=true;
-  importedVideo.onloadedmetadata=()=>status('本地 MP4 已加载：'+Math.round(importedVideo.duration)+' 秒。仅供预览，未进行渲染 QA 验证。');
+  if(importedMp4Url)URL.revokeObjectURL(importedMp4Url);
+  importedMp4Url=url;importedVideo.src=url;importedVideo.hidden=false;c.hidden=true;
+  importedVideo.onloadedmetadata=()=>status('本地 MP4 已加载：'+Math.round(importedVideo.duration)+' 秒。仅供预览，尚未执行成片 QA。');
   importedVideo.onerror=()=>status('MP4 文件无法播放，请检查编码格式或文件完整性');
  }catch(e){status('视频导入失败：'+e.message)}finally{$('render-file').value=''}
 });
-window.addEventListener('pagehide',()=>{if(importedVideoUrl)URL.revokeObjectURL(importedVideoUrl)});
+window.addEventListener('pagehide',()=>{if(importedMp4Url)URL.revokeObjectURL(importedMp4Url)});
 
 renderShots();draw(performance.now());
 // Browser-native recording: real canvas frames, never mislabeled as MP4.
