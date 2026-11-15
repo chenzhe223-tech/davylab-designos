@@ -1,5 +1,15 @@
+## 2026-11-15 scheduled run — verified progress
+- Read this continuity and actual committed Gateway, Cloudflare adapters, entry and integration test files.
+- Added `docs/ai-native/prototype/gateway/cors.mjs` (commit 283209e0) and `tests/cors.test.mjs` (commit 1d143b83), then wired middleware into `entry.mjs` (commit c955eda0).
+- Executed the CORS test logic locally using Node v22.16.0: **7/7 pass**. These were local copies of the authored files; GitHub Actions CI for the committed branch and all older tests are **not verified**.
+- Browser preflight permits only configured origins, POST and authorization/content-type headers; no wildcard or credential sharing. Error responses for allowed origins include CORS. Authentication remains independent.
+- No model calls, D1 migrations, Cloudflare deployments, or production changes.
+- Next: execute full suite against exact GitHub bytes; verify CI logs; add global hard budget and robust request size enforcement; inspect token-cost assumptions. Dedicated staging still blocked on reviewed Cloudflare bindings and approval before any billable calls.
+- Status: Code Completed = CORS increment committed; Build Passed = local 7 tests only; Runtime Verified = not tested in Cloudflare; Functional Tested = CORS unit tests only; Production Deployed = no.
+- Resume: read current branch, run complete Node test suite, fix failures, commit and read back. Never treat CORS unit tests as end-to-end or CI success.
+
 # DAVYLAB AI Native Ecosystem — continuity handoff
-Updated 2026-11-14. Scope: P0→P3. This is a development handoff, not evidence of deployment.
+Original baseline 2026-11-14. Scope: P0→P3. This is a development handoff, not evidence of deployment.
 
 ## Goal and constraints
 Build reusable secure AI Native infrastructure for DAVYLAB, pilot WorldToon. Preserve all existing production data, assets, Workers, and secrets. Never call billable models, create paid resources, or deploy to production without explicit user approval. No mock response presented as a real provider call.
