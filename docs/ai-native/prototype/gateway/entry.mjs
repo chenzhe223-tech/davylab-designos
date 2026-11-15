@@ -1,4 +1,5 @@
 import {createGateway,deepseekProvider} from './gateway-v1.mjs';
+import {withCors} from './cors.mjs';
 import {createSupabaseSessionVerifier,createD1Quota,createProjectScopeResolver} from './cloudflare-adapters.mjs';
 // Deploy only to a new isolated Worker after permission table and secrets are configured.
 export function buildHandler(env,{fetchImpl=fetch}={}){
@@ -9,6 +10,7 @@ export function buildHandler(env,{fetchImpl=fetch}={}){
   return !!row;
  }});
  const provider=deepseekProvider({apiKey:env.DEEPSEEK_API_KEY,fetchImpl});
- return createGateway({verifySession:verify,authorizeScope,consumeQuota:quota,callProvider:provider,allowedOrigins:String(env.ALLOWED_ORIGINS||'').split(',').map(s=>s.trim()).filter(Boolean)});
+ const allowedOrigins=String(env.ALLOWED_ORIGINS||'').split(',').map(s=>s.trim()).filter(Boolean);
+ return withCors(createGateway({verifySession:verify,authorizeScope,consumeQuota:quota,callProvider:provider,allowedOrigins}),allowedOrigins);
 }
 export default {fetch(request,env){try{return buildHandler(env)(request)}catch{return new Response(JSON.stringify({error:'gateway_unconfigured'}),{status:503,headers:{'content-type':'application/json'}})}}};
