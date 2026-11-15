@@ -1,0 +1,13 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {withCors} from '../gateway/cors.mjs';
+const origin='https://worldtoon.example';
+const wrap=withCors(async()=>new Response(JSON.stringify({error:'unauthorized'}),{status:401,headers:{'content-type':'application/json'}}),[origin]);
+const req=(method='OPTIONS',headers={})=>new Request('https://gateway.example/v1/chat',{method,headers:{origin,...headers}});
+test('preflight accepts exact origin and auth headers',async()=>{const r=await wrap(req('OPTIONS',{'access-control-request-method':'POST','access-control-request-headers':'authorization, content-type'}));assert.equal(r.status,204);assert.equal(r.headers.get('access-control-allow-origin'),origin)});
+test('preflight rejects unknown origin',async()=>assert.equal((await wrap(req('OPTIONS',{origin:'https://evil.example','access-control-request-method':'POST'}))).status,403));
+test('preflight rejects unknown headers',async()=>assert.equal((await wrap(req('OPTIONS',{'access-control-request-method':'POST','access-control-request-headers':'x-custom'}))).status,403));
+test('preflight rejects GET',async()=>assert.equal((await wrap(req('OPTIONS',{'access-control-request-method':'GET'}))).status,403));
+test('error response has CORS',async()=>{const r=await wrap(req('POST'));assert.equal(r.status,401);assert.equal(r.headers.get('access-control-allow-origin'),origin)});
+test('unknown origin error does not grant CORS',async()=>{const r=await wrap(req('POST',{origin:'https://evil.example'}));assert.equal(r.headers.get('access-control-allow-origin'),null)});
+test('no wildcard or credentials',async()=>{const r=await wrap(req('POST'));assert.equal(r.headers.get('access-control-allow-credentials'),null);assert.notEqual(r.headers.get('access-control-allow-origin'),'*')});
