@@ -226,3 +226,11 @@ READ FIRST: `docs/vibe-studio/DELIVERY_STATUS.md` is the current P0–P3 accepta
 - Manual `.github/workflows/vibe-p0-render-acceptance.yml` now requires a decoded pixel difference before acceptance and records the two frame fingerprints in output.
 - **Actually executed locally:** 3/3 targeted Node unit tests passed using a locally reproduced implementation. FFmpeg H.264 8-second red and blue fixtures decoded successfully; different visual content passed and identical-file comparison failed closed. These are controlled **QA fixtures, not Remotion or Vibe Studio videos**. GitHub source readback still required for this increment.
 - Next: obtain a licensed authorized runner with npm access; run fresh-checkout root and renderer tests, typecheck, actual 15s/17s Remotion render and check the enhanced decoded-frame gate. No production or phase-gate promotion justified by the fixture tests.
+
+## 2026-11-16 · P0 guarded renderer setup fix (Chat-only)
+
+- Confirmed branch head remained `80556af49978a05f3098d16243c91bce7510de10` before this increment; inspected Remotion CLI, frame QA, job transition and receipt code.
+- Commit `f3e67e0448e01827557ecddc82255f841d184555`: moved initial job persistence and private props-file write inside renderer's try/finally guarded lifecycle. Setup errors now flow through failed-state handling, unverified artifacts/receipts are removed, and private props are unlinked in finally.
+- GitHub source readback verified the try boundary precedes initial persistence and the cleanup path is present. This is source-contract verification, not proof that a live Remotion CLI exited or MP4 rendered.
+- Current container has Node 22 and FFmpeg/FFprobe but DNS for registry.npmjs.org and github.com is unavailable; no Remotion package install, full repo checkout, typecheck, E2E render or device QA could run. No CI, licensed rendering or production deployment was started.
+- **Next required acceptance:** network-enabled, authorized runner; Remotion licensing/usage confirmation; root `npm run check`, renderer `npm test && npm run typecheck`, 15s and edited 17s Remotion videos, independent visual/ffprobe/black-frame/receipt QA and multi-device persistence tests. P0 remains not accepted.
