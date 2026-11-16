@@ -64,3 +64,9 @@ Local FFmpeg proof rendered two **real playable videos**, not static concept scr
 - Added a real decoded-frame comparison gate at 6 seconds to the **manual-only** P0 acceptance workflow, using FFmpeg frame MD5; source implementation in `vibe-renderer/frame-qa.mjs`.
 - Local reproduced-code verification: **3/3 Node unit tests passed**; separate actual FFmpeg H.264 fixtures demonstrated differing colors pass and identical decoded frames reject. Fixture videos are not Remotion outputs.
 - P0 has **NOT** passed: no Remotion install, real Remotion MP4 or browser E2E in this increment. Build Passed NO; full Runtime Verified NO; full Functional Tested NO; Production Deployed NO. No CI workflow run or charge was initiated.
+
+## 2026-11-16 · P0 renderer setup failure-handling increment
+
+- Source fix `f3e67e0448e01827557ecddc82255f841d184555`: initial render-job and confidential props writes are now guarded by try/finally. Failed renders remove unverified MP4/receipt and best-effort persist a failed status; props cleanup runs even on setup failures.
+- GitHub source readback passed. No full build, runtime renderer test, true Remotion MP4, desktop/iPad/mobile browser E2E or production deployment executed in this increment due npm/GitHub DNS unavailability and unconfirmed license authorization.
+- Delivery gates unchanged: incremental Code Completed; Build Passed **NO**; Remotion Runtime Verified **NO**; P0 Functional Tested **NO**; Production Deployed **NO**.
