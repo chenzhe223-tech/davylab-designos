@@ -22,12 +22,14 @@ const jobFile=join(root,'render-job-'+renderId+'.json');
 const receiptFile=join(root,'render-receipt-'+renderId+'.json');
 let job=createRenderJob({id:renderId,project:prepared.project,output,expectedSeconds:prepared.durationSeconds});
 const persist=async(next=job)=>{const temp=jobFile+'.tmp';await writeFile(temp,JSON.stringify(next,null,2));await rename(temp,jobFile)};
-await persist();
-await writeFile(propsFile,JSON.stringify({project:prepared.project}),{mode:0o600});
 const bin=join(here,'node_modules','.bin',process.platform==='win32'?'remotion.cmd':'remotion');
 const args=['render','src/index.ts','VibeFilm',output,'--codec=h264','--props='+propsFile,'--log=error',...licenseFlags];
-console.log('Rendering '+prepared.durationSeconds+'s '+prepared.width+'x'+prepared.height+' MP4 via Remotion');
 try{
+ // Include initial job/props persistence in the guarded lifecycle so early I/O failures
+ // cannot leave a misleading queued state or an unremoved temporary props file.
+ await persist();
+ await writeFile(propsFile,JSON.stringify({project:prepared.project}),{mode:0o600});
+ console.log('Rendering '+prepared.durationSeconds+'s '+prepared.width+'x'+prepared.height+' MP4 via Remotion');
  job=transitionRenderJob(job,'running');await persist();
  await runRendererCommand(bin,args,{cwd:here,timeoutMs:600000});
  const file=await stat(output);if(file.size<10_000)throw new Error('MP4 file too small to count as validated video');
@@ -49,4 +51,12 @@ try{
  await persist(verifiedJob);
  job=verifiedJob;
  console.log(JSON.stringify({jobFile,receiptFile,output,inputSha256:job.inputSha256,outputSha256,bytes:file.size,durationSeconds:qa.durationSeconds,expectedSeconds:prepared.durationSeconds,qa,verified:true}));
-}catch(error){job=transitionRenderJob(job,'failed',{error:error.message});await unlink(output).catch(()=>{});await unlink(receiptFile).catch(()=>{});await unlink(receiptFile+'.tmp').catch(()=>{});await persist().catch(()=>{});console.error('Render/QA failed: '+error.message);process.exitCode=1}finally{await unlink(propsFile).catch(()=>{})}
+}catch(error){
+ const reason=error instanceof Error?error.message:String(error);
+ // Always remove unverified media and receipts, even when setup failed before rendering.
+ await Promise.all([output,receiptFile,receiptFile+'.tmp'].map(path=>unlink(path).catch(()=>{})));
+ try{job=transitionRenderJob(job,'failed',{error:reason})}catch{job={...job,status:'failed',error:reason.slice(0,500),updatedAt:new Date().toISOString()}}
+ await persist().catch(persistError=>console.error('Could not persist failed render status: '+persistError.message));
+ console.error('Render/QA failed: '+reason);
+ process.exitCode=1;
+}finally{await unlink(propsFile).catch(()=>{})}
