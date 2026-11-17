@@ -36,6 +36,7 @@ const runtimeProfiles = canonicalProfiles.filter(p => p.presentation && p.status
     protected: Boolean(v.protected || p.layoutPreservation?.enabled),
     status: p.status, evidenceStatus: p.evidenceStatus || p.status,
     tokens, rules: p.rules, extends: p.extends, productType: p.productType,
+    artPalette: p.artPalette || null,
     tags: v.tags || [], aliases: v.aliases || [], mobileFit: v.mobileFit || '按目标设备验证',
     limitationsVerified: Boolean(p.source?.verifiedAt && p.evidenceStatus === 'validated')
   }
