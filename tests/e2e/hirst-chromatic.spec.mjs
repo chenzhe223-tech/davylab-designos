@@ -42,8 +42,11 @@ test('Hirst Chromatic honors reduced motion and narrow mobile art layout',async 
   await page.emulateMedia({reducedMotion:'reduce'});
   await page.goto(home);
   await page.locator('.mobile-nav [data-nav=studio]').click();
+  await page.locator('.studio-inspector-toggle').click();
+  await expect(page.locator('#inspectorPanel')).toBeVisible();
   await page.locator('[data-action=choose-profile][data-profile=hirst-chromatic]').click();
   await page.locator('[data-action=hirst-variant][data-variant=spin]').click();
+  await page.locator('.inspector-mobile-header [data-action=toggle-inspector]').click();
   await page.locator('[data-action=device][data-device=phone]').click();
   await expect(page.locator('.hirst-spin-disc')).toHaveCSS('animation-name','none');
   await expect(page.locator('#canvasPaper')).toHaveClass(/is-phone/);
