@@ -1,0 +1,213 @@
+/* DAVYLAB DesignOS · Production studio layout pass.
+   Width-aware workspace, restrained iOS-style chrome, and independent inspector scrolling.
+   Scoped to #studio view; home, classic, logo-studio and other routes stay unchanged. */
+body[data-workspace-view="studio"]{
+  --studio-paper:#f6f8fc;
+  --studio-line:#e5eaf1;
+  --studio-blue:#3b68eb;
+}
+body[data-workspace-view="studio"] .app-layout{grid-template-columns:216px minmax(0,1fr)}
+body[data-workspace-view="studio"] .sidebar{padding-top:24px}
+body[data-workspace-view="studio"] .identity{padding-bottom:32px}
+body[data-workspace-view="studio"] .topbar{min-height:62px;padding:0 clamp(18px,2vw,34px)}
+body[data-workspace-view="studio"] .main-shell{min-width:0;width:100%}
+body[data-workspace-view="studio"] .main-view{
+  width:100%;max-width:none;min-width:0;margin:0;
+  padding:16px clamp(16px,1.65vw,32px) 19px;
+}
+body[data-workspace-view="studio"] .app-footer{display:none}
+.studio-workspace-header{
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:16px;margin-bottom:15px;min-width:0;
+}
+.studio-heading{display:flex;flex-direction:column;min-width:0}
+.studio-heading .section-eyebrow{font-size:10px;color:#76879b;letter-spacing:.16em}
+.studio-heading h1{font-size:clamp(21px,1.75vw,27px);line-height:1.26;letter-spacing:-.055em;font-weight:850;margin:5px 0 2px}
+.studio-heading p{font-size:12px;color:#687789;margin:0;line-height:1.6}
+.studio-head-actions{align-items:center;gap:9px;flex-wrap:nowrap}
+.studio-head-actions .button{padding:10px 15px;font-size:12px}
+body[data-workspace-view="studio"] .studio-layout{
+  display:grid;grid-template-columns:minmax(0,1fr) 336px;align-items:start;
+  gap:18px;min-width:0;min-height:calc(100dvh - 166px);
+}
+body[data-workspace-view="studio"] .canvas-panel{
+  display:flex;flex-direction:column;min-width:0;min-height:580px;
+  height:max(580px,calc(100dvh - 164px));
+  border:1px solid var(--studio-line);border-radius:16px;overflow:hidden;
+  background:white;box-shadow:0 12px 34px rgba(32,47,71,.035);
+}
+body[data-workspace-view="studio"] .canvas-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 15px;gap:12px;min-height:64px;flex:none;
+  background:#fff;border-bottom:1px solid var(--studio-line);
+}
+.canvas-context{min-width:115px;flex:none}
+.canvas-context b{display:flex;align-items:center;gap:6px;white-space:nowrap;font-size:11px;letter-spacing:.025em}
+.canvas-context .badge{font-size:9px;padding:4px 7px}
+.canvas-context small{font-size:10px;margin-top:3px}
+.canvas-tools{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:7px;min-width:0}
+.canvas-tools .segmented{padding:3px;white-space:nowrap;background:#f4f6fa;border-color:#e8ecf2}
+.canvas-tools .segmented button{font-size:11px;padding:7px 9px;color:#657083}
+.canvas-tools .segmented button.is-active{color:#23364e}
+.canvas-tool-button,.studio-zoom{
+  border:1px solid #e3e8f0;border-radius:9px;background:#fff;
+  font-size:11px;font-weight:750;color:#41516a;min-height:34px;
+}
+.canvas-tool-button{padding:7px 11px;white-space:nowrap}
+.canvas-tool-button:hover,.studio-zoom button:hover{background:#f2f6fc}
+.canvas-tool-button[aria-pressed="true"]{color:#2856c9;border-color:#8da8ec}
+.studio-zoom{display:flex;align-items:center;overflow:hidden;gap:0;white-space:nowrap}
+.studio-zoom button{border:0;background:transparent;padding:0 10px;min-height:33px;font-size:13px;color:#4a5874}
+.studio-zoom button:last-child{border-left:1px solid #e5eaf1;font-size:10px}
+.studio-zoom button:disabled{opacity:.35}
+.studio-zoom span{font-size:10px;font-variant-numeric:tabular-nums;min-width:38px;text-align:center}
+.studio-inspector-toggle{display:none}
+body[data-workspace-view="studio"] .canvas-field{
+  flex:1;min-height:0;display:flex;align-items:center;justify-content:center;
+  padding:clamp(14px,1.75vw,28px);overflow:auto;
+  background-color:var(--studio-paper);
+  background-image:linear-gradient(#dfe6ef50 1px,transparent 1px),linear-gradient(90deg,#dfe6ef50 1px,transparent 1px);
+  background-size:24px 24px;
+  scrollbar-width:thin;scrollbar-color:#c7d1df transparent;
+}
+body[data-workspace-view="studio"] .canvas-paper{
+  width:100%;max-width:1120px;min-width:0;flex:none;
+  zoom:var(--preview-zoom,1);
+  border-color:#e0e6ee;border-radius:11px;
+  box-shadow:0 20px 54px rgba(28,49,80,.115);
+  transition:none;
+}
+body[data-workspace-view="studio"] .canvas-paper.is-phone{width:375px;max-width:100%;align-self:center}
+body[data-workspace-view="studio"] .canvas-foot{
+  padding:11px 16px;flex:none;border-color:var(--studio-line);
+  background:white;color:#78859a;font-size:10px;
+}
+body[data-workspace-view="studio"] .inspector{
+  min-width:0;height:calc(100dvh - 166px);min-height:520px;max-height:calc(100dvh - 166px);
+  overflow-y:auto;overscroll-behavior:contain;display:grid;align-content:start;
+  grid-template-columns:minmax(0,1fr);gap:11px;position:sticky;top:12px;
+  padding:0 6px 6px 0;scrollbar-width:thin;scrollbar-color:#c8d2df transparent;
+}
+body[data-workspace-view="studio"] .inspector-card{
+  padding:18px;border:1px solid var(--studio-line);
+  border-radius:13px;background:#fff;box-shadow:0 6px 18px rgba(32,47,71,.022);
+}
+body[data-workspace-view="studio"] .inspector-card h3{font-size:13px;margin-bottom:14px;color:#22364b}
+body[data-workspace-view="studio"] .inspector-card h3 span{font-size:10px;color:#97a2b3}
+body[data-workspace-view="studio"] .control-label{font-size:11px;color:#5f7187}
+body[data-workspace-view="studio"] .control-input,
+body[data-workspace-view="studio"] .control-select,
+body[data-workspace-view="studio"] .control-textarea{
+  background:#fbfcfe;border-color:#dae2ed;border-radius:9px;
+  font-size:12px;line-height:1.5;padding:11px 12px;
+}
+body[data-workspace-view="studio"] .control-textarea{min-height:92px}
+body[data-workspace-view="studio"] .profile-option{
+  padding:12px;background:#fafcff;border:1px solid #e4eaf1;border-radius:9px;
+}
+body[data-workspace-view="studio"] .profile-option strong{font-size:12px}
+body[data-workspace-view="studio"] .profile-option small{font-size:10px}
+body[data-workspace-view="studio"] .profile-option.is-active{border-color:#9bb3e6;background:#f0f5ff}
+body[data-workspace-view="studio"] .inspector-note{font-size:11px;line-height:1.65;color:#6f7f92}
+body[data-workspace-view="studio"] .hirst-variant-button{font-size:11px;min-height:39px}
+body[data-workspace-view="studio"] .inspector-actions{grid-column:auto}
+.inspector-mobile-header{display:none}
+.inspector-backdrop{display:none}
+body.studio-fullscreen{overflow:hidden}
+body.studio-fullscreen .canvas-panel{
+  position:fixed;inset:12px;z-index:70;width:auto;
+  height:calc(100dvh - 24px);max-height:none;min-height:0;
+  border-radius:16px;box-shadow:0 24px 90px rgba(10,20,32,.34);
+}
+body.studio-fullscreen .canvas-field{min-height:0}
+body.studio-fullscreen .canvas-paper{max-width:1200px}
+/* Desktop screen sizes: use actual available width instead of a central max-width. */
+@media(min-width:1600px){
+  body[data-workspace-view="studio"] .studio-layout{grid-template-columns:minmax(0,1fr) 348px;gap:20px}
+  body[data-workspace-view="studio"] .main-view{padding-inline:28px}
+}
+@media(min-width:1101px) and (max-width:1300px){
+  body[data-workspace-view="studio"] .app-layout{grid-template-columns:200px minmax(0,1fr)}
+  body[data-workspace-view="studio"] .studio-layout{grid-template-columns:minmax(0,1fr) 312px;gap:13px}
+  body[data-workspace-view="studio"] .main-view{padding-inline:16px}
+  body[data-workspace-view="studio"] .canvas-bar{align-items:flex-start;flex-wrap:wrap}
+  .canvas-tools{justify-content:flex-start}
+}
+/* Tablet / narrow laptop: put properties in a user-invoked drawer. */
+@media(max-width:1100px){
+  body[data-workspace-view="studio"] .studio-layout{grid-template-columns:minmax(0,1fr);min-height:0}
+  .studio-inspector-toggle{display:inline-flex;align-items:center;justify-content:center}
+  body[data-workspace-view="studio"] .canvas-panel{height:max(590px,calc(100dvh - 165px))}
+  body[data-workspace-view="studio"] .inspector{
+    display:block;position:fixed;z-index:82;top:0;right:0;bottom:0;
+    width:min(360px,calc(100vw - 28px));height:100dvh;max-height:100dvh;min-height:0;
+    padding:0 14px 22px;overflow-y:auto;background:#f7f9fd;
+    box-shadow:-15px 0 65px rgba(15,30,53,.22);
+    transform:translateX(110%);visibility:hidden;pointer-events:none;
+    transition:transform .25s ease,visibility .25s ease;
+  }
+  body[data-workspace-view="studio"] .inspector.is-open{
+    transform:translateX(0);visibility:visible;pointer-events:auto;
+  }
+  body[data-workspace-view="studio"] .inspector-backdrop.is-open{
+    display:block;position:fixed;z-index:81;inset:0;
+    background:rgba(17,29,52,.42);border:0;cursor:pointer;
+  }
+  .inspector-mobile-header{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    position:sticky;top:0;z-index:2;padding:16px 3px 12px;
+    margin:0 -2px 12px;background:#f7f9fd;border-bottom:1px solid #dce4ef;
+  }
+  .inspector-mobile-header strong{font-size:15px;letter-spacing:-.025em;color:#243855}
+  body[data-workspace-view="studio"] .inspector-card{margin-bottom:11px}
+}
+@media(max-width:920px) and (min-width:701px){
+  body[data-workspace-view="studio"] .app-layout{grid-template-columns:76px minmax(0,1fr)}
+}
+@media(max-width:700px){
+  body[data-workspace-view="studio"] .app-layout{display:block}
+  body[data-workspace-view="studio"] .topbar{min-height:53px;padding-inline:13px}
+  body[data-workspace-view="studio"] .main-view{padding:12px 10px 20px}
+  body[data-workspace-view="studio"] .studio-workspace-header{gap:9px;margin-bottom:10px}
+  body[data-workspace-view="studio"] .studio-heading .section-eyebrow{font-size:9px}
+  body[data-workspace-view="studio"] .studio-heading h1{font-size:20px;margin:3px 0}
+  body[data-workspace-view="studio"] .studio-heading p{font-size:10px}
+  body[data-workspace-view="studio"] .studio-head-actions{gap:5px}
+  body[data-workspace-view="studio"] .studio-head-actions .button{font-size:10px;padding:8px 9px}
+  body[data-workspace-view="studio"] .canvas-panel{
+    min-height:500px;height:max(520px,calc(100dvh - 245px));border-radius:12px;
+  }
+  body[data-workspace-view="studio"] .canvas-bar{padding:9px 10px;gap:8px;flex-wrap:wrap}
+  .canvas-context{display:flex;justify-content:space-between;align-items:center;width:100%;gap:10px}
+  .canvas-tools{width:100%;justify-content:space-between;gap:5px}
+  .canvas-tools .segmented button{padding:6px 7px;font-size:10px}
+  .studio-zoom button{padding:0 7px;min-height:30px}
+  .studio-zoom span{min-width:31px;font-size:10px}
+  .canvas-tool-button{font-size:10px;padding:6px 8px;min-height:32px}
+  body[data-workspace-view="studio"] .canvas-field{padding:10px;background-size:19px 19px}
+  body[data-workspace-view="studio"] .canvas-paper{border-radius:8px}
+  body[data-workspace-view="studio"] .canvas-foot{padding:9px 10px;font-size:9px}
+  body.studio-fullscreen .canvas-panel{inset:4px;border-radius:10px;height:calc(100dvh - 8px)}
+  body[data-workspace-view="studio"] .inspector{width:min(360px,100vw)}
+}
+@media(max-width:420px){
+  body[data-workspace-view="studio"] .studio-workspace-header{align-items:flex-start}
+  body[data-workspace-view="studio"] .studio-heading{flex-basis:100%}
+  body[data-workspace-view="studio"] .studio-head-actions{width:100%;justify-content:flex-end}
+  .canvas-context small{font-size:9px}
+  .canvas-tools{justify-content:flex-start}
+}
+body[data-app-theme="dark"][data-workspace-view="studio"]{
+  --studio-paper:#202b38;--studio-line:#344455;
+}
+body[data-app-theme="dark"][data-workspace-view="studio"] .canvas-bar,
+body[data-app-theme="dark"][data-workspace-view="studio"] .canvas-foot,
+body[data-app-theme="dark"][data-workspace-view="studio"] .inspector-card{background:#253343;border-color:#344455}
+body[data-app-theme="dark"][data-workspace-view="studio"] .canvas-field{background-color:#202b38}
+body[data-app-theme="dark"][data-workspace-view="studio"] .inspector-card h3,
+body[data-app-theme="dark"][data-workspace-view="studio"] .inspector-mobile-header strong{color:#e4eaf5}
+body[data-app-theme="dark"][data-workspace-view="studio"] .canvas-tool-button,
+body[data-app-theme="dark"][data-workspace-view="studio"] .studio-zoom{background:#28384a;color:#eef1fb;border-color:#41536a}
+@media(prefers-reduced-motion:reduce){
+  body[data-workspace-view="studio"] .inspector{transition:none}
+}
