@@ -455,5 +455,184 @@
       "protected": false,
       "displayName": "Warm Editorial"
     }
+  },
+  {
+    "profileId": "davylab-hirst-chromatic",
+    "name": "Hirst Chromatic · 赫斯特色彩实验室",
+    "description": "受达明安·赫斯特（Damien Hirst）波点、旋转绘画、盛樱与蝴蝶系列启发的原创数字色彩系统。色值为编辑性近似选色，不是对原作的逐像素取样，也非艺术家官方授权联名。",
+    "productType": "art-direction",
+    "status": "draft",
+    "version": "0.1.0",
+    "extends": "davylab-default",
+    "accent": "#F04C73",
+    "tokens": {
+      "color": {
+        "canvas": "#F7FAFF",
+        "surface": "#FFFFFF",
+        "text": "#17233A",
+        "muted": "#526175",
+        "border": "#DEE5EE",
+        "accent": "#F04C73",
+        "success": "#13877A",
+        "warning": "#AD6600",
+        "danger": "#B72852"
+      },
+      "typography": {
+        "fontFamily": "Manrope, -apple-system, BlinkMacSystemFont, Noto Sans SC, sans-serif",
+        "bodySize": "14px",
+        "lineHeight": 1.55
+      },
+      "radius": {
+        "sm": "8px",
+        "md": "14px",
+        "lg": "20px"
+      },
+      "motion": {
+        "spinDuration": "18s",
+        "reducedMotion": "static",
+        "hoverDuration": "180ms"
+      },
+      "composition": {
+        "colorAllocation": "70% neutral / 20% structured color / 10% accent",
+        "maxHighSaturationColorsPerPanel": 3,
+        "avoidBeige": true
+      }
+    },
+    "artPalette": {
+      "default": "spots",
+      "sampled": false,
+      "provenance": "editorially interpreted from linked artworks; not pixel sampled",
+      "variants": [
+        {
+          "id": "spots",
+          "name": "理性色点",
+          "nameEn": "Spot System",
+          "work": "《氯化金》(2016)",
+          "accent": "#E94676",
+          "canvas": "#F7FAFF",
+          "ink": "#17233A",
+          "colors": [
+            "#E94676",
+            "#0D9CBA",
+            "#F2C94C",
+            "#704FCC",
+            "#26A889",
+            "#F07832"
+          ],
+          "rule": "等直径波点、严格网格、均匀间距，大片白底让颜色主导信息焦点。"
+        },
+        {
+          "id": "spin",
+          "name": "旋转能量",
+          "nameEn": "Spin Motion",
+          "work": "旋转绘画系列，文中1999年作品",
+          "accent": "#F04C73",
+          "canvas": "#F8FBFF",
+          "ink": "#1B2E43",
+          "colors": [
+            "#F04C73",
+            "#16B9BB",
+            "#FFD542",
+            "#3868F4",
+            "#19A66C",
+            "#844BE6"
+          ],
+          "rule": "色彩由中心向四周放射，背景克制，动效只在展示画布中使用。"
+        },
+        {
+          "id": "blossom",
+          "name": "盛樱叠彩",
+          "nameEn": "Cherry Blossom",
+          "work": "《新到之花》(2019)及盛樱系列",
+          "accent": "#E95988",
+          "canvas": "#F5FAFF",
+          "ink": "#20324C",
+          "colors": [
+            "#74C9EC",
+            "#F2A2CB",
+            "#E95988",
+            "#F8F8FC",
+            "#5F9C7A",
+            "#233C58"
+          ],
+          "rule": "天空蓝衬底、粉白花色分层点绘，主信息区保持可读的实体底色。"
+        },
+        {
+          "id": "butterfly",
+          "name": "蝶翼万花筒",
+          "nameEn": "Butterfly Mosaic",
+          "work": "《默观上帝的无限权能与荣耀》(2008)及女皇绘画系列",
+          "accent": "#B83A79",
+          "canvas": "#FCFCFF",
+          "ink": "#202343",
+          "colors": [
+            "#B83A79",
+            "#336DD5",
+            "#E2B94E",
+            "#25998F",
+            "#7B4EC4",
+            "#E96157"
+          ],
+          "rule": "中心轴对称或放射对称，宝石感多色点缀；不重绘真实蝶翼拼贴作品。"
+        }
+      ]
+    },
+    "rules": [
+      "以高饱和多色作为视觉语言，不以彩虹渐变覆盖整张应用界面；默认70%中性色、20%有序多色、10%强调色。",
+      "Spot：色点统一尺寸和间距，颜色顺序可变化，排布必须严格对齐；色点不承担唯一的状态语义。",
+      "Spin：仅在封面、作品预览、可控装饰区域使用放射和轻运动，提供暂停以及 prefers-reduced-motion 降级。",
+      "Blossom：叠彩和画笔触感只用于插画背景，不侵入按钮、正文和数据可视化的可读区域。",
+      "Butterfly：采用中心对称、万花筒式节奏和局部高彩点缀；只引用抽象视觉语法，不复制艺术家的原作品。",
+      "亮色必须与深色文字或白色实体容器协作；正文对比度至少4.5:1、控件至少3:1，信息不能只靠颜色表达。",
+      "移动端保持几何居中、视觉安全区和手势可达性；每个卡片最多三种高饱和主色，避免视觉噪声。",
+      "保留原文、作品与版权归属；色卡为启发式配色研究，不代表原作精准取色或获得艺术家授权。"
+    ],
+    "source": {
+      "kind": "museum-exhibition-editorial",
+      "evidence": "浦东美术馆MAP，2026-11-16，达明安·赫斯特中国首展作品文章 https://mp.weixin.qq.com/s/x8IuIuB3cnswzSF3LdADcg；辅以 HENI 艺术家与作品资料 https://heni.com/artists/damien-hirst 。对原作进行视觉研究，未复制作品图像。",
+      "verifiedAt": "2026-11-17"
+    },
+    "evidenceStatus": "reviewed",
+    "presentation": {
+      "id": "hirst-chromatic",
+      "category": "marketing",
+      "type": "艺术配色风格",
+      "style": "高饱和 · 几何秩序 · 动态流动",
+      "use": "设计品牌视觉、艺术内容页、创意实验室、专题封面、视觉化应用",
+      "device": "desktop",
+      "layout": "克制内容区 + 多色艺术展示区 + 清晰的交互操作 + 色板预览",
+      "interaction": "4种子风格切换、实时色板、桌面/手机预览、导出Token与设计指令",
+      "limitations": "不建议将高彩装饰直接用于密集数据表或关键表单；版权原作图像不能无授权用于商用产品素材。",
+      "principles": [
+        "四色系子风格",
+        "秩序与偶然的对比",
+        "背景克制、色彩大胆"
+      ],
+      "tags": [
+        "当代艺术",
+        "高饱和色彩",
+        "艺术配色",
+        "创意品牌",
+        "几何波点",
+        "动态设计",
+        "粒子动效",
+        "沉浸式"
+      ],
+      "aliases": [
+        "赫斯特",
+        "Damien Hirst",
+        "Hirst",
+        "spot painting",
+        "spin painting",
+        "cherry blossoms",
+        "butterfly",
+        "波点",
+        "旋转绘画",
+        "盛樱"
+      ],
+      "mobileFit": "视觉画布适配375/390/430px，禁用小屏危险溢出和强制自动旋转",
+      "protected": false,
+      "displayName": "Hirst Chromatic"
+    }
   }
 ]
