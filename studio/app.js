@@ -99,6 +99,9 @@ const state = {
   currentId:typeof stored.currentId==='string'?stored.currentId:null,
   view:Object.hasOwn(viewNames,location.hash.slice(1))?location.hash.slice(1):'home',
   mode:'preview',
+  previewZoom:100,
+  inspectorOpen:false,
+  fullPreview:false,
   filter:'',
   skillType:'all',
   skillId:registry[0]?.id||null,
@@ -143,6 +146,7 @@ function updateProject(field,value){
 function go(view){
   if(!Object.hasOwn(viewNames,view))return;
   state.view=view;state.filter='';state.skillType='all';state.componentCategory='all';
+  state.fullPreview=false;state.inspectorOpen=false;
   location.hash=view==='home'?'':view;
   document.querySelectorAll('[data-nav]').forEach(b=>{
     const active=b.dataset.nav===view;b.classList.toggle('is-active',active);
@@ -218,18 +222,25 @@ function renderStudio(){
   const hirstVariant=hirstActive?getHirstVariant(profile,p.chromaticVariant):null;
   const colorChoices=(hirstVariant?.colors||['#20364e','#52745d','#b56e47','#527985','#8d765d']).map(hex=>
     '<button class="swatch '+(p.accent.toLowerCase()===hex?'is-active':'')+'" type="button" data-action="color" data-color="'+hex+'" style="background:'+hex+'" aria-label="强调色 '+hex+'"></button>').join('');
-  const header=sectionHeader('让灵感成为真实的设计方向','所见即所得的规则预览。所有编辑仅保存在当前浏览器，不会修改其他项目。',
-    '<div class="studio-head-actions"><button class="button button-plain" data-action="snapshot">保存快照</button><button class="button button-dark" data-action="export-json">交付设计资产 ↗</button></div>');
-  const preview='<section class="canvas-panel"><div class="canvas-bar"><div><b>LIVE CANVAS <span class="badge badge-green">示例预览</span></b><small id="deviceStatus">'+(p.device==='phone'?'375px · Phone preview':'Responsive · Desktop preview')+'</small></div><div class="segmented"><button type="button" data-action="mode" data-mode="preview" class="'+(state.mode==='preview'?'is-active':'')+'">预览</button><button type="button" data-action="mode" data-mode="rules" class="'+(state.mode==='rules'?'is-active':'')+'">规范</button></div><div class="segmented"><button type="button" data-action="device" data-device="desktop" class="'+(p.device==='desktop'?'is-active':'')+'">桌面</button><button type="button" data-action="device" data-device="phone" class="'+(p.device==='phone'?'is-active':'')+'">手机</button></div></div>'+
-    (state.mode==='preview'?'<div class="canvas-field"><div id="canvasPaper" class="canvas-paper '+(p.device==='phone'?'is-phone':'')+'">'+mockCanvas(p)+'</div></div>':'<div class="canvas-field">'+profileRules(p)+'</div>')+
-    '<div class="canvas-foot"><span>规则驱动的演示页面 · 非目标应用实际截图</span><span>By DAVYLAB</span></div></section>';
+  const header='<div class="studio-workspace-header"><div class="studio-heading"><span class="section-eyebrow">DAVYLAB / DESIGN STUDIO</span><h1>设计工作台</h1><p>选择风格、编辑参数，实时对比桌面与手机效果。</p></div>'+
+    '<div class="studio-head-actions"><button class="button button-plain" data-action="snapshot">保存快照</button><button class="button button-dark" data-action="export-json">交付设计资产 ↗</button></div></div>';
+  const toolbar='<div class="canvas-bar"><div class="canvas-context"><b>LIVE CANVAS <span class="badge badge-green">示例预览</span></b><small id="deviceStatus">'+(p.device==='phone'?'375px · Phone preview':'Responsive · Desktop preview')+'</small></div>'+
+    '<div class="canvas-tools" role="toolbar" aria-label="画布控制">'+
+    '<div class="segmented" aria-label="预览和规范"><button type="button" data-action="mode" data-mode="preview" class="'+(state.mode==='preview'?'is-active':'')+'" aria-pressed="'+(state.mode==='preview')+'">预览</button><button type="button" data-action="mode" data-mode="rules" class="'+(state.mode==='rules'?'is-active':'')+'" aria-pressed="'+(state.mode==='rules')+'">规范</button></div>'+
+    '<div class="segmented" aria-label="设备预览"><button type="button" data-action="device" data-device="desktop" class="'+(p.device==='desktop'?'is-active':'')+'" aria-pressed="'+(p.device==='desktop')+'">桌面</button><button type="button" data-action="device" data-device="phone" class="'+(p.device==='phone'?'is-active':'')+'" aria-pressed="'+(p.device==='phone')+'">手机</button></div>'+
+    '<div class="studio-zoom" role="group" aria-label="画布缩放"><button type="button" data-action="canvas-zoom" data-zoom="out" aria-label="缩小预览" '+(state.previewZoom<=70?'disabled':'')+'>−</button><span id="canvasZoomValue" aria-live="polite">'+state.previewZoom+'%</span><button type="button" data-action="canvas-zoom" data-zoom="in" aria-label="放大预览" '+(state.previewZoom>=140?'disabled':'')+'>+</button><button type="button" data-action="canvas-fit" aria-label="适应窗口">适应</button></div>'+
+    '<button type="button" class="canvas-tool-button" data-action="toggle-fullscreen" aria-pressed="'+state.fullPreview+'">'+(state.fullPreview?'退出全屏':'全屏')+'</button>'+
+    '<button type="button" class="canvas-tool-button studio-inspector-toggle" data-action="toggle-inspector" aria-controls="inspectorPanel" aria-expanded="'+state.inspectorOpen+'">调整参数</button></div></div>';
+  const preview='<section class="canvas-panel" aria-label="实时设计画布">'+toolbar+
+    (state.mode==='preview'?'<div class="canvas-field"><div id="canvasPaper" class="canvas-paper '+(p.device==='phone'?'is-phone':'')+'" style="--preview-zoom:'+(state.previewZoom/100).toFixed(2)+'">'+mockCanvas(p)+'</div></div>':'<div class="canvas-field">'+profileRules(p)+'</div>')+
+    '<div class="canvas-foot"><span>规则驱动的示例画布 · 非产品正式截图</span><span>By DAVYLAB</span></div></section>';
   const candidates=registry.filter(r=>r.type==='skill')
     .map(r=>({resource:r,score:skillScore(r,p.goal+' '+p.name)}))
     .sort((a,b)=>b.score-a.score).slice(0,3);
   const skillControls='<section class="inspector-card"><h3>能力组合 <span>04 / SKILLS</span></h3><p class="inspector-note" style="margin:0 0 12px">基于项目意图的本地关键词推荐；勾选后纳入 Agent 交付指令，不会自动运行外部 Skill。</p>'+
     candidates.map(({resource:r,score})=>'<button type="button" class="profile-option '+(p.skills.includes(r.id)?'is-active':'')+'" style="width:100%;margin-bottom:7px" data-action="toggle-skill" data-skill="'+safe(r.id)+'"><span><strong>'+safe(r.name)+'</strong><br><small>'+(score>0?'与项目描述相关':'公开能力资源')+'</small></span><span>'+(p.skills.includes(r.id)?'✓':'+')+'</span></button>').join('')+
     '<p class="inspector-note">已关联 '+p.skills.length+' 项能力 · 仅引用经过登记的公开元数据</p></section>';
-  const inspector='<aside class="inspector" aria-label="设计属性面板" tabindex="0"><section class="inspector-card"><h3>当前项目 <span>01 / BRIEF</span></h3><label class="control-label" for="projectNameInput">项目名称</label><input class="control-input" data-field="name" id="projectNameInput" maxlength="70" value="'+safe(p.name)+'"><div class="control-group"><label class="control-label" for="projectGoalInput">设计意图</label><textarea class="control-textarea" data-field="goal" id="projectGoalInput" maxlength="900" placeholder="产品目标、受众或使用场景">'+safe(p.goal)+'</textarea></div></section>'+
+  const inspector='<aside id="inspectorPanel" class="inspector '+(state.inspectorOpen?'is-open':'')+'" aria-label="设计属性面板" tabindex="0"><div class="inspector-mobile-header"><strong>设计参数</strong><button type="button" class="button button-plain button-small" data-action="toggle-inspector">关闭</button></div><section class="inspector-card"><h3>当前项目 <span>01 / BRIEF</span></h3><label class="control-label" for="projectNameInput">项目名称</label><input class="control-input" data-field="name" id="projectNameInput" maxlength="70" value="'+safe(p.name)+'"><div class="control-group"><label class="control-label" for="projectGoalInput">设计意图</label><textarea class="control-textarea" data-field="goal" id="projectGoalInput" maxlength="900" placeholder="产品目标、受众或使用场景">'+safe(p.goal)+'</textarea></div></section>'+
     '<section class="inspector-card"><h3>设计方向 <span>02 / FOUNDATION</span></h3><div class="profile-select">'+profileButtons+'</div><p class="inspector-note">所有预设来自真实设计档案；受保护的 Dashboard Studio 仅供只读审计。</p></section>'+
     '<section class="inspector-card"><h3>视觉语言 <span>03 / STYLE</span></h3>'+(hirstActive?renderHirstVariantButtons(p,profile,safe):'')+'<span class="control-label">强调色</span><div class="swatch-row">'+colorChoices+'<input type="color" class="color-picker" data-field="accent" value="'+safe(p.accent)+'" aria-label="自定义强调色"></div>'+
     '<div class="control-group"><label class="control-label" for="canvasColor">画布底色</label><input id="canvasColor" class="color-picker" type="color" data-field="canvas" value="'+safe(p.canvas)+'"></div>'+
@@ -237,7 +248,7 @@ function renderStudio(){
     '<div class="control-group"><label class="control-label" for="densityRange">间距 <span class="range-value">'+p.density+'px</span></label><input id="densityRange" class="control-range" type="range" data-field="density" min="8" max="28" step="1" value="'+p.density+'"></div></section>'+
     skillControls+
     '<section class="inspector-card inspector-actions"><h3>下一步 <span>05 / DELIVER</span></h3><button class="button button-dark" data-action="export-json">导出设计方案 JSON ↗</button><button class="button button-plain" data-action="export-css">导出 CSS Tokens</button><button class="button button-plain" data-action="export-agent">生成 Agent 实施指令</button><button class="button button-ghost" data-action="skills">为项目添加 Skill</button><p class="inspector-note">导出的是设计数据与实施指令，不代表 Agent 已执行、代码已上线或设计已审核。</p></section></aside>';
-  return header+'<div class="studio-layout">'+preview+inspector+'</div>';
+  return header+'<div class="studio-layout">'+preview+'<button type="button" class="inspector-backdrop '+(state.inspectorOpen?'is-open':'')+'" data-action="toggle-inspector" aria-label="关闭设计参数面板" tabindex="-1"></button>'+inspector+'</div>';
 }
 function renderComponents(){
   const demos=[
@@ -314,6 +325,8 @@ function renderSettings(){
     '<section class="settings-section"><span class="section-eyebrow">04 / ABOUT</span><h3 style="margin-top:14px">DesignOS 3.0</h3><p>以设计资产交付为导向的本地优先工作台。真实工程实施须结合目标仓库与组件兼容性完成验收。</p><div class="notice-panel">Design with intent. Build with evidence.<br>By DAVYLAB · 把想法，做成能用的工具。</div></section></div>';
 }
 function render(){
+  document.body.dataset.workspaceView=state.view;
+  document.body.classList.toggle('studio-fullscreen',state.view==='studio' && state.fullPreview);
   const v=$('#view');
   v.innerHTML=state.view==='home'?renderHome():
     state.view==='studio'?renderStudio():
@@ -435,6 +448,14 @@ function bindApp(){
         p.chromaticVariant=variant.id;p.accent=variant.accent;p.canvas=variant.canvas;p.ink=variant.ink;
         p.updatedAt=new Date().toISOString();persist();render();break;
       }
+      case 'canvas-zoom':{
+        const delta=target.dataset.zoom==='in'?10:-10;
+        state.previewZoom=Math.max(70,Math.min(140,state.previewZoom+delta));
+        render();break;
+      }
+      case 'canvas-fit':state.previewZoom=100;render();break;
+      case 'toggle-fullscreen':state.fullPreview=!state.fullPreview;render();break;
+      case 'toggle-inspector':state.inspectorOpen=!state.inspectorOpen;render();if(state.inspectorOpen)$('#inspectorPanel')?.focus();break;
       case 'mode':state.mode=target.dataset.mode==='rules'?'rules':'preview';render();break;
       case 'device':ensureProject().device=target.dataset.device==='phone'?'phone':'desktop';persist();render();break;
       case 'color':updateProject('accent',target.dataset.color);render();break;
@@ -509,6 +530,8 @@ function bindApp(){
     if(event.target.id==='workspaceImportFile'){importWorkspace(event.target.files?.[0]);event.target.value='';}
   });
   document.addEventListener('keydown',event=>{
+    if(event.key==='Escape'&&state.inspectorOpen){state.inspectorOpen=false;render();return;}
+    if(event.key==='Escape'&&state.fullPreview){state.fullPreview=false;render();return;}
     if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='s'){
       event.preventDefault();if(state.view==='studio')snapshot();else exportWorkspace();
     }
