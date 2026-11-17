@@ -3,6 +3,8 @@ import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
 import { readFile } from 'node:fs/promises';
 
+const expectedProfileCount = JSON.parse(await readFile(resolve('profiles/index.json'), 'utf8')).length;
+
 const appUrl = process.env.BASE_URL ? new URL('./classic/', process.env.BASE_URL).href : pathToFileURL(resolve('dist/classic/index.html')).href;
 
 test('desktop: search, select, preview, compare and generate an agent prompt', async ({ page }) => {
@@ -10,7 +12,7 @@ test('desktop: search, select, preview, compare and generate an agent prompt', a
   page.on('pageerror', error => errors.push(error.message));
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(appUrl);
-  await expect(page.locator('#cards .profile')).toHaveCount(5);
+  await expect(page.locator('#cards .profile')).toHaveCount(expectedProfileCount);
   await page.locator('#intentInput').fill('高级、有科技感、适合手机的 AI 数据看板');
   await page.locator('#matchIntent').click();
   await expect(page.locator('#matchSummary')).toContainText('Analytics Dashboard');
@@ -25,7 +27,7 @@ test('mobile: layout fits viewport and keyboard focus hides fixed action dock', 
   page.on('pageerror', error => errors.push(error.message));
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(appUrl);
-  await expect(page.locator('#cards .profile')).toHaveCount(5);
+  await expect(page.locator('#cards .profile')).toHaveCount(expectedProfileCount);
   const widths = await page.evaluate(() => ({ body: document.body.scrollWidth, viewport: document.documentElement.clientWidth }));
   expect(widths.body).toBeLessThanOrEqual(widths.viewport + 1);
   await page.locator('#intentInput').focus();
@@ -39,13 +41,13 @@ test('JSON export preview contains canonical profile identifiers and version', a
   await page.locator('#exportAll').click();
   const json = await page.locator('#jsonPreview').textContent();
   const parsed = JSON.parse(json);
-  expect(parsed.profiles.length).toBe(5);
+  expect(parsed.profiles.length).toBe(expectedProfileCount);
   expect(parsed.profiles.some(profile => profile.profileId === 'davylab-warm-editorial')).toBeTruthy();
   expect(parsed.profiles.every(profile => Boolean(profile.version))).toBeTruthy();
   const [download] = await Promise.all([page.waitForEvent('download'), page.locator('#confirmDownload').click()]);
   const filePath = await download.path();
   const downloaded = JSON.parse(await readFile(filePath, 'utf8'));
-  expect(downloaded.profiles.length).toBe(5);
+  expect(downloaded.profiles.length).toBe(expectedProfileCount);
   expect(downloaded.profiles.some(profile => profile.profileId === 'davylab-warm-editorial')).toBeTruthy();
 });
 
