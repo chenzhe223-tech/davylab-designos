@@ -464,7 +464,7 @@
     "status": "draft",
     "version": "0.1.0",
     "extends": "davylab-default",
-    "accent": "#F04C73",
+    "accent": "#E94676",
     "tokens": {
       "color": {
         "canvas": "#F7FAFF",
@@ -472,7 +472,7 @@
         "text": "#17233A",
         "muted": "#526175",
         "border": "#DEE5EE",
-        "accent": "#F04C73",
+        "accent": "#E94676",
         "success": "#13877A",
         "warning": "#AD6600",
         "danger": "#B72852"
