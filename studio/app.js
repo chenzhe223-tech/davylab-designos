@@ -1,4 +1,5 @@
 /* DAVYLAB DesignOS 3.0 — dependency-free, browser-local productive design workspace. */
+import { getHirstVariant, renderHirstCanvas, renderHirstVariantButtons } from './hirst-chromatic.js';
 const boot = JSON.parse(document.querySelector('#bootstrap').textContent);
 const profiles = Array.isArray(boot.profiles) ? boot.profiles : [];
 const registry = Array.isArray(boot.resources) ? boot.resources : [];
@@ -65,7 +66,7 @@ const dateText = value => {try {return new Date(value).toLocaleDateString('zh-CN
 const randomId = () => 'd-' + (globalThis.crypto?.randomUUID?.() || String(Date.now())+'-'+Math.random().toString(36).slice(2));
 const starter = {
   name:'未命名设计',goal:'',profileId:selectable[0]?.id||'balanced-saas',
-  accent:'#557761',canvas:'#f7f7f3',ink:'#1e2922',radius:16,density:15,device:'desktop',skills:[]
+  accent:'#557761',canvas:'#f7f7f3',ink:'#1e2922',radius:16,density:15,device:'desktop',chromaticVariant:'spots',skills:[]
 };
 const loadJson = (key,fallback) => {try {return JSON.parse(localStorage.getItem(key)) ?? fallback;}catch {return fallback;}};
 const validHex = value => typeof value === 'string' && /^#[0-9a-fA-F]{6}$/.test(value);
@@ -83,6 +84,7 @@ const normalize = raw => {
     radius:Number.isFinite(raw.radius)?Math.max(2,Math.min(32,raw.radius)):16,
     density:Number.isFinite(raw.density)?Math.max(8,Math.min(28,raw.density)):15,
     device:raw.device==='phone'?'phone':'desktop',
+    chromaticVariant:['spots','spin','blossom','butterfly'].includes(raw.chromaticVariant)?raw.chromaticVariant:'spots',
     skills:Array.isArray(raw.skills)?raw.skills.filter(id=>validResourceIds.has(id)).slice(0,25):[],
     createdAt:Number.isFinite(Date.parse(raw.createdAt))?raw.createdAt:new Date().toISOString(),
     updatedAt:Number.isFinite(Date.parse(raw.updatedAt))?raw.updatedAt:new Date().toISOString()
@@ -174,6 +176,7 @@ function renderHome(){
 function mockCanvas(p){
   const name=safe(p.name.trim()||'你的产品');
   const profile=byId(p.profileId);
+  if(profile?.id==='hirst-chromatic')return renderHirstCanvas(p,profile,safe);
   const isEditorial=profile?.id==='warm-editorial';
   const isAnalytics=profile?.id==='analytics-dashboard';
   const variant=isEditorial?'editorial':isAnalytics?'analytics':'product';
@@ -211,7 +214,9 @@ function profileRules(p){
 function renderStudio(){
   const p=ensureProject();const profile=byId(p.profileId);
   const profileButtons=selectable.map(x=>profileButton(x,p)).join('');
-  const colorChoices=['#20364e','#52745d','#b56e47','#527985','#8d765d'].map(hex=>
+  const hirstActive=profile?.id==='hirst-chromatic';
+  const hirstVariant=hirstActive?getHirstVariant(profile,p.chromaticVariant):null;
+  const colorChoices=(hirstVariant?.colors||['#20364e','#52745d','#b56e47','#527985','#8d765d']).map(hex=>
     '<button class="swatch '+(p.accent.toLowerCase()===hex?'is-active':'')+'" type="button" data-action="color" data-color="'+hex+'" style="background:'+hex+'" aria-label="强调色 '+hex+'"></button>').join('');
   const header=sectionHeader('让灵感成为真实的设计方向','所见即所得的规则预览。所有编辑仅保存在当前浏览器，不会修改其他项目。',
     '<div class="studio-head-actions"><button class="button button-plain" data-action="snapshot">保存快照</button><button class="button button-dark" data-action="export-json">交付设计资产 ↗</button></div>');
@@ -226,7 +231,7 @@ function renderStudio(){
     '<p class="inspector-note">已关联 '+p.skills.length+' 项能力 · 仅引用经过登记的公开元数据</p></section>';
   const inspector='<aside class="inspector" aria-label="设计属性面板" tabindex="0"><section class="inspector-card"><h3>当前项目 <span>01 / BRIEF</span></h3><label class="control-label" for="projectNameInput">项目名称</label><input class="control-input" data-field="name" id="projectNameInput" maxlength="70" value="'+safe(p.name)+'"><div class="control-group"><label class="control-label" for="projectGoalInput">设计意图</label><textarea class="control-textarea" data-field="goal" id="projectGoalInput" maxlength="900" placeholder="产品目标、受众或使用场景">'+safe(p.goal)+'</textarea></div></section>'+
     '<section class="inspector-card"><h3>设计方向 <span>02 / FOUNDATION</span></h3><div class="profile-select">'+profileButtons+'</div><p class="inspector-note">所有预设来自真实设计档案；受保护的 Dashboard Studio 仅供只读审计。</p></section>'+
-    '<section class="inspector-card"><h3>视觉语言 <span>03 / STYLE</span></h3><span class="control-label">强调色</span><div class="swatch-row">'+colorChoices+'<input type="color" class="color-picker" data-field="accent" value="'+safe(p.accent)+'" aria-label="自定义强调色"></div>'+
+    '<section class="inspector-card"><h3>视觉语言 <span>03 / STYLE</span></h3>'+(hirstActive?renderHirstVariantButtons(p,profile,safe):'')+'<span class="control-label">强调色</span><div class="swatch-row">'+colorChoices+'<input type="color" class="color-picker" data-field="accent" value="'+safe(p.accent)+'" aria-label="自定义强调色"></div>'+
     '<div class="control-group"><label class="control-label" for="canvasColor">画布底色</label><input id="canvasColor" class="color-picker" type="color" data-field="canvas" value="'+safe(p.canvas)+'"></div>'+
     '<div class="control-group"><label class="control-label" for="radiusRange">圆角 <span class="range-value">'+p.radius+'px</span></label><input id="radiusRange" class="control-range" type="range" data-field="radius" min="2" max="32" step="1" value="'+p.radius+'"></div>'+
     '<div class="control-group"><label class="control-label" for="densityRange">间距 <span class="range-value">'+p.density+'px</span></label><input id="densityRange" class="control-range" type="range" data-field="density" min="8" max="28" step="1" value="'+p.density+'"></div></section>'+
@@ -334,6 +339,7 @@ function projectOutput(){
     schemaVersion:'3.0.0',product:'DAVYLAB DesignOS',exportedAt:new Date().toISOString(),
     project:{...p,skills:p.skills.filter(x=>validResourceIds.has(x))},
     design:{selectedProfile:profile?{profileId:profile.profileId,name:profile.name,version:profile.version,evidenceStatus:profile.evidenceStatus,rules:profile.rules,protected:Boolean(profile.protected)}:null,
+      artDirection:profile?.artPalette?{variant:getHirstVariant(profile,p.chromaticVariant),source:profile.source,sourceStatus:profile.artPalette.provenance,officialCollaboration:false}:null,
       tokens:{accent:p.accent,canvas:p.canvas,text:p.ink,radiusPx:p.radius,spacingPx:p.density}},
     skillReferences:p.skills.map(id=>registry.find(r=>r.id===id)).filter(Boolean).map(r=>({id:r.id,name:r.name,source:r.source,guardrails:r.guardrails})),
     delivery:{agentExecutionPerformed:false,productionDeployed:false,previewKind:'illustrative-rule-driven'}
@@ -347,7 +353,7 @@ function exportProject(type){
     const css='/* DAVYLAB DesignOS 3.0 — project tokens */\n:root {\n'+[
       ['--davy-accent',t.accent],['--davy-canvas',t.canvas],['--davy-ink',t.text],
       ['--davy-radius',t.radiusPx+'px'],['--davy-spacing',t.spacingPx+'px']
-    ].map(([key,value])=>'  '+key+': '+value+';').join('\n')+'\n}\n';
+    ].concat((pkg.design.artDirection?.variant?.colors||[]).map((hex,i)=>['--davy-chromatic-'+(i+1),hex])).map(([key,value])=>'  '+key+': '+value+';').join('\n')+'\n}\n';
     blobDownload(name+'-tokens.css',css,'text/css');
   }else{
     const p=pkg.project,profile=pkg.design.selectedProfile;
@@ -355,6 +361,7 @@ function exportProject(type){
       'Agent: '+state.preferences.agent+'\nProject: '+p.name+'\nGoal: '+(p.goal||'Not specified')+'\n\n'+
       '## Selected design direction\n'+profile.name+' ('+profile.profileId+')\nEvidence status: '+profile.evidenceStatus+'\n\n'+
       '## Visual tokens\n'+JSON.stringify(pkg.design.tokens,null,2)+'\n\n'+
+      (pkg.design.artDirection?'## Art palette and provenance\n'+JSON.stringify(pkg.design.artDirection,null,2)+'\n\n':'')+
       '## Rules\n'+(profile.rules||[]).map(x=>'- '+x).join('\n')+'\n\n'+
       '## Relevant skill references\n'+(pkg.skillReferences.map(x=>'- '+x.name+' — '+(x.guardrails||[]).join('; ')).join('\n')||'- None')+'\n\n'+
       '## Execution and acceptance\n1. Confirm target repository and component compatibility before coding.\n2. Implement real interactive UI and responsive layouts.\n3. Test mobile widths 375/390/430px, keyboard navigation and contrast.\n4. Run build, runtime checks and actual user-flow tests.\n5. Deploy only after approval and report verifiable URL and commit.\n\n'+
@@ -414,9 +421,18 @@ function bindApp(){
         const p=ensureProject(),profile=byId(profileId);
         if(profile.protected){toast('此档案为只读审计，不能用于覆盖现有项目');break;}
         p.profileId=profile.id;
+        if(profile.id==='hirst-chromatic')p.chromaticVariant='spots';
         if(validHex(profile.palette?.[2]))p.accent=profile.palette[2];
         if(validHex(profile.palette?.[0]))p.canvas=profile.palette[0];
         if(validHex(profile.palette?.[1]))p.ink=profile.palette[1];
+        p.updatedAt=new Date().toISOString();persist();render();break;
+      }
+      case 'hirst-variant':{
+        const p=ensureProject(),profile=byId(p.profileId);
+        if(profile?.id!=='hirst-chromatic')break;
+        const variant=profile.artPalette?.variants?.find(v=>v.id===target.dataset.variant);
+        if(!variant)break;
+        p.chromaticVariant=variant.id;p.accent=variant.accent;p.canvas=variant.canvas;p.ink=variant.ink;
         p.updatedAt=new Date().toISOString();persist();render();break;
       }
       case 'mode':state.mode=target.dataset.mode==='rules'?'rules':'preview';render();break;
@@ -445,14 +461,14 @@ function bindApp(){
       case 'duplicate':{
         const original=state.projects.find(p=>p.id===id);if(!original)break;
         const p=makeProject(original.name+' · 副本',original.goal,original.profileId);
-        Object.assign(p,{accent:original.accent,canvas:original.canvas,ink:original.ink,radius:original.radius,density:original.density,skills:[...original.skills]});
+        Object.assign(p,{accent:original.accent,canvas:original.canvas,ink:original.ink,radius:original.radius,density:original.density,chromaticVariant:original.chromaticVariant,skills:[...original.skills]});
         persist();go('studio');break;
       }
       case 'restore-snapshot':{
         const snap=state.snapshots.find(s=>s.id===id);if(!snap)return;
         const original=normalize(snap.project);if(!original)return;
         const p=makeProject(original.name+' · 恢复版',original.goal,original.profileId);
-        Object.assign(p,{accent:original.accent,canvas:original.canvas,ink:original.ink,radius:original.radius,density:original.density,skills:[...original.skills]});
+        Object.assign(p,{accent:original.accent,canvas:original.canvas,ink:original.ink,radius:original.radius,density:original.density,chromaticVariant:original.chromaticVariant,skills:[...original.skills]});
         persist();go('studio');break;
       }
       case 'delete-snapshot':

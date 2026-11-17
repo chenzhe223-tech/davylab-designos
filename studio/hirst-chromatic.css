@@ -1,0 +1,40 @@
+/* Art-direction study by DAVYLAB. Decorative graphics are original CSS/SVG, not Hirst artworks. */
+.mock-hirst{width:100%;min-height:490px;background:var(--sample-paper);color:var(--sample-ink);border-radius:var(--sample-radius);overflow:hidden;box-shadow:0 18px 45px rgba(18,36,68,.07);font-family:Manrope,-apple-system,BlinkMacSystemFont,"Noto Sans SC",sans-serif}
+.hirst-header{height:67px;display:flex;align-items:center;gap:20px;padding:0 clamp(20px,3vw,40px);border-bottom:1px solid #dfe5ee}
+.hirst-header strong{font-size:21px;letter-spacing:-.075em}.hirst-header strong span{color:var(--sample-accent)}
+.hirst-header nav{display:flex;gap:24px;margin-left:auto;font-size:11px;color:#637084;font-weight:700}.hirst-header-signature{font-size:9px;letter-spacing:.12em;font-weight:900;color:#64718a;border:1px solid #dce3ec;border-radius:99px;padding:6px 10px}
+.hirst-content{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);min-height:367px}
+.hirst-copy{display:flex;flex-direction:column;align-items:flex-start;padding:clamp(28px,4vw,56px) 25px clamp(23px,3vw,35px) clamp(22px,4vw,55px)}
+.hirst-eyebrow{font-size:10px;letter-spacing:.18em;font-weight:900;color:var(--sample-accent)}
+.hirst-copy h2{font-size:clamp(34px,4vw,58px);line-height:1.09;letter-spacing:-.072em;margin:16px 0 17px;font-weight:900}
+.hirst-copy h2 em{font-style:normal;color:var(--sample-accent)}
+.hirst-copy p{font-size:12px;line-height:1.9;max-width:290px;margin:0;color:#586477}
+.hirst-tags{display:flex;gap:7px;margin:19px 0 23px}.hirst-tags span{font-size:10px;padding:6px 11px;border-radius:40px;color:#566275;background:white;border:1px solid #dde4ed;font-weight:700}
+.hirst-palette-strip{display:flex;width:100%;max-width:260px;gap:5px;height:21px}.hirst-palette-strip span{min-width:0;flex:1;border-radius:4px}
+.hirst-work-ref{font-size:9px;color:#7a8799;margin-top:12px;line-height:1.7}
+.hirst-art-frame{margin:22px 26px 21px 0;position:relative;min-width:0;overflow:hidden;border-radius:11px;background:white;box-shadow:0 12px 32px rgba(26,36,62,.11);isolation:isolate}
+.hirst-artwork{position:absolute;inset:0;overflow:hidden}
+.hirst-art-spots{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));grid-template-rows:repeat(6,minmax(0,1fr));align-items:center;justify-items:center;gap:4px 5px;padding:22px 22px 76px;background:#fff}
+.hirst-art-spots i{display:block;width:min(64%,26px);aspect-ratio:1;border-radius:50%}
+.hirst-art-spin{background:radial-gradient(circle at center,#fcfdff 0 13%,transparent 14%),#fbfcff;display:grid;place-items:center}
+.hirst-spin-disc{width:128%;aspect-ratio:1;border-radius:50%;background:conic-gradient(from 18deg,var(--hirst-c1),var(--hirst-c3) 13%,var(--hirst-c2) 22%,#ffffff 29%,var(--hirst-c4) 42%,var(--hirst-c5) 52%,var(--hirst-c1) 65%,var(--hirst-c6) 74%,#ffffff 81%,var(--hirst-c3) 92%,var(--hirst-c1));filter:saturate(1.15);animation:hirst-spin 18s linear infinite}
+.hirst-spin-disc:after{content:"";position:absolute;inset:15%;border-radius:50%;background:repeating-conic-gradient(from 12deg,transparent 0 12deg,rgba(255,255,255,.38) 13deg 16deg,transparent 18deg 29deg);mix-blend-mode:screen}
+.hirst-spin-center{position:absolute;width:15%;aspect-ratio:1;background:#fff;border-radius:50%;box-shadow:0 0 40px 23px rgba(255,255,255,.8)}
+@keyframes hirst-spin{to{transform:rotate(360deg)}}
+.hirst-art-blossom{background:linear-gradient(155deg,#9DDCF4,#74C9EC 74%,#E9F7FF)}
+.hirst-art-blossom svg{position:absolute;width:115%;height:110%;left:-6%;top:-8%}
+.hirst-art-blossom>i{position:absolute;left:var(--x);top:var(--y);width:var(--s);aspect-ratio:1;border-radius:55% 37% 67% 27%;filter:drop-shadow(1px 3px 1px #ec8fb055);transform:rotate(25deg)}
+.hirst-art-butterfly{background:radial-gradient(circle at 50% 50%,#f7f2ff 2%,#ecedff 58%,#f4f7ff 100%);display:flex;justify-content:center;align-items:center}
+.hirst-butterfly-wing{position:relative;width:43%;height:68%;background:conic-gradient(from 25deg,var(--hirst-c1),var(--hirst-c3),var(--hirst-c2),var(--hirst-c5),var(--hirst-c1));clip-path:polygon(100% 50%,70% 6%,27% 0,0 26%,25% 54%,0 79%,46% 100%,84% 84%);border-radius:50%;transform:rotate(7deg);box-shadow:inset 0 0 40px rgba(255,255,255,.5)}
+.hirst-butterfly-wing.right{transform:scaleX(-1) rotate(7deg)}
+.hirst-butterfly-wing i{position:absolute;width:34%;aspect-ratio:1;border-radius:50%;background:var(--hirst-c3);top:19%;left:34%;box-shadow:0 65px 0 var(--hirst-c4),25px 28px 0 var(--hirst-c6)}
+.hirst-butterfly-axis{width:8px;height:56%;background:#283052;border-radius:90%;position:absolute;left:calc(50% - 4px);top:24%}
+.hirst-frame-label{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 15px;color:#27324d;background:rgba(255,255,255,.91);backdrop-filter:blur(14px);font-size:11px}
+.hirst-frame-label small{font-size:8px;letter-spacing:.1em;font-weight:800;color:#68768e}
+.hirst-bottom{display:flex;justify-content:space-between;gap:16px;border-top:1px solid #e1e6ee;padding:14px clamp(20px,3vw,40px);font-size:9px;letter-spacing:.08em;color:#7f8a9d;font-weight:800}
+.hirst-inspector{margin-bottom:17px}.hirst-variant-select{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}.hirst-variant-button{display:flex;align-items:center;gap:7px;text-align:left;padding:10px 7px;border-radius:8px;background:white;color:#536079;border:1px solid #dde3ec;font-size:11px;font-weight:800;min-width:0}.hirst-variant-button.is-active{border-color:#F04C73;box-shadow:0 0 0 1px #F04C7333;background:#fffafd;color:#27324a}.hirst-small-dots{display:flex;gap:2px;flex:none}.hirst-small-dots i{width:7px;height:7px;border-radius:50%;display:block}
+.hirst-variant-button:focus-visible{outline:2px solid #3868f4;outline-offset:2px}
+@media(max-width:970px){.hirst-header nav{gap:12px}.hirst-content{grid-template-columns:1fr}.hirst-copy{padding:28px 24px}.hirst-copy h2{font-size:42px}.hirst-art-frame{height:280px;margin:0 24px 25px}.hirst-bottom{padding:14px 24px}}
+.canvas-paper.is-phone .mock-hirst{border-radius:0}.canvas-paper.is-phone .hirst-header{height:57px;padding:0 16px}.canvas-paper.is-phone .hirst-header nav{display:none}.canvas-paper.is-phone .hirst-header-signature{margin-left:auto}.canvas-paper.is-phone .hirst-content{display:block}.canvas-paper.is-phone .hirst-copy{padding:27px 18px 22px}.canvas-paper.is-phone .hirst-copy h2{font-size:40px}.canvas-paper.is-phone .hirst-art-frame{margin:0 16px 18px;height:250px}.canvas-paper.is-phone .hirst-bottom{padding:12px 16px;font-size:8px;flex-wrap:wrap}
+body[data-reduced-motion="true"] .hirst-spin-disc{animation:none}
+@media(prefers-reduced-motion:reduce){.hirst-spin-disc{animation:none}}
