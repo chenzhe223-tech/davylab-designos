@@ -161,6 +161,9 @@ body.studio-fullscreen .canvas-paper{max-width:1200px}
   .inspector-mobile-header strong{font-size:15px;letter-spacing:-.025em;color:#243855}
   body[data-workspace-view="studio"] .inspector-card{margin-bottom:11px}
 }
+@media(max-width:920px) and (min-width:701px){
+  body[data-workspace-view="studio"] .app-layout{grid-template-columns:76px minmax(0,1fr)}
+}
 @media(max-width:700px){
   body[data-workspace-view="studio"] .app-layout{display:block}
   body[data-workspace-view="studio"] .topbar{min-height:53px;padding-inline:13px}
