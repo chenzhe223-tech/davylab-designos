@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "prompt": "为 DAVYLAB Vibe Studio 制作30秒竖屏产品体验宣传片。所有功能演示须使用已验证的真实界面素材；未验证功能禁止虚构成片。",
+  "format": "portrait",
+  "mode": "brand",
+  "title": "从一句话，到一部影片｜方案A 产品体验",
+  "shots": [
+    {
+      "duration": 3,
+      "title": "一句话，能变成影片吗？",
+      "visual": "深蓝背景上的输入框与逐字输入；随后展开为分镜卡片。仅使用原创程序动画。",
+      "motion": "typewriter to storyboard reveal",
+      "narration": "如果一句话，就能制作一部影片？"
+    },
+    {
+      "duration": 5,
+      "title": "理解创意",
+      "visual": "以真实创意输入和可编辑分镜 JSON 为素材，三张分镜卡片依次出现。",
+      "motion": "staggered card reveal",
+      "narration": "从你的想法开始，让创意变成清晰的脚本与分镜。"
+    },
+    {
+      "duration": 6,
+      "title": "画面动起来",
+      "visual": "使用现有可执行的城市、粒子与几何程序动画；不可使用概念静帧冒充视频。",
+      "motion": "match cuts between procedural scenes",
+      "narration": "让文字成为画面，让画面真正动起来。"
+    },
+    {
+      "duration": 6,
+      "title": "编辑每个镜头",
+      "visual": "真实录制时间轴编辑、镜头时长修改和前后对比，未实测时不得伪装成产品功能。",
+      "motion": "timeline focus and edit comparison",
+      "narration": "每一个镜头，都可以自由调整、反复打磨。"
+    },
+    {
+      "duration": 6,
+      "title": "真实渲染与交付",
+      "visual": "只使用实际渲染通过 QA 的 MP4 及其回执；验收前本镜头仅为占位制作指令。",
+      "motion": "verified render playback reveal",
+      "narration": "从预览到渲染，让作品成为真正可播放的视频。"
+    },
+    {
+      "duration": 4,
+      "title": "DAVYLAB Vibe Studio",
+      "visual": "品牌 Logo 正确比例、冷白蓝灰背景和口号；优先使用经确认的官方品牌资产。",
+      "motion": "soft logo fade in",
+      "narration": "DAVYLAB Vibe Studio。把想法，做成能用的工具。"
+    }
+  ]
+}
